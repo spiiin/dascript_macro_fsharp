@@ -43,3 +43,5 @@ daslang.exe examples/state_operations_demo.das -no-module-cache
 Групповая отмена CancellationToken и передача Cancelled через bind: [TASK_CANCELLATION.md](TASK_CANCELLATION.md), [пример](examples/task_cancellation_demo.das).
 
 Ожидание времени task_delay_ms через now_ms планировщика: [TASK_DELAY.md](TASK_DELAY.md), [пример](examples/task_delay_demo.das).
+
+WhenAll для динамического массива задач, порядок результатов и владеющий массив: [TASK_ARRAY.md](TASK_ARRAY.md), [пример](examples/task_array_demo.das).

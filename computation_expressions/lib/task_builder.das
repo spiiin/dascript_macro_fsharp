@@ -17,6 +17,10 @@ struct TaskTag {}
 struct TaskEventTag {}
 struct TaskContext {}
 struct TaskResultContext {}
+def ce_task_is_polling(task:auto) : bool {return task.polling}
+def ce_await_borrow_value(builder:auto; source:auto) {
+    concept_assert(false,"task: reference binding requires an owning array Task")
+}
 
 // Task is single-threaded. A nested error scope reports callback failures only
 // after native iterator finalizers have returned and released their closures.

@@ -274,3 +274,5 @@ Task scheduler: TaskTimeout(after_ms=...) отменяет задачу до pol
 Task bind и комбинаторы передают Cancelled ребёнка родителю без panic; try_with его не перехватывает. CancellationToken добавляет кооперативный групповой запрос, наблюдаемый при poll. Ресурсы закрываются; ошибка cleanup даёт Failed. См. [TASK_CANCELLATION.md](TASK_CANCELLATION.md).
 
 task_delay_ms — холодная Task<CeUnit>, отсчёт от первого poll по now_ms scheduler. TaskResultBuilder допускает Task<CeUnit> без доменного Error; отмена/исключения передаются как обычно. Детали времени и владения: [TASK_DELAY.md](TASK_DELAY.md).
+
+task_when_all(array) сохраняет порядок входных индексов. Failed/Cancelled передаются вверх с закрытием остальных детей. Result.error внутри элементов остаётся данными. Владеющий массив заимствуется через var results & = ... |> bind и живёт через последующие ожидания продолжения. [TASK_ARRAY.md](TASK_ARRAY.md).

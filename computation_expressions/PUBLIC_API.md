@@ -123,3 +123,5 @@ state, не внешние эффекты или объекты по указа�
 Общий токен: cancellation_token(), cancellation_clone(token), cancellation_requested(token), cancellation_cancel(token). task_with_cancellation(task,token) потребляет Task и сохраняет свой handle токена. Clone и := также разделяют состояние. Cancelled проходит через bind и комбинаторы без исключения. Контракт: [TASK_CANCELLATION.md](TASK_CANCELLATION.md).
 
 task_delay_ms(duration_ms) возвращает Task<CeUnit>, ожидающую now_ms текущего task_tick. Срок начинается при первом poll задержки; TaskResultBuilder также принимает Task<CeUnit> через bind. Модуль task_delay.das включён в task_scheduler.das. Контракт часов, отмена и пример: [TASK_DELAY.md](TASK_DELAY.md).
+
+task_when_all(tasks) потребляет массив Task с одинаковым копируемым T и возвращает владеющую задачу коллекции. Bind: var results & = task_when_all(make_jobs()) |> bind. task_value возвращает clone массива; прямая регистрация — task_scheduler(type<array<T>>). Поддержаны token, timeout и task_scope. Подробности: [TASK_ARRAY.md](TASK_ARRAY.md).

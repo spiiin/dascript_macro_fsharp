@@ -195,3 +195,5 @@ Scope потребляет scheduler и удаляет его и при успе
 Общая отмена группы через task_with_cancellation(task,token): [TASK_CANCELLATION.md](TASK_CANCELLATION.md). В отличие от таймеров, запрос наблюдается при очередном опросе каждой обёртки и подчиняется бюджету tick; до его обработки ресурс остаётся у задачи.
 
 Ожидание заданного времени в CE: task_delay_ms(duration_ms) |> bind. Текущий now_ms доступен вложенным Task на время tick; задержки подчиняются бюджету опросов. [TASK_DELAY.md](TASK_DELAY.md).
+
+Коллекционный результат task_when_all(array) можно зарегистрировать в task_scheduler(type<array<T>>). task_value возвращает независимый clone массива. Пример и ограничения элементов: [TASK_ARRAY.md](TASK_ARRAY.md).

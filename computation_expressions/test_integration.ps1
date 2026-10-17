@@ -6,7 +6,7 @@ $destination=Join-Path ([IO.Path]::GetFullPath($OutputDirectory)) ('integration-
 $expected=@(Get-Content (Join-Path $PSScriptRoot 'public_modules.json') -Raw|ConvertFrom-Json)
 $actual=@(Get-ChildItem (Join-Path $destination 'lib') -Filter '*.das'|Select-Object -ExpandProperty Name)
 if(@(Compare-Object $expected $actual).Count){throw 'Export has unexpected modules'}
-foreach($file in @('README.md','PUBLIC_API.md','TASKS.md','TASK_COMPOSITION.md','TASK_SCHEDULER.md','TASK_CANCELLATION.md','TASK_DELAY.md','main.das','identity_builder.das','manifest.json')){
+foreach($file in @('README.md','PUBLIC_API.md','TASKS.md','TASK_COMPOSITION.md','TASK_SCHEDULER.md','TASK_CANCELLATION.md','TASK_DELAY.md','TASK_ARRAY.md','main.das','identity_builder.das','manifest.json')){
     if(-not(Test-Path -LiteralPath (Join-Path $destination $file))){throw "Incomplete export: $file"}
 }
 & $Daslang (Join-Path $destination 'main.das') -no-module-cache
@@ -85,6 +85,14 @@ def main() {
     let delayed=task_spawn(scheduler,delayTask)
     verify(task_tick(scheduler,10)==1)
     verify(task_tick(scheduler,15)==0 && task_value(scheduler,delayed)==3)
+    var inscope arrays <- task_scheduler(type<array<int>>)
+    var jobs:array<typedecl(task_after_polls(0,0))>
+    jobs |> emplace(task_after_polls(1,3))
+    jobs |> emplace(task_after_polls(0,4))
+    let batch=task_spawn(arrays,task_when_all(jobs))
+    verify(task_tick(arrays,0)==1 && task_tick(arrays,1)==0)
+    var inscope values <- task_value(arrays,batch)
+    verify(values[0]==3 && values[1]==4)
     print("Public module integration OK\n")
 }
 '@

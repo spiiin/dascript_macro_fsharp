@@ -50,8 +50,9 @@ def ce_resumable_scope(node:ExpressionPtr; builder:string; var error:string&) : 
             var tail:array<ExpressionPtr>
             if(stmt is ExprLet) {
                 var declaration=clone_expression(stmt) as ExprLet
-                if(declaration.variables[0]._type.flags.ref) {error="task: bind produces a value; reference bindings are unsupported";return blk}
-                declaration.variables[0].init=qmacro(ce_await_value($i(builder),$i(event)))
+                if(declaration.variables[0]._type.flags.ref) {
+                    declaration.variables[0].init=qmacro(ce_await_borrow_value($i(builder),$i(event)))
+                } else {declaration.variables[0].init=qmacro(ce_await_value($i(builder),$i(event)))}
                 tail |> push <| declaration
             }
             for(i in range(index+1,length(blk.list))) {tail |> push <| clone_expression(blk.list[i])}
