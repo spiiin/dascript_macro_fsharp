@@ -1,0 +1,72 @@
+name: Examples and tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    name: Windows / Daslang 0.6.4
+    runs-on: windows-2022
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install pinned Daslang SDK
+        id: sdk
+        run: |
+          $exe = & ./.github/scripts/install-daslang.ps1 -Destination (Join-Path $env:RUNNER_TEMP 'daslang-0.6.4')
+          "DASLANG_EXE=$exe" >> $env:GITHUB_ENV
+
+      - name: Type providers / interpreter examples and tests
+        if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
+        run: |
+          # Nonzero native exits are expected in negative compiler tests.
+          $PSNativeCommandUseErrorActionPreference = $false
+          New-Item -ItemType Directory -Path ci-results -Force | Out-Null
+          Start-Transcript -Path ci-results/type-providers.log
+          try { & ./type_providers/run.ps1 -Test }
+          finally { Stop-Transcript }
+
+      - name: Computation expressions / interpreter examples and tests
+        if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          Start-Transcript -Path ci-results/computation-expressions.log
+          try { & ./computation_expressions/run_computation.ps1 -Test }
+          finally { Stop-Transcript }
+
+      - name: CE / JIT regression subset
+        if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          & ./computation_expressions/run_modes.ps1 -Mode Jit -OutputDirectory "$env:GITHUB_WORKSPACE/ci-results/jit"
+
+      - name: CE / AOT C++ generation (no runtime execution)
+        if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          & ./computation_expressions/run_modes.ps1 -Mode AotGenerate -OutputDirectory "$env:GITHUB_WORKSPACE/ci-results/aot-generation"
+
+      - name: Upload test logs and mode reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-daslang-0.6.4-results
+          path: ci-results/
+          if-no-files-found: warn
+          retention-days: 14
