@@ -79,6 +79,12 @@ def ce_await_failed(builder:tuple<kind:TaskResultContext;element:auto(T)>; event
 def ce_await_failure(builder:tuple<kind:TaskContext;element:auto(T)>; event:auto) {return task_pending(type<T>)}
 def ce_await_failure(builder:tuple<kind:TaskResultContext;element:auto(T)>; event:tuple<tag:TaskEventTag;ready:bool;value:variant<ok:auto(U);error:string>>) {return task_ready(result_error(event.value as error,type<T>))}
 
+// Unit operations have no domain Error; native failure/cancellation still
+// propagate through ce_await_source. This also permits delay |> bind in TaskResult.
+def ce_await_value(builder:tuple<kind:TaskResultContext;element:auto(T)>; event:tuple<tag:TaskEventTag;ready:bool;value:CeUnit>) {return CeUnit()}
+def ce_await_failed(builder:tuple<kind:TaskResultContext;element:auto(T)>; event:tuple<tag:TaskEventTag;ready:bool;value:CeUnit>) {return false}
+def ce_await_failure(builder:tuple<kind:TaskResultContext;element:auto(T)>; event:tuple<tag:TaskEventTag;ready:bool;value:CeUnit>) {return task_pending(type<variant<ok:T;error:string>>)}
+
 def ce_sequence_run(builder:tuple<kind:TaskContext;element:auto(T)>; var source:iterator<tuple<tag:TaskEventTag;ready:bool;value:T>>) {return <- task_create(source)}
 def ce_sequence_run(builder:tuple<kind:TaskResultContext;element:auto(T)>; var source:iterator<tuple<tag:TaskEventTag;ready:bool;value:variant<ok:T;error:string>>>) {return <- task_create(source)}
 

@@ -121,3 +121,5 @@ state, не внешние эффекты или объекты по указа�
 Таймаут при регистрации: task_spawn(scheduler, source, TaskTimeout(after_ms=30)). task_timed_out(scheduler,id) отличает его от ручной отмены; deadline проверяется до poll независимо от его бюджета. См. [TASK_SCHEDULER.md](TASK_SCHEDULER.md#таймауты).
 
 Общий токен: cancellation_token(), cancellation_clone(token), cancellation_requested(token), cancellation_cancel(token). task_with_cancellation(task,token) потребляет Task и сохраняет свой handle токена. Clone и := также разделяют состояние. Cancelled проходит через bind и комбинаторы без исключения. Контракт: [TASK_CANCELLATION.md](TASK_CANCELLATION.md).
+
+task_delay_ms(duration_ms) возвращает Task<CeUnit>, ожидающую now_ms текущего task_tick. Срок начинается при первом poll задержки; TaskResultBuilder также принимает Task<CeUnit> через bind. Модуль task_delay.das включён в task_scheduler.das. Контракт часов, отмена и пример: [TASK_DELAY.md](TASK_DELAY.md).

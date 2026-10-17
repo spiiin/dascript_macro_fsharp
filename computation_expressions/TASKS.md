@@ -29,7 +29,7 @@ let status = task_poll(task)
 ```
 
 `TaskBuilder(type<T>)` ожидает Task<U> и возвращает Task<T>.
-`TaskResultBuilder(type<T>)` ожидает Task<Result<U>>: bind извлекает ok,
+`TaskResultBuilder(type<T>)` ожидает Task<Result<U>> или Task<CeUnit>: bind извлекает ok,
 а error завершает всю задачу с Result.error, пропуская продолжение.
 `return value` в этом builder автоматически оборачивает значение в ok.
 Тип результата задаётся явно; payload должен быть копируемым и владеть данными.
@@ -194,9 +194,11 @@ Builder определяет `ce_await_source`, `ce_await_pending`, `ce_await_va
 Await-source — владеющий iterator событий с полем ready; Pending не запускает
 продолжение. Terminal-событие закрывает весь корневой iterator до следующего resume.
 
-Новые Task-сценарии включены в полный набор интерпретатора. Шестнадцать положительных
+Новые Task-сценарии включены в полный набор интерпретатора. Восемнадцать положительных
 Task-файлов включены в отдельные JIT/AOT проверки run_modes.ps1:
-всего там двадцать файлов. Это конечный набор сценариев, не доказательство для любых
+всего там двадцать два файла. Это конечный набор сценариев, не доказательство для любых
 сочетаний типов и исключений. Генерация AOT не подтверждает исполнение AOT-хоста.
 
 Типизированный планировщик с лимитом опросов, круговым обходом, ID, отменой и историей: [TASK_SCHEDULER.md](TASK_SCHEDULER.md).
+
+Ожидание времени task_delay_ms через часы scheduler и Unit bind в TaskResultBuilder: [TASK_DELAY.md](TASK_DELAY.md).

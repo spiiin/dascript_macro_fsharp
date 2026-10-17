@@ -1,6 +1,7 @@
 options gen2
 module task_scheduler public
 require ./task_builder.das public
+require ./task_delay.das public
 require daslib/rtti
 
 struct TaskSchedulerConfig {max_polls_per_tick:int=64}
@@ -236,29 +237,31 @@ def task_tick(var scheduler:auto; now_ms:int64) : int {
         if(now_ms<int64(0) || (frame.state.has_time && now_ms<frame.state.now_ms)) {panic("task scheduler: time must be non-negative and monotonic")}
         frame.state.busy=true
         try {
-            if(!frame.state.has_time) {
-                var timer=frame.state.timer_head
-                while(timer!=0) {
-                    frame.records[timer-1].slot.deadline_ms+=uint64(now_ms)
-                    timer=frame.records[timer-1].slot.timer_next
+            ce_task_clock_scope(frame.state.owner,now_ms,$ {
+                if(!frame.state.has_time) {
+                    var timer=frame.state.timer_head
+                    while(timer!=0) {
+                        frame.records[timer-1].slot.deadline_ms+=uint64(now_ms)
+                        timer=frame.records[timer-1].slot.timer_next
+                    }
                 }
-            }
-            frame.state.now_ms=now_ms;frame.state.has_time=true
-            // All due timers close before any polling, independent of poll budget.
-            while(frame.state.timer_head!=0 && frame.records[frame.state.timer_head-1].slot.deadline_ms<=uint64(now_ms)) {
-                let index=frame.state.timer_head
-                frame.records[index-1].slot.timed_out=true
-                task_cancel(frame.records[index-1].task)
-                task_scheduler_unlink(frame,index)
-            }
-            var budget=frame.state.config.max_polls_per_tick<frame.state.active_count ? frame.state.config.max_polls_per_tick : frame.state.active_count
-            while(budget>0 && frame.state.active_count>0) {
-                let index=frame.state.cursor
-                frame.state.cursor=frame.records[index-1].slot.next!=0 ? frame.records[index-1].slot.next : frame.state.head
-                let status=task_poll(frame.records[index-1].task)
-                if(!task_scheduler_active(status)) {task_scheduler_unlink(frame,index)}
-                budget--
-            }
+                frame.state.now_ms=now_ms;frame.state.has_time=true
+                // All due timers close before any polling, independent of poll budget.
+                while(frame.state.timer_head!=0 && frame.records[frame.state.timer_head-1].slot.deadline_ms<=uint64(now_ms)) {
+                    let index=frame.state.timer_head
+                    frame.records[index-1].slot.timed_out=true
+                    task_cancel(frame.records[index-1].task)
+                    task_scheduler_unlink(frame,index)
+                }
+                var budget=frame.state.config.max_polls_per_tick<frame.state.active_count ? frame.state.config.max_polls_per_tick : frame.state.active_count
+                while(budget>0 && frame.state.active_count>0) {
+                    let index=frame.state.cursor
+                    frame.state.cursor=frame.records[index-1].slot.next!=0 ? frame.records[index-1].slot.next : frame.state.head
+                    let status=task_poll(frame.records[index-1].task)
+                    if(!task_scheduler_active(status)) {task_scheduler_unlink(frame,index)}
+                    budget--
+                }
+            })
         } recover {frame.state.busy=false;panic("{this_context().last_exception}")}
         frame.state.busy=false
         return frame.state.active_count

@@ -19,6 +19,7 @@ function Check([string]$File, [bool]$Pass, [string]$Expected) {
 }
 Push-Location $PSScriptRoot
 try {
+    Check 'examples/task_delay_demo.das' $true 'Task delay demo OK'
     Check 'examples/task_cancellation_demo.das' $true 'Task cancellation demo OK'
     Check 'examples/task_timeout_demo.das' $true 'Task timeout demo OK'
     Check 'examples/task_scheduler_demo.das' $true 'Task scheduler demo OK'
@@ -69,6 +70,8 @@ try {
     Check 'examples/single_cleanup_demo.das' $true 'single For cleanup demo OK'
     Check 'examples/zip_cleanup_demo.das' $true 'zip cleanup demo OK'
     if ($Test) {
+        Check 'tests/test_task_delay.das' $true 'Task delay checks OK'
+        Check 'tests/test_task_delay_lifetime.das' $true 'Task delay lifetime checks OK'
         Check 'tests/test_task_cancellation.das' $true 'Task cancellation checks OK'
         Check 'tests/test_task_cancellation_lifetime.das' $true 'Task cancellation lifetime checks OK'
         Check 'tests/test_task_timeouts.das' $true 'Task timeout checks OK'

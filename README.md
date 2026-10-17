@@ -27,8 +27,8 @@
 - CE: примеры, положительные и отрицательные тесты, диагностику,
   независимый экспорт библиотеки и раскрытие оптимизаций через
   `computation_expressions/run_computation.ps1 -Test`.
-- JIT: двадцать явно перечисленных тестов `run_modes.ps1 -Mode Jit`.
-- AOT: генерацию C++ для тех же двадцати тестов, без сборки и исполнения AOT-хоста.
+- JIT: двадцать два явно перечисленных теста `run_modes.ps1 -Mode Jit`.
+- AOT: генерацию C++ для тех же двадцати двух тестов, без сборки и исполнения AOT-хоста.
 
 Ожидаемые ошибки компиляции проверяются по коду завершения и сообщению;
 неожиданная ошибка делает проверку красной. Остальные наборы продолжают
@@ -45,6 +45,8 @@
 [TASK_SCHEDULER.md](computation_expressions/TASK_SCHEDULER.md).
 
 Групповая отмена и передача Cancelled через bind: [TASK_CANCELLATION.md](computation_expressions/TASK_CANCELLATION.md).
+
+Ожидание времени через now_ms планировщика: [task_delay_ms](computation_expressions/TASK_DELAY.md).
 
 ## Подробности и история возможностей
 

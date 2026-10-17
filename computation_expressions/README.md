@@ -4,7 +4,7 @@
 
 | Каталог | Содержимое |
 |---|---|
-| lib/ | 26 публичных модулей без тестовых builders |
+| lib/ | 27 публичных модулей без тестовых builders |
 | examples/ | Запускаемые примеры |
 | tests/ | Положительные и отрицательные проверки; tests/repro/ — известные сбои |
 | support/ | Демонстрационные builders и вспомогательные модули примеров/тестов |
@@ -41,3 +41,5 @@ daslang.exe examples/state_operations_demo.das -no-module-cache
 Таймауты по now_ms, отмена вложенных ожиданий и освобождение ресурсов: [task_timeout_demo.das](examples/task_timeout_demo.das), [контракт](TASK_SCHEDULER.md#таймауты).
 
 Групповая отмена CancellationToken и передача Cancelled через bind: [TASK_CANCELLATION.md](TASK_CANCELLATION.md), [пример](examples/task_cancellation_demo.das).
+
+Ожидание времени task_delay_ms через now_ms планировщика: [TASK_DELAY.md](TASK_DELAY.md), [пример](examples/task_delay_demo.das).
