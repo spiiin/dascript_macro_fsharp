@@ -135,6 +135,47 @@ def task_after_polls(count:int; value:auto(T)) {
     return <- task_create(source)
 }
 
+// Standard [async] generators can produce several res events. Like native await,
+// finish the producer and retain its last result; only wait events suspend us.
+// This also observes side effects and exceptions after the last yielded value.
+def task_from_async(var source:iterator<variant<res:auto(T);wait:bool>>) {
+    static_assert(typeinfo ce_resumable_payload(default<T>))
+    concept_assert(typeinfo can_copy(type<T>),"task_from_async: payload must be copyable")
+    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:T -const -&>> capture(<-source) {
+        var event:variant<res:T;wait:bool>
+        var value:T -const -&
+        var received=false
+        while(ce_sequence_next_value(source,event)) {
+            if(event is res) {value=event as res;received=true}
+            else {yield task_pending(type<T>)}
+        }
+        sequence_close(source)
+        if(!received) {panic("task_from_async: async completed without a result")}
+        yield task_ready(value)
+        return false
+    } finally {ce_sequence_finalize($ {sequence_close(source)})}
+    return <- task_create(events)
+}
+
+// Void [async] functions produce iterator<bool>; completion yields successful Unit.
+def task_from_async(var source:iterator<bool>) {
+    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:CeUnit>> capture(<-source) {
+        var waiting=false
+        while(ce_sequence_next_value(source,waiting)) {yield task_pending(type<CeUnit>)}
+        sequence_close(source)
+        yield task_ready(CeUnit())
+        return false
+    } finally {ce_sequence_finalize($ {sequence_close(source)})}
+    return <- task_create(events)
+}
+
+// Own an external operation/resource until the async source is closed. The
+// Sequence owner runs close even for an unstarted source and frees the lambda.
+def task_from_async(var source:iterator<auto(T)>; var close:lambda<():void>) {
+    var scoped <- ce_sequence_scoped(source,close)
+    return <- task_from_async(scoped)
+}
+
 // Own a task across exceptions in the driving/event-loop code as well.
 def task_scope(var task:auto(T); body:block<(var owned:T):void>) {
     var owned <- task

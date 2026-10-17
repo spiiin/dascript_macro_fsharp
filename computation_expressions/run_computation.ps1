@@ -19,6 +19,8 @@ function Check([string]$File, [bool]$Pass, [string]$Expected) {
 }
 Push-Location $PSScriptRoot
 try {
+    Check 'examples/task_async_demo.das' $true 'Task async demo OK'
+    Check 'examples/task_async_resources_demo.das' $true 'Task async resources demo OK'
     Check 'examples/task_demo.das' $true 'Task demo OK'
     Check 'examples/task_external_demo.das' $true 'External task demo OK'
     Check 'examples/move_resources_demo.das' $true 'move-only resources demo OK'
@@ -63,6 +65,9 @@ try {
     Check 'examples/single_cleanup_demo.das' $true 'single For cleanup demo OK'
     Check 'examples/zip_cleanup_demo.das' $true 'zip cleanup demo OK'
     if ($Test) {
+        Check 'tests/test_task_from_async.das' $true 'Task async adapter checks OK'
+        Check 'tests/test_task_from_async_lifetime.das' $true 'Task async adapter lifetime checks OK'
+        Check 'tests/test_task_from_async_move.das' $false 'task_from_async: payload must be copyable'
         Check 'tests/test_task.das' $true 'Task checks OK'
         Check 'tests/test_task_result.das' $true 'TaskResult checks OK'
         Check 'tests/test_task_control.das' $true 'Task control checks OK'

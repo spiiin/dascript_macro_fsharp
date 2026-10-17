@@ -1,5 +1,19 @@
 # Надёжность и режимы выполнения
 
+## Native async и локальный inscope
+
+В Windows SDK 0.6.4 воспроизводится отдельный сбой стандартного async_boost:
+локальный var inscope внутри [async]-функции освобождается при первом ожидании,
+а следующее возобновление завершается `invalid label index`.
+[repro_async_inscope.das](tests/repro/repro_async_inscope.das) не использует нашу
+библиотеку; проверенный режим — интерпретатор, код завершения 1. Это известный
+непроходящий repro, он не включён в обычные наборы и не помечен как успех.
+
+task_from_async не исправляет стандартный макрос. Обход: владеть ресурсом через
+Task CE use_resource либо task_from_async(source, closeCallback), передавая в
+стандартную async-функцию устойчивый heap handle. Пример и границы владения —
+[TASKS.md](TASKS.md), [task_async_resources_demo.das](examples/task_async_resources_demo.das).
+
 ## Воспроизводимый сбой JIT
 
 На Daslang 0.6.4 из используемого bundle воспроизводится access violation
@@ -32,8 +46,9 @@
 - `run_computation.ps1 -Test`: полный набор интерпретатора, включая ожидаемые
   ошибки компиляции и проверки раскрытия.
 - `run_modes.ps1 -Mode Jit`: явно перечисленное подмножество исполнения JIT.
-  Восемь файлов: четыре базовых CE-набора и test_task, test_task_result,
-  test_task_control, test_task_lifetime. Последние проверяют также отмену,
+  Десять файлов: четыре базовых CE-набора и test_task, test_task_result,
+  test_task_control, test_task_lifetime, test_task_from_async,
+  test_task_from_async_lifetime. Последние проверяют также отмену,
   обработку ошибок, ожидание внешнего события и освобождение ресурсов.
   Не означает успех всех тестов интерпретатора под JIT. Кеш JIT отключён.
 - `run_modes.ps1 -Mode AotGenerate`: генерация C++ через `daslang -aot`.

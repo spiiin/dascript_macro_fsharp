@@ -18,6 +18,9 @@ require ./lib/validation_builder.das
 require ./lib/reader_result_builder.das
 require ./lib/deferred_computation.das
 require ./lib/task_builder.das
+require daslib/async_boost
+[async]
+def standard_value() : int {await_next_frame();yield 12}
 [export]
 def main() {
     let state=computation(StateBuilder(5)) {
@@ -52,6 +55,12 @@ def main() {
     verify(task_poll(asyncTask)==TaskStatus.Succeeded)
     let outcome=task_value(asyncTask)
     verify(outcome is ok && outcome as ok==9)
+    var inscope adapted <- computation(TaskBuilder(type<int>)) {
+        let n=task_from_async(standard_value()) |> bind
+        return n+1
+    }
+    verify(task_poll(adapted)==TaskStatus.Waiting)
+    verify(task_poll(adapted)==TaskStatus.Succeeded && task_value(adapted)==13)
     print("Public module integration OK\n")
 }
 '@

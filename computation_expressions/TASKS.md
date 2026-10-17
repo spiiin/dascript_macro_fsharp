@@ -57,6 +57,8 @@ let status = task_poll(task)
 | `task_cancel(task)` | Закрывает Created/Waiting, возвращает true; повторно false |
 | `task_scope(task, $(var owner) { ... })` | Перемещает владельца в защищённую область; закрывает и при panic внешнего кода |
 | `task_after_polls(n, value)` | Тестовый источник: n состояний Pending, затем результат |
+| `task_from_async(source)` | Перемещает стандартный async-итератор, ожидает завершения, возвращает последний res или CeUnit для void |
+| `task_from_async(source, closeLambda)` | Также владеет close callback; вызывает его ровно один раз после закрытия источника |
 
 Bind **перемещает дочернюю задачу** в родительскую. Не используйте исходную переменную
 после передачи. Отмена родителя отменяет и закрывает ожидаемого ребёнка.
@@ -110,6 +112,73 @@ borrowed-указателей отвечает адаптер. Callback не д�
 Проверки: test_task, test_task_result, test_task_control, test_task_lifetime,
 отрицательные test_task_and_bind и test_task_pointer — через run_computation.ps1 -Test.
 
+## Стандартные [async]-функции
+
+```das
+require daslib/async_boost
+
+[async]
+def read_health() : variant<ok:int;error:string> {
+    await_next_frame()
+    yield result_ok(85)
+}
+
+// Внутри main или другой обычной функции:
+var inscope task <- computation(TaskResultBuilder(type<int>)) {
+    let health = task_from_async(read_health()) |> bind
+    return health + 10
+}
+```
+
+Адаптер поддерживает `iterator<variant<res:T;wait:bool>>` и void-вариант
+`iterator<bool>`. Он не требует изменений async_boost и не запускает поток.
+Требования к payload те же, что у Task: копируемые данные без borrowed-указателей.
+Для TaskResultBuilder async-функция выдаёт Result<T>, для TaskBuilder — обычный T.
+Void даёт Task<CeUnit>; напрямую ожидается в TaskBuilder через bind без переменной.
+
+Контракт: ожидать **полного завершения**, сохранить **последний res**. Код после
+yield res выполняется; исключение после уже выданного результата даёт Failed.
+Несколько res в одном синхронном участке не добавляют Pending. Каждый wait, даже
+после res, даёт отдельный Pending. Конечный Result.error проверяется TaskResultBuilder
+после завершения источника и пропускает продолжение CE. Это не немедленная остановка
+самого источника при первом промежуточном error. Типизированный источник без единого
+res даёт Failed с сообщением `task_from_async: async completed without a result`.
+Void без ожиданий завершается сразу с CeUnit.
+
+От стандартного await отличается число приостановок: async_boost 0.6.4 также
+вставляет ожидание после res, адаптер — только для настоящих wait-событий.
+Если сама async-функция использует await, вставленные им wait остаются частью
+её событий и сохраняются. Мы не удаляем их и не изменяем стандартный макрос.
+
+Переданный iterator перемещается в адаптер сразу; исходную переменную после этого
+использовать нельзя. Само выражение source вычисляется при создании адаптера,
+тело cold async-итератора начинается при poll. Адаптер закрывает источник до
+передачи результата продолжению, а также при исключении и отмене, включая отмену
+до первого poll. Close callback выполняется после закрытия источника, затем его
+lambda освобождается. При бросающем close задача получает Failed, повторного close нет.
+Обычный delete/inscope владельца также закрывает источник.
+
+### Ограничение SDK 0.6.4
+
+В проверенном Windows bundle стандартная [async]-функция с локальным
+`var inscope` может освободить его при первом await_next_frame, а при следующем
+возобновлении выдать `invalid label index`. Воспроизведение без нашей библиотеки:
+[repro_async_inscope.das](tests/repro/repro_async_inscope.das). Это известный сбой,
+а не проходящий тест; в обычные run_computation/run_modes он не включён.
+Адаптер не исправляет код, уже некорректно раскрытый стандартным макросом.
+
+Для ресурса, который должен пережить ожидание, используйте CE use_resource вокруг
+bind либо перегрузку с close callback. Во втором случае handle размещается
+в устойчивой heap-области, стандартная async-функция заимствует его, а callback
+освобождает. Он вызывается даже для не начавшей выполнение операции. Для владения
+родительским Task при panic внешнего driving-кода сохраняется task_scope.
+Не захватывайте в callback адрес локальной переменной стека.
+
+Примеры: [task_async_demo.das](examples/task_async_demo.das),
+[task_async_resources_demo.das](examples/task_async_resources_demo.das).
+Тесты порядка, вложенного native await, Error/исключений, отмены, порядка cleanup,
+32 повторений со стабильным heap: test_task_from_async и test_task_from_async_lifetime.
+
 ## Общий протокол
 
 `ce_protocol(builder)` возвращает `ce_resumable_protocol(type<Event>)`.
@@ -121,7 +190,7 @@ Builder определяет `ce_await_source`, `ce_await_pending`, `ce_await_va
 Await-source — владеющий iterator событий с полем ready; Pending не запускает
 продолжение. Terminal-событие закрывает весь корневой iterator до следующего resume.
 
-Новые Task-сценарии включены в полный набор интерпретатора. Четыре положительных
-Task-файла отдельно прошли JIT и генерацию AOT и включены в run_modes.ps1:
-всего там восемь файлов. Это конечный набор сценариев, не доказательство для любых
+Новые Task-сценарии включены в полный набор интерпретатора. Шесть положительных
+Task-файлов включены в отдельные JIT/AOT проверки run_modes.ps1:
+всего там десять файлов. Это конечный набор сценариев, не доказательство для любых
 сочетаний типов и исключений. Генерация AOT не подтверждает исполнение AOT-хоста.

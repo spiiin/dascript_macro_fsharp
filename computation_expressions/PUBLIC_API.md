@@ -42,6 +42,11 @@ Result/Option используют копируемые данные. Для mov
 Task поддерживает неблокирующее ожидание через callback-адаптер; сетевой транспорт
 и потоки сам модуль не предоставляет. API: task_poll, task_status, task_value,
 task_error, task_cancel, task_scope, task_from_poll, task_after_polls.
+`task_from_async(source)` принимает стандартные [async]-итераторы с res/wait
+или void-итераторы bool. `task_from_async(source, closeLambda)` также владеет
+внешним cleanup. Источник перемещается, Task возвращает последний res после
+полного завершения; void возвращает CeUnit. Ограничение native inscope в SDK
+0.6.4 и безопасный пример владения описаны в [TASKS.md](TASKS.md).
 
 ## Прикладные операции
 
