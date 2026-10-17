@@ -167,6 +167,11 @@ Bind, yield и resource scopes здесь реализованы общим gene
 вычисляются слева направо ровно один раз, даже при неуспешном значении слева.
 Контракт, порядок и владение: [AND_BIND.md](AND_BIND.md).
 
+Для Resumable-протокола группы также проходят через `ce_merge_sources`.
+Task-перегрузки находятся в `task_combinators.das`: [TASK_AND_BIND.md](TASK_AND_BIND.md).
+Макрос сохраняет владение временными источниками при ошибке последующей фабрики.
+Bind2/Bind2Return для Task не используются.
+
 ## BindReturn
 
 Необязательный `ce_bind_return(builder, source, mapper)` объединяет Bind и

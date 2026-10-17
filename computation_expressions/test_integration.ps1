@@ -6,7 +6,7 @@ $destination=Join-Path ([IO.Path]::GetFullPath($OutputDirectory)) ('integration-
 $expected=@(Get-Content (Join-Path $PSScriptRoot 'public_modules.json') -Raw|ConvertFrom-Json)
 $actual=@(Get-ChildItem (Join-Path $destination 'lib') -Filter '*.das'|Select-Object -ExpandProperty Name)
 if(@(Compare-Object $expected $actual).Count){throw 'Export has unexpected modules'}
-foreach($file in @('README.md','PUBLIC_API.md','TASKS.md','TASK_COMPOSITION.md','TASK_SCHEDULER.md','TASK_CANCELLATION.md','TASK_DELAY.md','TASK_ARRAY.md','main.das','identity_builder.das','manifest.json')){
+foreach($file in @('README.md','PUBLIC_API.md','TASKS.md','TASK_COMPOSITION.md','TASK_SCHEDULER.md','TASK_CANCELLATION.md','TASK_DELAY.md','TASK_ARRAY.md','TASK_AND_BIND.md','main.das','identity_builder.das','manifest.json')){
     if(-not(Test-Path -LiteralPath (Join-Path $destination $file))){throw "Incomplete export: $file"}
 }
 & $Daslang (Join-Path $destination 'main.das') -no-module-cache
@@ -64,7 +64,7 @@ def main() {
     verify(task_poll(adapted)==TaskStatus.Waiting)
     verify(task_poll(adapted)==TaskStatus.Succeeded && task_value(adapted)==13)
     var inscope together <- computation(TaskBuilder(type<int>)) {
-        let pair=task_when_all(task_from_async(standard_value()),task_after_polls(1,5)) |> bind
+        let pair=task_from_async(standard_value()) |> and_bind(task_after_polls(1,5)) |> bind
         return pair.first+pair.second
     }
     verify(task_poll(together)==TaskStatus.Waiting)

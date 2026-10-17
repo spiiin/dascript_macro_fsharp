@@ -94,7 +94,9 @@ class CeCheckedMerge : AstTypeInfoMacro {
                 let message=string(errors)
                 var failure=qmacro(static_assert(false,$v(message)))
                 failure.at=ce_merge_locations[location].at
-                let left=(merged as ExprCall).arguments[1]
+                var left=clone_expression(merged)
+                if(length(envelope.arguments)==4) {left=clone_expression(envelope.arguments[3])}
+                elif(merged is ExprCall) {left=clone_expression((merged as ExprCall).arguments[1])}
                 var invalid=qmacro(invoke($ {
                     $e(failure);
                     static_if(typeinfo can_copy($e(left))) {return $e(left)}
@@ -131,6 +133,53 @@ def ce_merge_source(node : ExpressionPtr; builder : string; var error : string&)
         return merged
     }
     return ce_normalize_source(builder,node)
+}
+
+// Resumable sources transfer ownership before suspension. Materialize each
+// product once. Save exceptions before running any source finalizer, outside
+// recover, so a close callback cannot replace the original factory error.
+def ce_resumable_merge_source(node:ExpressionPtr; builder:string; var error:string&) : ExpressionPtr {
+    if(!(node is ExprCall) || (node as ExprCall).name!="and_bind") {return ce_normalize_source(builder,node)}
+    let call=node as ExprCall
+    if(length(call.arguments)!=2) {error="computation: expected 'left |> and_bind(right) |> bind'";return null}
+    let left=ce_resumable_merge_source(call.arguments[0],builder,error)
+    let right=ce_resumable_merge_source(call.arguments[1],builder,error)
+    if(!empty(error)) {return null}
+    let ln=make_unique_private_name("__await_left",node.at)
+    let rn=make_unique_private_name("__await_right",node.at)
+    let result=make_unique_private_name("__await_product",node.at)
+    let failure=result+"_error"
+    let failed=result+"_failed"
+    let location="{node.at.fileInfo.name}:{int(node.at.line)}:{int(node.at.column)}"
+    ce_merge_locations |> insert(location,new ExprConstBool(at=node.at,value=true))
+    let merged=qmacro(ce_merge_sources($i(builder),$i(ln),$i(rn)))
+    let checked=qmacro(typeinfo ce_checked_merge(ce_merge_origin($i(result),$i(builder),$v(location),$i(ln))))
+    let closeLeft=qmacro_expr() {static_if(typeinfo can_delete($i(ln))) {delete $i(ln)}}
+    let closeRight=qmacro_expr() {static_if(typeinfo can_delete($i(rn))) {delete $i(rn)}}
+    let closeResult=qmacro_expr() {static_if(typeinfo can_delete($i(result))) {delete $i(result)}}
+    // These are explicit owners, not inscope: cleanup must run after the primary
+    // exception is saved, and a returned product already owns both children.
+    return qmacro(invoke($ {
+        var $i(ln):typedecl($e(left))
+        static_if(typeinfo can_copy($e(left))) {$i(ln)=$e(left)}
+        else {$i(ln) <- $e(left)}
+        var $i(rn):typedecl($e(right))
+        var $i(failure)=""
+        var $i(failed)=false
+        try {
+            static_if(typeinfo can_copy($e(right))) {$i(rn)=$e(right)}
+            else {$i(rn) <- $e(right)}
+        } recover {$i(failed)=true;$i(failure)=ce_exception_message()}
+        if($i(failed)) {$e(closeLeft);$e(closeRight);panic($i(failure))}
+        var $i(result):typedecl($e(merged))
+        try {
+            static_if(typeinfo can_copy($e(merged))) {$i(result)=$e(merged)}
+            else {$i(result) <- $e(merged)}
+        } recover {$i(failed)=true;$i(failure)=ce_exception_message()}
+        $e(closeLeft);$e(closeRight)
+        if($i(failed)) {$e(closeResult);panic($i(failure))}
+        return <- $e(checked)
+    }))
 }
 
 // Run a continuation while keeping an owned temporary alive. Borrowed arrays
@@ -1051,7 +1100,16 @@ class ComputationMacro : AstCallMacro {
         if (sequence_mode) {
             var error : string
             var raw=clone_expression(blk)
-            if(resumable_mode) {raw=ce_resumable_scope(raw,name,error)}
+            if(resumable_mode) {
+                raw=ce_resumable_scope(raw,name,error,$(source:ExpressionPtr) {
+                    if(source is ExprCall && (source as ExprCall).name=="and_bind") {
+                        let merged=ce_resumable_merge_source(source,name,error)
+                        if(!empty(error)) {return null}
+                        return qmacro(ce_await_source($i(name),$e(merged)))
+                    }
+                    return qmacro(ce_await_source($i(name),$e(source)))
+                })
+            }
             if(!empty(error)) {macro_error(prog,expr.at,error);return null}
             var body = ce_sequence_scope(raw, 0, protocol.argTypes[1], ce_sequence_has_resources(raw), error, name)
             if (!empty(error)) {

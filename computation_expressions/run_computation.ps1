@@ -20,6 +20,7 @@ function Check([string]$File, [bool]$Pass, [string]$Expected) {
 Push-Location $PSScriptRoot
 try {
     Check 'examples/task_array_demo.das' $true 'Task array demo OK'
+    Check 'examples/task_and_bind_demo.das' $true 'Task and_bind demo OK'
     Check 'examples/task_delay_demo.das' $true 'Task delay demo OK'
     Check 'examples/task_cancellation_demo.das' $true 'Task cancellation demo OK'
     Check 'examples/task_timeout_demo.das' $true 'Task timeout demo OK'
@@ -93,7 +94,9 @@ try {
         Check 'tests/test_task_result.das' $true 'TaskResult checks OK'
         Check 'tests/test_task_control.das' $true 'Task control checks OK'
         Check 'tests/test_task_lifetime.das' $true 'Task lifetime checks OK'
-        Check 'tests/test_task_and_bind.das' $false 'task: and_bind is not supported yet'
+        Check 'tests/test_task_and_bind.das' $true 'Task and_bind checks OK'
+        Check 'tests/test_task_and_bind_lifetime.das' $true 'Task and_bind lifetime checks OK'
+        Check 'tests/test_task_and_bind_unsupported.das' $false 'and_bind is unsupported for builder'
         Check 'tests/test_task_pointer.das' $false 'task: payload must own its data'
         & (Join-Path $PSScriptRoot 'test_diagnostics.ps1') -Daslang $Daslang
         & (Join-Path $PSScriptRoot 'test_integration.ps1') -Daslang $Daslang

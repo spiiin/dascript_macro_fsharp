@@ -27,6 +27,7 @@ def ce_source_pair(first : auto(A); second : auto(B)) : tuple<first:A -const -&;
 }
 
 // Release an owned source/result before rethrowing a native exception.
+def ce_exception_message() : string {return "{this_context().last_exception}"}
 def ce_owned_source_rethrow(var source : auto) {
     let message = "{this_context().last_exception}"
     delete source
@@ -52,6 +53,8 @@ struct CeMergeSourcesFallback {}
 def ce_merge_sources(builder:auto; left,right:auto) { return CeMergeSourcesFallback() }
 // Type-only diagnostic envelope, always removed by ce_checked_merge.
 def ce_merge_origin(source:auto; builder:auto; location:string) {}
+// A materialized resumable merge keeps its left type for diagnostic recovery.
+def ce_merge_origin(source:auto; builder:auto; location:string; left:auto) {}
 def ce_protocol(builder:auto) { return CeMissingProtocol() }
 struct CeRunFallback {}
 def ce_run(builder:auto; outcome:auto) { return CeRunFallback() }

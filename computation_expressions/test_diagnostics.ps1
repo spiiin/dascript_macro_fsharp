@@ -4,6 +4,7 @@ $ErrorActionPreference='Stop'
 if(-not $Daslang){$Daslang='C:/src/daslang-0.6.4/daslang_bundle/bin/daslang.exe'}
 $cases=@(
     @{File='test_and_bind_unsupported.das';Message='and_bind is unsupported for builder';Marker='and_bind';ExactErrors=1},
+    @{File='test_task_and_bind_unsupported.das';Message='and_bind is unsupported for builder';Marker='and_bind';ExactErrors=1},
     @{File='test_and_bind_mixed.das';Message='and_bind is unsupported for builder';Marker='and_bind';ExactErrors=1},
     @{File='test_move_copy.das';Message="value must be moved; use 'return <- value'";Marker='return items';ExactErrors=0}
 )

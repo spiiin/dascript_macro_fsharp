@@ -28,7 +28,8 @@ class ResumablePayload : AstTypeInfoMacro {
 
 // A resumable builder supplies events, await adapters and return conversion.
 // The sequence lowering subsequently adds protected source/resource ownership.
-def ce_resumable_scope(node:ExpressionPtr; builder:string; var error:string&) : ExpressionPtr {
+def ce_resumable_scope(node:ExpressionPtr; builder:string; var error:string&;
+    await_source:block<(source:ExpressionPtr):ExpressionPtr>) : ExpressionPtr {
     if (node==null) {return qmacro_block() {}}
     var blk=qmacro_block() {} as ExprBlock
     if (node is ExprBlock) {blk=clone_expression(node) as ExprBlock}
@@ -43,9 +44,8 @@ def ce_resumable_scope(node:ExpressionPtr; builder:string; var error:string&) : 
         if(binding!=null && binding is ExprCall && (binding as ExprCall).name=="bind") {
             let call=binding as ExprCall
             if(length(call.arguments)!=1) {error="task: expected source |> bind";return blk}
-            if(call.arguments[0] is ExprCall && (call.arguments[0] as ExprCall).name=="and_bind") {
-                error="task: and_bind is not supported yet; use sequential bind";return blk
-            }
+            let source=invoke(await_source,call.arguments[0])
+            if(!empty(error)) {return blk}
             let event=make_unique_private_name("__await_event",stmt.at)
             var tail:array<ExpressionPtr>
             if(stmt is ExprLet) {
@@ -56,9 +56,9 @@ def ce_resumable_scope(node:ExpressionPtr; builder:string; var error:string&) : 
                 tail |> push <| declaration
             }
             for(i in range(index+1,length(blk.list))) {tail |> push <| clone_expression(blk.list[i])}
-            let rest=ce_resumable_scope(qmacro_block() {$b(tail);},builder,error)
+            let rest=ce_resumable_scope(qmacro_block() {$b(tail);},builder,error,await_source)
             var loop=qmacro_expr() {
-                for($i(event) in ce_await_source($i(builder),$e(call.arguments[0]))) {
+                for($i(event) in $e(source)) {
                     if(!$i(event).ready) {yield ce_await_pending($i(builder))}
                     elif(ce_await_failed($i(builder),$i(event))) {yield ce_await_failure($i(builder),$i(event))}
                     else {$e(rest)}
@@ -75,19 +75,19 @@ def ce_resumable_scope(node:ExpressionPtr; builder:string; var error:string&) : 
             output |> push <| qmacro_expr() {yield ce_await_return($i(builder),$e(ret.subexpr))}
         } elif(stmt is ExprIfThenElse) {
             var branch=stmt as ExprIfThenElse
-            branch.if_true=ce_resumable_scope(branch.if_true,builder,error)
-            branch.if_false=ce_resumable_scope(branch.if_false,builder,error)
+            branch.if_true=ce_resumable_scope(branch.if_true,builder,error,await_source)
+            branch.if_false=ce_resumable_scope(branch.if_false,builder,error,await_source)
             output |> push <| branch
         } elif(stmt is ExprFor) {
             var loop=stmt as ExprFor
-            loop.body=ce_resumable_scope(loop.body,builder,error)
+            loop.body=ce_resumable_scope(loop.body,builder,error,await_source)
             output |> push <| loop
         } elif(stmt is ExprWhile) {
             var loop=stmt as ExprWhile
-            loop.body=ce_resumable_scope(loop.body,builder,error)
+            loop.body=ce_resumable_scope(loop.body,builder,error,await_source)
             output |> push <| loop
         } elif(stmt is ExprBlock) {
-            output |> push <| ce_resumable_scope(stmt,builder,error)
+            output |> push <| ce_resumable_scope(stmt,builder,error,await_source)
         } elif(stmt is ExprCall && ((stmt as ExprCall).name=="try_finally" || (stmt as ExprCall).name=="try_with")) {
             var call=stmt as ExprCall
             // Cleanup is ordinary code; a recovery handler is another CE body.
@@ -96,7 +96,7 @@ def ce_resumable_scope(node:ExpressionPtr; builder:string; var error:string&) : 
                 if(call.arguments[i] is ExprMakeBlock) {
                     var mb=call.arguments[i] as ExprMakeBlock
                     var original=mb._block as ExprBlock
-                    var lowered=ce_resumable_scope(mb._block,builder,error) as ExprBlock
+                    var lowered=ce_resumable_scope(mb._block,builder,error,await_source) as ExprBlock
                     original.list |> clear()
                     for(entry in lowered.list) {original.list |> push <| clone_expression(entry)}
                 }

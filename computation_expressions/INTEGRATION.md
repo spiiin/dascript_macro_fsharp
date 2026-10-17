@@ -14,7 +14,7 @@ daslang.exe C:/my_project/ce_example/main.das -no-module-cache
 Destination должен быть новым каталогом. Поставка содержит lib с 27 модулями,
 manifest.json с SHA256, main.das, identity_builder.das, README.md,
 [PUBLIC_API.md](PUBLIC_API.md), [TASKS.md](TASKS.md) и
-[TASK_COMPOSITION.md](TASK_COMPOSITION.md), [TASK_SCHEDULER.md](TASK_SCHEDULER.md), [TASK_CANCELLATION.md](TASK_CANCELLATION.md), [TASK_DELAY.md](TASK_DELAY.md), [TASK_ARRAY.md](TASK_ARRAY.md). Тестовые builders и type providers не требуются.
+[TASK_COMPOSITION.md](TASK_COMPOSITION.md), [TASK_SCHEDULER.md](TASK_SCHEDULER.md), [TASK_CANCELLATION.md](TASK_CANCELLATION.md), [TASK_DELAY.md](TASK_DELAY.md), [TASK_ARRAY.md](TASK_ARRAY.md), [TASK_AND_BIND.md](TASK_AND_BIND.md). Тестовые builders и type providers не требуются.
 Exporter сверяет manifest с фактическим составом lib и его локальными requires.
 
 ```das

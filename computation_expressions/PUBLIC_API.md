@@ -15,7 +15,7 @@ require ./lib/computation.das
 Типизированные задачи: `./lib/task_builder.das`, см. [TASKS.md](TASKS.md).
 Планировщик и таймауты: `./lib/task_scheduler.das`, см. [TASK_SCHEDULER.md](TASK_SCHEDULER.md).
 Совместное ожидание: `./lib/task_combinators.das`, операции task_when_all,
-task_result_when_all и task_race; см. [TASK_COMPOSITION.md](TASK_COMPOSITION.md).
+task_result_when_all, task_race и [and_bind для Task](TASK_AND_BIND.md); см. [TASK_COMPOSITION.md](TASK_COMPOSITION.md).
 Вложенные файлы приложения используют соответствующий относительный путь
 с расширением `.das`, например `require ../lib/computation.das`.
 
@@ -104,7 +104,8 @@ handles и stack blocks; каждый run клонирует рабочие да
 `source |> bind`, `left |> and_bind(right) |> bind`, `return value`,
 `return source |> return_from`, `yield value`, `source |> yield_from`,
 `resource |> use_resource`, `try_finally(body,cleanup)`, `try_with(body,handler)`
-раскрываются макросом. Поддержка зависит от builder. and_bind eager и не запускает
+раскрываются макросом. Поддержка зависит от builder. and_bind вычисляет фабрики
+достигнутой группы слева направо; у Task затем кооперативно опрашивает детей. Не запускает
 потоки; Error/None не являются исключениями. StateResult откатывает только поле
 state, не внешние эффекты или объекты по указателям.
 

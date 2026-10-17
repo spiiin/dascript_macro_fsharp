@@ -21,7 +21,8 @@ $tests=@('tests/test_computation.das','tests/test_composition_laws.das','tests/t
     'tests/test_task_timeouts.das','tests/test_task_timeout_lifetime.das',
     'tests/test_task_cancellation.das','tests/test_task_cancellation_lifetime.das',
     'tests/test_task_delay.das','tests/test_task_delay_lifetime.das',
-    'tests/test_task_array.das','tests/test_task_array_lifetime.das')
+    'tests/test_task_array.das','tests/test_task_array_lifetime.das',
+    'tests/test_task_and_bind.das','tests/test_task_and_bind_lifetime.das')
 Push-Location $PSScriptRoot
 try {
     foreach($currentMode in $modes) {

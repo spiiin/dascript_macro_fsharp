@@ -99,8 +99,8 @@ cleanup отмены незавершённого владельца после 
 ce_dispose пользовательских ресурсов по-прежнему должны быть небросающими.
 Известное ограничение inscope внутри стандартного [async] остаётся — см. [TASKS.md](TASKS.md).
 
-Пайповый bind сохранён. And_bind для Task пока не включён: совместное ожидание
-задаётся явными combinators. Динамический task_when_all(tasks) для массива:
+Пайповый `left |> and_bind(right) |> bind` использует общий ce_merge_sources
+и эти же combinators: [TASK_AND_BIND.md](TASK_AND_BIND.md). Динамический task_when_all(tasks) для массива:
 [TASK_ARRAY.md](TASK_ARRAY.md). Новые потоки не добавляются.
 Планировщик и таймауты по now_ms: [TASK_SCHEDULER.md](TASK_SCHEDULER.md).
 Синхронный код ребёнка может блокировать poll.

@@ -17,8 +17,8 @@ TaskBuilder и TaskResultBuilder предоставляют cold single-shot з�
 | Builder | Результат обычного CE | `and_bind` | `for` / `while` / zip-for | Ресурсы | `deferred` | Move-only payload результата |
 |---|---|---|---|---|---|---|
 | ResultBuilder | `ok:T / error:string` | Да: Result | Да / да / да | Да | Да | Нет; использовать MoveResult |
-| TaskBuilder(type<T>) | Task<T>, cold single-shot | Нет | Да / да / native zip | Да | Нет | Нет |
-| TaskResultBuilder(type<T>) | Task<Result<T>>, cold single-shot | Нет | Да / да / native zip | Да | Нет | Нет |
+| TaskBuilder(type<T>) | Task<T>, cold single-shot | Да: Task | Да / да / native zip | Да | Нет | Нет |
+| TaskResultBuilder(type<T>) | Task<Result<T>>, cold single-shot | Да: Task<Result> | Да / да / native zip | Да | Нет | Нет |
 | OptionBuilder | `some:T / none:bool` | Да: Option | Да / да / да | Да | Да | Нет; использовать MoveOption |
 | ValidationBuilder | `valid:T / invalid:…` | Да: накопление ошибок | Да / да / да | Да | Да | Нет |
 | StateBuilder(initial) | `(value:T, state:S)` | Нет | Да / да / да | Да | Да | Нет; состояние также копируемое |
@@ -72,7 +72,7 @@ Task начинает тело при первом task_poll. Pending приос
 готовый источник продолжает его в том же poll. Успешный результат кешируется.
 Result.error завершает TaskResult со статусом Succeeded; native panic даёт Failed,
 явная отмена — Cancelled. Области ресурсов закрываются и в этих путях.
-У Task пока нет and_bind, break/continue внутри CE, return_from, неявного Unit,
+У Task пока нет break/continue внутри CE, return_from, неявного Unit,
 deferred и move-only payload. Нативные синхронные участки могут блокировать poll.
 `task_from_async` связывает стандартные [async]-источники с Task: ждёт полного
 завершения, возвращает последний res либо CeUnit для void. Промежуточный res
@@ -80,8 +80,8 @@ deferred и move-only payload. Нативные синхронные участ�
 добавляют приостановки адаптера. Для внешнего cleanup есть перегрузка с callback;
 ограничение native inscope в SDK 0.6.4 описано в [TASKS.md](TASKS.md).
 Совместное ожидание двух владельцев задаётся task_when_all/task_result_when_all,
-гонка — task_race, из отдельного модуля task_combinators.das. And_bind для Task
-по-прежнему не включён. Порядок опроса, отмена оставшихся детей и обработка
+гонка — task_race, из отдельного модуля task_combinators.das. Группа
+`and_bind` использует общий ce_merge_sources, см. [TASK_AND_BIND.md](TASK_AND_BIND.md). Порядок опроса, отмена оставшихся детей и обработка
 бросающих close-callbacks описаны в [TASK_COMPOSITION.md](TASK_COMPOSITION.md).
 
 Обычный bind сначала вычисляет источник. После успешного связывания выполняется

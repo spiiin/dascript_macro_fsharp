@@ -35,6 +35,8 @@ daslang.exe examples/state_operations_demo.das -no-module-cache
 Исторические дампы и метаданные сохранены без переписывания путей внутри них.
 
 Типизированные задачи TaskBuilder / TaskResultBuilder, ожидание внешних операций и отмена: [TASKS.md](TASKS.md).
+Пайповый `left |> and_bind(right) |> bind` для Task через общий протокол:
+[TASK_AND_BIND.md](TASK_AND_BIND.md), [пример](examples/task_and_bind_demo.das).
 
 Типизированный планировщик с лимитом опросов, круговым обходом, ID, отменой и историей: [TASK_SCHEDULER.md](TASK_SCHEDULER.md).
 

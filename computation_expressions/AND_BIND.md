@@ -76,7 +76,9 @@ payload, а `ce_bind` умеет его обработать. Имена `.first
 `test_and_bind_external.das` добавляет перегрузку для ReaderBuilder в вызывающем
 модуле и использует только `computation_macro` + `reader_builder`.
 
-`and_bind` поддержан для стратегий Value и Collect. Generator-стратегия
+`and_bind` поддержан для стратегий Value, Collect и Resumable Task.
+Для Task источники холодные, опрос кооперативный: [TASK_AND_BIND.md](TASK_AND_BIND.md).
+Generator-стратегия
 Sequence пока не поддерживает этот маркер. Встроенная Validation-перегрузка
 вызывает прежнюю `validation_zip`; её прямое использование тоже сохранено.
 

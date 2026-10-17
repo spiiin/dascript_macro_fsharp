@@ -31,6 +31,7 @@ Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_SCHEDULER.md') -Destinatio
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_CANCELLATION.md') -Destination $Destination
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_DELAY.md') -Destination $Destination
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_ARRAY.md') -Destination $Destination
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_AND_BIND.md') -Destination $Destination
 $modules | ForEach-Object {[pscustomobject]@{File="lib/$_";Sha256=(Get-FileHash -LiteralPath (Join-Path $Destination "lib/$_")).Hash}} |
     ConvertTo-Json | Set-Content -LiteralPath (Join-Path $Destination 'manifest.json')
 Write-Host "Exported $($modules.Count) library modules and a standalone integration example to $Destination"

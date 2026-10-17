@@ -8,6 +8,22 @@ struct TaskResultAllPolicy {}
 struct TaskArrayTag {}
 struct TaskArrayEventTag {}
 
+// Resumable CE uses the same source grouping protocol as eager builders.
+// The pair combinators consume owners and poll left-to-right cooperatively.
+def ce_merge_sources(builder:tuple<kind:TaskContext;element:auto>;
+    var left:tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTag;ready:bool;value:auto(CeTaskMergeLeft)>>;status:TaskStatus;value:CeTaskMergeLeft;error:string;polling:bool>;
+    var right:tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTag;ready:bool;value:auto(CeTaskMergeRight)>>;status:TaskStatus;value:CeTaskMergeRight;error:string;polling:bool>) {
+    return <- task_when_all(left,right)
+}
+
+// Match the whole payload, rather than a nested variant pattern: the 0.6.4
+// compiler crashes on that pattern when a Result contains a grouped pair.
+def ce_merge_sources(builder:tuple<kind:TaskResultContext;element:auto>;
+    var left:tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTag;ready:bool;value:auto(CeTaskMergeLeft)>>;status:TaskStatus;value:CeTaskMergeLeft;error:string;polling:bool>;
+    var right:tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTag;ready:bool;value:auto(CeTaskMergeRight)>>;status:TaskStatus;value:CeTaskMergeRight;error:string;polling:bool>) {
+    return <- task_result_when_all(left,right)
+}
+
 // Array results are move-only, so a Task<Unit> drives the children while a
 // separate owning array caches values. The generator only borrows its stable
 // data buffer; the array owner always closes the driver before freeing it.

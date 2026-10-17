@@ -84,9 +84,9 @@ use_resource и try_finally. TryWith позволяет восстановить
 Освобождающие функции должны быть небросающими. Если close внешнего адаптера всё же
 бросил исключение, его lambda освобождаются, а задача получает Failed.
 
-Поддержаны последовательные bind, bind без переменной, if/else, for/while,
+Поддержаны последовательные bind, bind без переменной, [and_bind](TASK_AND_BIND.md) через task_combinators, if/else, for/while,
 ранний return, use_resource, try_finally и try_with. Break/continue внутри Task CE,
-and_bind, return_from, неявный Zero для Task<Unit>, move-only payload и deferred
+return_from, неявный Zero для Task<Unit>, move-only payload и deferred
 для самих Task пока не поддержаны. Завершение цикла без return не равно успешному Unit.
 Публичный scheduler и таймауты по now_ms доступны в [TASK_SCHEDULER.md](TASK_SCHEDULER.md).
 WhenAll для массива реализован: [TASK_ARRAY.md](TASK_ARRAY.md). Shared await нескольких владельцев пока не реализован.
@@ -114,7 +114,7 @@ borrowed-указателей отвечает адаптер. Callback не д�
 Примеры: [task_demo.das](examples/task_demo.das),
 [task_external_demo.das](examples/task_external_demo.das).
 Проверки: test_task, test_task_result, test_task_control, test_task_lifetime,
-отрицательные test_task_and_bind и test_task_pointer — через run_computation.ps1 -Test.
+test_task_and_bind, test_task_and_bind_lifetime и отрицательный test_task_pointer — через run_computation.ps1 -Test.
 
 ## Стандартные [async]-функции
 
@@ -194,9 +194,9 @@ Builder определяет `ce_await_source`, `ce_await_pending`, `ce_await_va
 Await-source — владеющий iterator событий с полем ready; Pending не запускает
 продолжение. Terminal-событие закрывает весь корневой iterator до следующего resume.
 
-Новые Task-сценарии включены в полный набор интерпретатора. Двадцать положительных
+Новые Task-сценарии включены в полный набор интерпретатора. Двадцать два положительных
 Task-файлов включены в отдельные JIT/AOT проверки run_modes.ps1:
-всего там двадцать четыре файла. Это конечный набор сценариев, не доказательство для любых
+всего там двадцать шесть файлов. Это конечный набор сценариев, не доказательство для любых
 сочетаний типов и исключений. Генерация AOT не подтверждает исполнение AOT-хоста.
 
 Типизированный планировщик с лимитом опросов, круговым обходом, ID, отменой и историей: [TASK_SCHEDULER.md](TASK_SCHEDULER.md).
