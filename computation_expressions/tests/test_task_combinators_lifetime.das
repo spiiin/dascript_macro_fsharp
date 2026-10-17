@@ -147,8 +147,8 @@ def checks() {
         var inscope first <- owned(0,1,10)
         verify(task_cancel(first))
         var inscope task <- task_when_all(first,owned(1,3,20))
-        verify(task_poll(task)==TaskStatus.Failed && polls[1]==0)
-        verify(starts_with(task_error(task),"task composition: child was cancelled"))
+        verify(task_poll(task)==TaskStatus.Cancelled && polls[1]==0)
+        verify(empty(task_error(task)))
     }
     balanced()
 }

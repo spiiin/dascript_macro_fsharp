@@ -18,7 +18,8 @@ $tests=@('tests/test_computation.das','tests/test_composition_laws.das','tests/t
     'tests/test_task_from_async.das','tests/test_task_from_async_lifetime.das',
     'tests/test_task_combinators.das','tests/test_task_combinators_lifetime.das','tests/test_task_cleanup_errors.das',
     'tests/test_task_scheduler.das','tests/test_task_scheduler_safety.das','tests/test_task_scheduler_lifetime.das',
-    'tests/test_task_timeouts.das','tests/test_task_timeout_lifetime.das')
+    'tests/test_task_timeouts.das','tests/test_task_timeout_lifetime.das',
+    'tests/test_task_cancellation.das','tests/test_task_cancellation_lifetime.das')
 Push-Location $PSScriptRoot
 try {
     foreach($currentMode in $modes) {

@@ -270,3 +270,5 @@ Daslang 0.6.4, не подтверждение всех путей под JIT/AO
 Типизированный планировщик с лимитом опросов, круговым обходом, ID, отменой и историей: [TASK_SCHEDULER.md](TASK_SCHEDULER.md).
 
 Task scheduler: TaskTimeout(after_ms=...) отменяет задачу до poll при достижении срока, независимо от бюджета опросов. TaskResult также получает Cancelled, а не Result.error; ошибка cleanup даёт Failed при сохранении task_timed_out=true. Контракт часов и владения: [TASK_SCHEDULER.md](TASK_SCHEDULER.md#таймауты).
+
+Task bind и комбинаторы передают Cancelled ребёнка родителю без panic; try_with его не перехватывает. CancellationToken добавляет кооперативный групповой запрос, наблюдаемый при poll. Ресурсы закрываются; ошибка cleanup даёт Failed. См. [TASK_CANCELLATION.md](TASK_CANCELLATION.md).

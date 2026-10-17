@@ -28,9 +28,10 @@ def private task_check_distinct(var left:auto; var right:auto) {
         }
     }
 }
-def private task_check_child(status:TaskStatus; error:string) {
+def private task_check_child(status:TaskStatus; error:string) : bool {
     if(status==TaskStatus.Failed) {panic(error)}
-    if(status==TaskStatus.Cancelled) {panic("task composition: child was cancelled")}
+    if(status==TaskStatus.Cancelled || ce_task_cancellation_requested()) {ce_task_cancelled();return false}
+    return true
 }
 def private task_release_child(var task:auto) : string {
     let cancelled=task_cancel(task)
@@ -53,13 +54,13 @@ def private task_pair(var left:auto(L); var right:auto(R); policy:auto(P)) {
     var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:typedecl(task_pair_value(policy,left.value,right.value)) -const -&>> capture(<-left,<-right) {
         while(true) {
             let first=task_poll(left)
-            task_check_child(first,task_error(left))
+            if(!task_check_child(first,task_error(left))) {yield task_pair_pending(policy,left.value,right.value);return false}
             if(first==TaskStatus.Succeeded && task_pair_stops(policy,left.value)) {
                 yield task_ready(task_pair_error(policy,left.value,type<typedecl(task_pair_value(policy,left.value,right.value)) -const -&>))
                 return false
             }
             let second=task_poll(right)
-            task_check_child(second,task_error(right))
+            if(!task_check_child(second,task_error(right))) {yield task_pair_pending(policy,left.value,right.value);return false}
             if(second==TaskStatus.Succeeded && task_pair_stops(policy,right.value)) {
                 yield task_ready(task_pair_error(policy,right.value,type<typedecl(task_pair_value(policy,left.value,right.value)) -const -&>))
                 return false
@@ -86,15 +87,21 @@ def task_result_when_all(var left:auto(L); var right:auto(R)) {
 }
 
 // First terminal child wins. A tie is won by the left child without polling right.
-// Native faults/cancelled children fail the parent; pending losers are cancelled.
+// Native faults fail the parent; cancelled children cancel it. Losers are closed.
 def private task_race_impl(var left,right:auto(T)) {
     var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:tuple<index:int;value:typedecl(left.value) -const -&>>> capture(<-left,<-right) {
         while(true) {
             let first=task_poll(left)
-            task_check_child(first,task_error(left))
+            if(!task_check_child(first,task_error(left))) {
+                yield task_pending(type<tuple<index:int;value:typedecl(left.value) -const -&>>)
+                return false
+            }
             if(first==TaskStatus.Succeeded) {yield task_ready((index=0,value=task_value(left)));return false}
             let second=task_poll(right)
-            task_check_child(second,task_error(right))
+            if(!task_check_child(second,task_error(right))) {
+                yield task_pending(type<tuple<index:int;value:typedecl(left.value) -const -&>>)
+                return false
+            }
             if(second==TaskStatus.Succeeded) {yield task_ready((index=1,value=task_value(right)));return false}
             yield task_pending(type<tuple<index:int;value:typedecl(left.value) -const -&>>)
         }

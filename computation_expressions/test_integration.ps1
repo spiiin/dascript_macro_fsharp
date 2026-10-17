@@ -6,7 +6,7 @@ $destination=Join-Path ([IO.Path]::GetFullPath($OutputDirectory)) ('integration-
 $expected=@(Get-Content (Join-Path $PSScriptRoot 'public_modules.json') -Raw|ConvertFrom-Json)
 $actual=@(Get-ChildItem (Join-Path $destination 'lib') -Filter '*.das'|Select-Object -ExpandProperty Name)
 if(@(Compare-Object $expected $actual).Count){throw 'Export has unexpected modules'}
-foreach($file in @('README.md','PUBLIC_API.md','TASKS.md','TASK_COMPOSITION.md','TASK_SCHEDULER.md','main.das','identity_builder.das','manifest.json')){
+foreach($file in @('README.md','PUBLIC_API.md','TASKS.md','TASK_COMPOSITION.md','TASK_SCHEDULER.md','TASK_CANCELLATION.md','main.das','identity_builder.das','manifest.json')){
     if(-not(Test-Path -LiteralPath (Join-Path $destination $file))){throw "Incomplete export: $file"}
 }
 & $Daslang (Join-Path $destination 'main.das') -no-module-cache
@@ -76,6 +76,11 @@ def main() {
     let expired=task_spawn(scheduler,task_after_polls(10,7),TaskTimeout(after_ms=5))
     verify(task_tick(scheduler,5)==0 && task_timed_out(scheduler,expired))
     verify(task_status(scheduler,expired)==TaskStatus.Cancelled)
+    var inscope group <- cancellation_token()
+    var inscope guarded <- task_with_cancellation(task_after_polls(10,4),group)
+    verify(task_poll(guarded)==TaskStatus.Waiting)
+    verify(cancellation_cancel(group))
+    verify(task_poll(guarded)==TaskStatus.Cancelled)
     print("Public module integration OK\n")
 }
 '@

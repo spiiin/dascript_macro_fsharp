@@ -3,6 +3,7 @@ module task_builder public
 require ./computation_builders.das public
 require ./sequence_runtime.das public
 require ./resumable_lowering.das public
+require ./cancellation_token.das public
 require daslib/rtti
 
 enum TaskStatus {
@@ -20,15 +21,25 @@ struct TaskResultContext {}
 // Task is single-threaded. A nested error scope reports callback failures only
 // after native iterator finalizers have returned and released their closures.
 // Throwing directly from a 0.6.4 generator finalizer skips its deallocation.
-var private task_cleanup_scopes:array<string>
-def private task_cleanup_begin() {task_cleanup_scopes |> push("")}
+struct TaskPollScope {error:string;cancelled:bool}
+var private task_cleanup_scopes:array<TaskPollScope>
+def private task_cleanup_begin() {task_cleanup_scopes |> push(TaskPollScope())}
 def ce_task_cleanup_error(message:string) {
     let count=length(task_cleanup_scopes)
-    if(count>0 && empty(task_cleanup_scopes[count-1])) {task_cleanup_scopes[count-1]=message}
+    if(count>0 && empty(task_cleanup_scopes[count-1].error)) {task_cleanup_scopes[count-1].error=message}
+}
+// Cancellation is a scoped control signal, never a catchable panic/string.
+def ce_task_cancelled() {
+    let count=length(task_cleanup_scopes)
+    if(count>0) {task_cleanup_scopes[count-1].cancelled=true}
+}
+def private task_cleanup_cancelled() : bool {
+    let count=length(task_cleanup_scopes)
+    return count>0 && task_cleanup_scopes[count-1].cancelled
 }
 def private task_cleanup_current() : string {
     let count=length(task_cleanup_scopes)
-    return count>0 ? task_cleanup_scopes[count-1] : ""
+    return count>0 ? task_cleanup_scopes[count-1].error : ""
 }
 def private task_cleanup_end() : string {
     let message=task_cleanup_current()
@@ -94,12 +105,17 @@ def task_cancel(var task:tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTa
 def task_poll(var task:tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTag;ready:bool;value:auto(T)>>;status:TaskStatus;value:T;error:string;polling:bool>) : TaskStatus {
     if(task.polling) {panic("task_poll: reentrant polling is unsupported")}
     if(task.status!=TaskStatus.Created && task.status!=TaskStatus.Waiting) {return task.status}
+    if(ce_task_cancellation_requested()) {task_cancel(task);return task.status}
     task.polling=true
     task_cleanup_begin()
     var event=task_pending(type<T>)
     try {
-        if(!ce_sequence_next_value(task.source,event)) {panic("task: computation ended without return")}
-        if(event.ready) {
+        let more=ce_sequence_next_value(task.source,event)
+        if(task_cleanup_cancelled() || ce_task_cancellation_requested()) {
+            task.status=TaskStatus.Cancelled
+            sequence_close(task.source)
+        } elif(!more) {panic("task: computation ended without return")}
+        elif(event.ready) {
             task.value=event.value
             task.status=TaskStatus.Succeeded
             sequence_close(task.source)
@@ -124,9 +140,13 @@ def ce_await_source(builder:auto; var task:tuple<tag:TaskTag;source:iterator<tup
     return <- generator<tuple<tag:TaskEventTag;ready:bool;value:T>> capture(<-task) {
         while(true) {
             let status=task_poll(task)
-            if(status==TaskStatus.Succeeded) {yield task_ready(task_value(task));break}
             if(status==TaskStatus.Failed) {panic(task_error(task))}
-            if(status==TaskStatus.Cancelled) {panic("task: awaited child was cancelled")}
+            if(status==TaskStatus.Cancelled || ce_task_cancellation_requested()) {
+                ce_task_cancelled()
+                yield task_pending(type<T>)
+                return false
+            }
+            if(status==TaskStatus.Succeeded) {yield task_ready(task_value(task));break}
             yield task_pending(type<T>)
         }
         return false
@@ -135,6 +155,34 @@ def ce_await_source(builder:auto; var task:tuple<tag:TaskTag;source:iterator<tup
         if(cancelled && task_status(task)==TaskStatus.Failed) {ce_task_cleanup_error(task_error(task))}
         delete task
     })}
+}
+
+// Own both a child and a lease on the shared token. The dynamic scope lasts
+// only for task_poll, so nested binds observe the token without stack captures.
+def task_with_cancellation(var task:auto; token:CancellationToken) {
+    if(task.polling) {panic("task cancellation: cannot move a task being polled")}
+    var lease <- cancellation_clone(token)
+    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:typedecl(task.value) -const -&>> capture(<-task,<-lease) {
+        while(true) {
+            var status=TaskStatus.Created
+            ce_cancellation_scope(lease,$ {status=task_poll(task)})
+            if(status==TaskStatus.Failed) {panic(task_error(task))}
+            if(status==TaskStatus.Cancelled || cancellation_requested(lease)) {
+                ce_task_cancelled()
+                yield task_pending(type<typedecl(task.value) -const -&>)
+                return false
+            }
+            if(status==TaskStatus.Succeeded) {yield task_ready(task_value(task));return false}
+            yield task_pending(type<typedecl(task.value) -const -&>)
+        }
+        return false
+    } finally {ce_sequence_finalize($ {
+        let cancelled=task_cancel(task)
+        if(cancelled && task_status(task)==TaskStatus.Failed) {ce_task_cleanup_error(task_error(task))}
+        delete task
+        delete lease
+    })}
+    return <- task_create(events)
 }
 
 // Adapter for a nonblocking operation's poll callback. The lambda owns captures.
