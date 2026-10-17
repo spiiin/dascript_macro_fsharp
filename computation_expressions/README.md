@@ -4,7 +4,7 @@
 
 | Каталог | Содержимое |
 |---|---|
-| lib/ | 21 публичный модуль без тестовых builders |
+| lib/ | 23 публичных модуля без тестовых builders |
 | examples/ | Запускаемые примеры |
 | tests/ | Положительные и отрицательные проверки; tests/repro/ — известные сбои |
 | support/ | Демонстрационные builders и вспомогательные модули примеров/тестов |
@@ -33,3 +33,5 @@ daslang.exe examples/state_operations_demo.das -no-module-cache
 Режимы и ограничение JIT: [RELIABILITY.md](RELIABILITY.md). Метрики и границы
 оптимизаций: [PERFORMANCE_METRICS.md](PERFORMANCE_METRICS.md), [BENCHMARKS.md](BENCHMARKS.md).
 Исторические дампы и метаданные сохранены без переписывания путей внутри них.
+
+Типизированные задачи TaskBuilder / TaskResultBuilder, ожидание внешних операций и отмена: [TASKS.md](TASKS.md).

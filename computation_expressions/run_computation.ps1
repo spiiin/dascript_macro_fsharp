@@ -19,6 +19,8 @@ function Check([string]$File, [bool]$Pass, [string]$Expected) {
 }
 Push-Location $PSScriptRoot
 try {
+    Check 'examples/task_demo.das' $true 'Task demo OK'
+    Check 'examples/task_external_demo.das' $true 'External task demo OK'
     Check 'examples/move_resources_demo.das' $true 'move-only resources demo OK'
     Check 'examples/sequence_next_move_demo.das' $true 'sequence_next_move demo OK'
     Check 'examples/deferred_move_collections_demo.das' $true 'deferred move-only collections demo OK'
@@ -61,6 +63,12 @@ try {
     Check 'examples/single_cleanup_demo.das' $true 'single For cleanup demo OK'
     Check 'examples/zip_cleanup_demo.das' $true 'zip cleanup demo OK'
     if ($Test) {
+        Check 'tests/test_task.das' $true 'Task checks OK'
+        Check 'tests/test_task_result.das' $true 'TaskResult checks OK'
+        Check 'tests/test_task_control.das' $true 'Task control checks OK'
+        Check 'tests/test_task_lifetime.das' $true 'Task lifetime checks OK'
+        Check 'tests/test_task_and_bind.das' $false 'task: and_bind is not supported yet'
+        Check 'tests/test_task_pointer.das' $false 'task: payload must own its data'
         & (Join-Path $PSScriptRoot 'test_diagnostics.ps1') -Daslang $Daslang
         & (Join-Path $PSScriptRoot 'test_integration.ps1') -Daslang $Daslang
         Check 'tests/test_state_operations_failures.das' $true 'State operation failure checks OK'

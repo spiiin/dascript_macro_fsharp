@@ -7,10 +7,15 @@ require daslib/rtti
 struct CeValueProtocol {}
 struct CeCollectProtocol {}
 struct CeSequenceProtocol {}
+struct CeResumableProtocol {}
 struct CeUnit {}
 
 def ce_sequence_protocol(unused : type<auto(T)>) {
     return (strategy=CeSequenceProtocol(), element=default<T -const -&>)
+}
+
+def ce_resumable_protocol(unused:type<auto(T)>) {
+    return (strategy=CeResumableProtocol(),element=default<T -const -&>)
 }
 
 // Default for copyable eager outcomes. Move-only builders override this.

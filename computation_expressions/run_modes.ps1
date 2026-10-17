@@ -13,7 +13,8 @@ New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
 $rows=[Collections.Generic.List[object]]::new()
 $modes=if($Mode -eq 'All'){@('Interpreter','Jit','AotGenerate')}else{@($Mode)}
 # This is an explicit cross-mode subset, not the full interpreter regression.
-$tests=@('tests/test_computation.das','tests/test_composition_laws.das','tests/test_state_operations.das','tests/test_list_benchmarks.das')
+$tests=@('tests/test_computation.das','tests/test_composition_laws.das','tests/test_state_operations.das','tests/test_list_benchmarks.das',
+    'tests/test_task.das','tests/test_task_result.das','tests/test_task_control.das','tests/test_task_lifetime.das')
 Push-Location $PSScriptRoot
 try {
     foreach($currentMode in $modes) {

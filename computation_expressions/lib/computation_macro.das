@@ -3,6 +3,7 @@ module computation_macro public
 require ./builder_protocol.das public
 require ./sequence_runtime.das public
 require ./zip_runtime.das public
+require ./resumable_lowering.das
 require daslib/ast
 require daslib/ast_boost
 require daslib/templates_boost
@@ -1042,13 +1043,17 @@ class ComputationMacro : AstCallMacro {
         if (protocol == null) { return null }
         let bt = expr.arguments[0]._type
         if (ce_is_protocol(protocol,"CeMissingProtocol")) {
-            macro_error(prog,expr.at,"computation: missing ce_protocol for builder {describe(bt)}; define ce_protocol(builder) returning CeValueProtocol, CeCollectProtocol or ce_sequence_protocol(type<T>)")
+            macro_error(prog,expr.at,"computation: missing ce_protocol for builder {describe(bt)}; define ce_protocol(builder) returning CeValueProtocol, CeCollectProtocol, ce_sequence_protocol(type<T>) or ce_resumable_protocol(type<Event>)")
             return null
         }
-        let sequence_mode = ce_is_sequence_protocol(protocol)
+        let resumable_mode = protocol.baseType==Type.tTuple && length(protocol.argTypes)==2 && ce_is_protocol(protocol.argTypes[0],"CeResumableProtocol")
+        let sequence_mode = ce_is_sequence_protocol(protocol) || resumable_mode
         if (sequence_mode) {
             var error : string
-            var body = ce_sequence_scope(blk, 0, protocol.argTypes[1], ce_sequence_has_resources(blk), error, name)
+            var raw=clone_expression(blk)
+            if(resumable_mode) {raw=ce_resumable_scope(raw,name,error)}
+            if(!empty(error)) {macro_error(prog,expr.at,error);return null}
+            var body = ce_sequence_scope(raw, 0, protocol.argTypes[1], ce_sequence_has_resources(raw), error, name)
             if (!empty(error)) {
                 macro_error(prog, expr.at, error)
                 return null
@@ -1067,7 +1072,7 @@ class ComputationMacro : AstCallMacro {
         let owned=ce_is_protocol(protocol,"CeOwnedProtocol")
         let collect_mode = ce_is_protocol(protocol, "CeCollectProtocol") || owned
         if (!collect_mode && !ce_is_protocol(protocol, "CeValueProtocol")) {
-            macro_error(prog, expr.at, "computation: ce_protocol must return a builder_protocol descriptor; builder {describe(bt)} returned {describe(protocol)}; expected CeValueProtocol, CeCollectProtocol, CeOwnedProtocol or ce_sequence_protocol(type<T>)")
+            macro_error(prog, expr.at, "computation: ce_protocol must return a builder_protocol descriptor; builder {describe(bt)} returned {describe(protocol)}; expected CeValueProtocol, CeCollectProtocol, CeOwnedProtocol, ce_sequence_protocol(type<T>) or ce_resumable_protocol(type<Event>)")
             return null
         }
         var error : string

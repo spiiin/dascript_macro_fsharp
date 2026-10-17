@@ -6,7 +6,7 @@ $destination=Join-Path ([IO.Path]::GetFullPath($OutputDirectory)) ('integration-
 $expected=@(Get-Content (Join-Path $PSScriptRoot 'public_modules.json') -Raw|ConvertFrom-Json)
 $actual=@(Get-ChildItem (Join-Path $destination 'lib') -Filter '*.das'|Select-Object -ExpandProperty Name)
 if(@(Compare-Object $expected $actual).Count){throw 'Export has unexpected modules'}
-foreach($file in @('README.md','PUBLIC_API.md','main.das','identity_builder.das','manifest.json')){
+foreach($file in @('README.md','PUBLIC_API.md','TASKS.md','main.das','identity_builder.das','manifest.json')){
     if(-not(Test-Path -LiteralPath (Join-Path $destination $file))){throw "Incomplete export: $file"}
 }
 & $Daslang (Join-Path $destination 'main.das') -no-module-cache
@@ -17,6 +17,7 @@ require ./lib/computation.das
 require ./lib/validation_builder.das
 require ./lib/reader_result_builder.das
 require ./lib/deferred_computation.das
+require ./lib/task_builder.das
 [export]
 def main() {
     let state=computation(StateBuilder(5)) {
@@ -43,6 +44,14 @@ def main() {
     var inscope first <- run_deferred(task)
     var inscope second <- run_deferred(task)
     assert(length(first)==3 && length(second)==3)
+    var inscope asyncTask <- computation(TaskResultBuilder(type<int>)) {
+        let n=task_after_polls(1,result_ok(8)) |> bind
+        return n+1
+    }
+    verify(task_poll(asyncTask)==TaskStatus.Waiting)
+    verify(task_poll(asyncTask)==TaskStatus.Succeeded)
+    let outcome=task_value(asyncTask)
+    verify(outcome is ok && outcome as ok==9)
     print("Public module integration OK\n")
 }
 '@

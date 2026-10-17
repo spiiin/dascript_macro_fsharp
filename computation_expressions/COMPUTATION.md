@@ -108,7 +108,7 @@ Builder вычисляется один раз во внешнем блоке; �
 bind вычисляется один раз. Продолжения — синхронные daScript blocks, не
 сохраняемые heap-lambda. Обычные Value CE синхронны. Отложенный запуск даёт
 отдельный `deferred`, а кадровые корутины и планировщик — модули
-`coroutine_builder` и `coroutine_scheduler`. Настоящего Async/Task ещё нет.
+`coroutine_builder` и `coroutine_scheduler`. Добавлены cold TaskBuilder/TaskResultBuilder с неблокирующим poll-адаптером; см. [TASKS.md](TASKS.md).
 Проверка тега Result/Option нужна на каждом bind; макрос не убирает стоимость
 проверки результата операции. Создание самих строк или значений может выделять
 память независимо от механизма продолжений.
@@ -180,7 +180,7 @@ let description = computation(OptionBuilder()) {
 готовый Result/Option. Delay здесь не создаёт хранимую задачу или ленивое
 вычисление для последующего повторного запуска. Для этого есть отдельный
 `deferred` ([DEFERRED.md](DEFERRED.md)). Завершающий hook `ce_run` также
-поддержан ([RUN.md](RUN.md)); async не реализован.
+поддержан ([RUN.md](RUN.md)); типизированные задачи описаны в [TASKS.md](TASKS.md).
 
 Макрос рекурсивно преобразует ветки и тела циклов. Ветки и циклы,
 после которых есть код, объединяются с ним через Combine. Циклы остаются
@@ -217,7 +217,7 @@ Unit. Обычно для этого достаточно не писать retu
 `try_finally`. Error остаётся значением, а не исключением языка.
 Обычные ResultBuilder/OptionBuilder требуют копируемого payload; move-only
 значения поддерживают отдельные MoveResultBuilder/MoveOptionBuilder
-([MOVE_CE.md](MOVE_CE.md)). Async/Task отсутствуют; это поднабор идеи F# CE,
+([MOVE_CE.md](MOVE_CE.md)). TaskBuilder/TaskResultBuilder описаны в [TASKS.md](TASKS.md); это поднабор идеи F# CE,
 а не полная совместимость синтаксиса и семантики F#. Перечень стратегий —
 [BUILDER_PROTOCOL.md](BUILDER_PROTOCOL.md).
 

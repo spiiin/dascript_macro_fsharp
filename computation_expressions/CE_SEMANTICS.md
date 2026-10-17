@@ -4,8 +4,9 @@
 
 Этот документ фиксирует контракт текущей реализации. Сигнатуры конкретного
 builder определяют допустимые источники; общая запись `|> bind` не делает
-произвольные контейнеры совместимыми. SearchBuilder и Task/Async builders
-обсуждались как возможные расширения и в эту библиотеку пока не входят.
+произвольные контейнеры совместимыми. SearchBuilder пока не реализован.
+TaskBuilder и TaskResultBuilder предоставляют cold single-shot задачи и ожидание
+внешних операций через poll-адаптер, см. [TASKS.md](TASKS.md).
 
 ## Таблица основных builders
 
@@ -16,6 +17,8 @@ builder определяют допустимые источники; общая
 | Builder | Результат обычного CE | `and_bind` | `for` / `while` / zip-for | Ресурсы | `deferred` | Move-only payload результата |
 |---|---|---|---|---|---|---|
 | ResultBuilder | `ok:T / error:string` | Да: Result | Да / да / да | Да | Да | Нет; использовать MoveResult |
+| TaskBuilder(type<T>) | Task<T>, cold single-shot | Нет | Да / да / native zip | Да | Нет | Нет |
+| TaskResultBuilder(type<T>) | Task<Result<T>>, cold single-shot | Нет | Да / да / native zip | Да | Нет | Нет |
 | OptionBuilder | `some:T / none:bool` | Да: Option | Да / да / да | Да | Да | Нет; использовать MoveOption |
 | ValidationBuilder | `valid:T / invalid:…` | Да: накопление ошибок | Да / да / да | Да | Да | Нет |
 | StateBuilder(initial) | `(value:T, state:S)` | Нет | Да / да / да | Да | Да | Нет; состояние также копируемое |
@@ -65,6 +68,12 @@ builder, поле или аргумент функции допускаются.
 Sequence и Coroutine создают ленивые итераторы: тело начинается при запросе
 элемента/возобновлении. Код до создания CE и выражение builder остаются обычными
 вычислениями. Coroutine не добавляет потоки или сетевое async-ожидание.
+Task начинает тело при первом task_poll. Pending приостанавливает продолжение;
+готовый источник продолжает его в том же poll. Успешный результат кешируется.
+Result.error завершает TaskResult со статусом Succeeded; native panic даёт Failed,
+явная отмена — Cancelled. Области ресурсов закрываются и в этих путях.
+У Task пока нет and_bind, break/continue внутри CE, return_from, неявного Unit,
+deferred и move-only payload. Нативные синхронные участки могут блокировать poll.
 
 Обычный bind сначала вычисляет источник. После успешного связывания выполняется
 продолжение, которое может вычислить следующий источник. При Error/None/invalid

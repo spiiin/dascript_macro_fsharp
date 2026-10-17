@@ -12,6 +12,7 @@ require ./lib/computation.das
 Дополнительные подключения: `./lib/reader_builder.das`, `./lib/reader_result_builder.das`,
 `./lib/validation_builder.das`, `./lib/state_writer_result_builder.das`,
 `./lib/deferred_computation.das`, `./lib/coroutine_builder.das`, `./lib/coroutine_scheduler.das`.
+Типизированные задачи: `./lib/task_builder.das`, см. [TASKS.md](TASKS.md).
 Вложенные файлы приложения используют соответствующий относительный путь
 с расширением `.das`, например `require ../lib/computation.das`.
 
@@ -31,11 +32,16 @@ require ./lib/computation.das
 | ListBuilder(type<T>) | Владеющий array<T> |
 | SequenceBuilder(type<T>) | Ленивый iterator, для move-only элементов — owning slot |
 | CoroutineBuilder | Ленивый iterator<CoroutineFrame> |
+| TaskBuilder(type<T>) | Однократная задача с результатом T, запуск через task_poll |
+| TaskResultBuilder(type<T>) | Задача с Result<T>, Error пропускает продолжение |
 
 ListBuilder()/SequenceBuilder() выбирают int. Обычные Value CE выполняются
 немедленно; Sequence/Coroutine — при обходе/возобновлении. State/Reader и обычные
 Result/Option используют копируемые данные. Для move-only нужны owning builders
 или соответствующий List/Sequence. По умолчанию нет сетевого async или потоков.
+Task поддерживает неблокирующее ожидание через callback-адаптер; сетевой транспорт
+и потоки сам модуль не предоставляет. API: task_poll, task_status, task_value,
+task_error, task_cancel, task_scope, task_from_poll, task_after_polls.
 
 ## Прикладные операции
 

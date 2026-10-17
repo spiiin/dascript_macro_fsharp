@@ -271,3 +271,5 @@ For/While используют общий fallback. Изменения ядра 
 ListBuilder выбирает `ce_collect_sink_protocol(type<T>)`, разрешая оптимизацию
 линейных bind/return-цепочек. Дескриптор сам по себе не заменяет операции
 накопления и владения. Полный контракт и ограничения: [LIST_OPTIMIZATION.md](LIST_OPTIMIZATION.md).
+
+Resumable builders используют ce_resumable_protocol(type<Event>) и hooks ожидания — см. [TASKS.md](TASKS.md). Этот путь не использует eager block-продолжения, которые не могут пережить возврат со стека.
