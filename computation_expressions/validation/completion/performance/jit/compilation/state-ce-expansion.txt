@@ -1,0 +1,183 @@
+require rtti_core
+require strings
+require ast_core
+require math
+require builtin
+require rtti
+require computation_resources
+require builder_protocol
+require sequence_runtime
+require zip_runtime
+require ast
+require strings_boost
+require ast_boost
+require templates
+require contracts
+require array_boost
+require algorithm
+require quote
+require templates_boost
+require computation_macro
+require computation_builders
+require computation_effects
+require writer_result_builder
+require state_result_builder
+require list_builder
+require sequence_builder
+require move_builders
+require computation
+
+/*FULLY INFERRED*/
+[nosideeffects]
+// from generic computation_effects::state_result(value: auto(T) const; state: auto(S) const): tuple<value:T -const;state:S -const>
+def private computation_effects`state_result`1030098215053763(value:builder_protocol::CeUnit aka T const explicit; state:int aka S const explicit) : tuple<value:builder_protocol::CeUnit;state:int> {
+	return tuple<tuple<value:builder_protocol::CeUnit aka T;state:int aka S>>(value,state);
+}
+
+/*FULLY INFERRED*/
+[nosideeffects]
+// from generic computation_effects::state_put(value: auto(S) const): tuple<operation:computation_effects::StatePut;state:S -const>
+def private computation_effects`state_put`8627864096686221759(value:int aka S const explicit) : tuple<operation:computation_effects::StatePut;state:int> {
+	return tuple<tuple<operation:computation_effects::StatePut;state:int aka S>>(struct<computation_effects::StatePut>(uninitialized ),value);
+}
+
+/*FULLY INFERRED*/
+[nosideeffects]
+// from generic computation_effects::ce_zero(builder: tuple<kind:computation_effects::StateContext;state:auto(S)> const): auto
+def private computation_effects`ce_zero`2451325231943730818(builder:tuple<kind:computation_effects::StateContext;state:int aka S> const explicit) : tuple<value:builder_protocol::CeUnit;state:int> {
+	return __::computation_effects`state_result`1030098215053763(struct<builder_protocol::CeUnit>(uninitialized ),builder.state);
+}
+
+/*FULLY INFERRED*/
+[nosideeffects]
+// from generic computation_effects::state_result(value: auto(T) const; state: auto(S) const): tuple<value:T -const;state:S -const>
+def private computation_effects`state_result`1030098215053763(value:int aka T const explicit; state:int aka S const explicit) : tuple<value:int;state:int> {
+	return tuple<tuple<value:int aka T;state:int aka S>>(value,state);
+}
+
+/*FULLY INFERRED*/
+[nosideeffects]
+// from generic computation_effects::StateBuilder(initial: auto(S) const): tuple<kind:computation_effects::StateContext;state:S -const>
+def private computation_effects`StateBuilder`4395036099668822102(initial:int aka S const explicit) : tuple<kind:computation_effects::StateContext;state:int> {
+	return tuple<tuple<kind:computation_effects::StateContext;state:int aka S>>(struct<computation_effects::StateContext>(uninitialized ),initial);
+}
+
+/*FULLY INFERRED*/
+[nosideeffects]
+def public work(seed:int const) : int64 const {
+	var _inl0_res:tuple<value:int;state:int>;
+	{
+		var _inl0_arguu_ce_input_3_0x5_0xf:tuple<kind:computation_effects::StateContext;state:int> = __::computation_effects`StateBuilder`4395036099668822102(seed);
+		var _inl0_luu_ce_builder_3_0x5_0xf:tuple<kind:computation_effects::StateContext;state:int> = _inl0_arguu_ce_input_3_0x5_0xf;
+		var _inl37_res:tuple<value:int;state:int>;
+		{
+			var _inl55_res:tuple<value:int;state:int>;
+			{
+				var _inl72_res:tuple<value:builder_protocol::CeUnit;state:int>;
+				{
+					var _inl90_res:tuple<value:builder_protocol::CeUnit;state:int>;
+					{
+						var _inl107_res:tuple<value:builder_protocol::CeUnit;state:int>;
+						{
+							var _inl122_res:tuple<value:builder_protocol::CeUnit;state:int>;
+							{
+								var _inl146_res:tuple<value:builder_protocol::CeUnit;state:int>;
+								for ( _inl146_l_item in range(0,16) ) {
+									var _inl162_res:tuple<value:builder_protocol::CeUnit;state:int aka S>;
+									{
+										var _inl171_res:tuple<value:builder_protocol::CeUnit;state:int>;
+										{
+											var _inl184_res:tuple<value:builder_protocol::CeUnit;state:int>;
+											{
+												var _inl204_res:tuple<value:builder_protocol::CeUnit;state:int>;
+												{
+													let _inl204_l_snapshot:int const = _inl0_luu_ce_builder_3_0x5_0xf.state;
+													var _inl212_res:tuple<value:builder_protocol::CeUnit;state:int>;
+													{
+														let _inl212_lu_inl195_lu_inl184_lu_inl171_lu_inl162_lu_inl135_lu_inl122_lu_inl107_lu_inl90_lu_inl72_lu_inl37_lu_inl0_l_n:int const = _inl204_l_snapshot;
+														var _inl219_res:tuple<value:builder_protocol::CeUnit;state:int>;
+														{
+															let _inl224_argu_inl219_lu_inl212_lu_inl195_lu_inl184_lu_inl171_lu_inl162_lu_inl135_lu_inl122_lu_inl107_lu_inl90_lu_inl72_lu_inl37_lu_inl0_luu_ce_group_source_0x6_0x48:tuple<operation:computation_effects::StatePut;state:int> const = __::computation_effects`state_put`8627864096686221759(_inl212_lu_inl195_lu_inl184_lu_inl171_lu_inl162_lu_inl135_lu_inl122_lu_inl107_lu_inl90_lu_inl72_lu_inl37_lu_inl0_l_n + _inl146_l_item);
+															var _inl227_res:tuple<value:builder_protocol::CeUnit;state:int>;
+															{
+																_inl0_luu_ce_builder_3_0x5_0xf.state = _inl224_argu_inl219_lu_inl212_lu_inl195_lu_inl184_lu_inl171_lu_inl162_lu_inl135_lu_inl122_lu_inl107_lu_inl90_lu_inl72_lu_inl37_lu_inl0_luu_ce_group_source_0x6_0x48.state;
+																var _inl229_res:tuple<value:builder_protocol::CeUnit;state:int>;
+																_inl229_res = __::computation_effects`ce_zero`2451325231943730818(_inl0_luu_ce_builder_3_0x5_0xf);
+																_inl227_res = _inl229_res;
+															}
+															_inl219_res = _inl227_res;
+														}
+														_inl212_res = _inl219_res;
+													}
+													_inl204_res = _inl212_res;
+												}
+												_inl184_res = _inl204_res;
+											}
+											_inl171_res = _inl184_res;
+										}
+										_inl162_res = _inl171_res;
+									}
+									let _inl146_l_step:tuple<value:builder_protocol::CeUnit;state:int aka S> const = _inl162_res;
+									_inl0_luu_ce_builder_3_0x5_0xf.state = _inl146_l_step.state;
+								}
+								_inl146_res = __::computation_effects`ce_zero`2451325231943730818(_inl0_luu_ce_builder_3_0x5_0xf);
+								_inl122_res = _inl146_res;
+							}
+							_inl107_res = _inl122_res;
+						}
+						_inl90_res = _inl107_res;
+					}
+					_inl72_res = _inl90_res;
+				}
+				let _inl55_arg_first:tuple<value:builder_protocol::CeUnit;state:int> const = _inl72_res;
+				{
+					_inl0_luu_ce_builder_3_0x5_0xf.state = _inl55_arg_first.state;
+					var _inl102_res:tuple<value:int;state:int>;
+					{
+						var _inl118_res:tuple<value:int;state:int>;
+						{
+							var _inl144_res:tuple<value:int;state:int>;
+							{
+								var _inl154_res:tuple<value:int;state:int>;
+								{
+									let _inl154_l_snapshot:int const = _inl0_luu_ce_builder_3_0x5_0xf.state;
+									var _inl163_res:int;
+									{
+										let _inl163_lu_inl144_lu_inl132_lu_inl118_lu_inl102_lu_inl37_lu_inl0_l_n:int const = _inl154_l_snapshot;
+										_inl163_res = _inl163_lu_inl144_lu_inl132_lu_inl118_lu_inl102_lu_inl37_lu_inl0_l_n * 2;
+									}
+									let _inl154_l_mapped:int const = _inl163_res;
+									_inl154_res = __::computation_effects`state_result`1030098215053763(_inl154_l_mapped,_inl0_luu_ce_builder_3_0x5_0xf.state);
+								}
+								_inl144_res = _inl154_res;
+							}
+							_inl118_res = _inl144_res;
+						}
+						_inl102_res = _inl118_res;
+					}
+					_inl55_res = _inl102_res;
+				}
+			}
+			_inl37_res = _inl55_res;
+		}
+		var _inl0_luu_ce_run_outcome_0x5_0xf:tuple<value:int;state:int> = _inl37_res;
+		_inl0_res = _inl0_luu_ce_run_outcome_0x5_0xf;
+	}
+	let result:tuple<value:int;state:int> const = _inl0_res;
+	return int64(result.value) + int64(result.state);
+}
+
+/*FULLY INFERRED*/
+// [modify_external][capture_string]
+// 
+[export]
+[$::export]
+def public main : void {
+	var checksum:int64 = 0;
+	for ( seed in range(0,64) ) {
+		checksum += work(seed);
+	}
+	print(string_builder_temp("CHECKSUM,", checksum, "\n"),__context__,__lineinfo__);
+}
+
+

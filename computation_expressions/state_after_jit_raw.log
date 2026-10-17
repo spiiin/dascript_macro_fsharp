@@ -1,0 +1,66 @@
+[I] LLVM JIT: DLL cache miss, codegen for .jitted_scripts/_anon_13024915655541362033/0x7d5b05db8a44dccf.dll
+[I] LLVM JIT: split codegen - 2 das-module partitions, auto threads -> one DLL
+[I] LLVM JIT: obj cache - 0/2 partitions cached
+[I] Library .jitted_scripts/_anon_13024915655541362033/0x7d5b05db8a44dccf.dll linked - ok
+[I] LLVM JIT: GC stale artifact .jitted_scripts/_anon_13024915655541362033/0x5b62b61491f9fffc.m_benchmark_workloads.o
+[I] LLVM JIT: GC stale artifact .jitted_scripts/_anon_13024915655541362033/0x5b6a50dc8ae5825.dll
+[I] LLVM JIT: GC stale artifact .jitted_scripts/_anon_13024915655541362033/0x5b6a50dc8ae5825.lib
+[I] LLVM JIT: GC stale artifact .jitted_scripts/_anon_13024915655541362033/0x5b6a50dc8ae5825.map
+[I] LLVM JIT: GC stale artifact .jitted_scripts/_anon_13024915655541362033/0x5b6a50dc8ae5825.objs.rsp
+[I] LLVM JIT: GC stale artifact .jitted_scripts/_anon_13024915655541362033/0xd84c9e665524ae5b.m_main.o
+[I] LLVM JIT: 18 functions in 0.418133 sec (codegen, O3, split 2 modules)
+BENCH,state_loop,ce,0,50000,458700,22723848,0x0,0x0
+BENCH,state_loop,manual,0,50000,501400,22723848,0x0,0x0
+BENCH,state_loop,manual,1,50000,501300,22723848,0x0,0x0
+BENCH,state_loop,ce,1,50000,475100,22723848,0x0,0x0
+BENCH,state_loop,ce,2,50000,459400,22723848,0x0,0x0
+BENCH,state_loop,manual,2,50000,459300,22723848,0x0,0x0
+BENCH,state_loop,manual,3,50000,458600,22723848,0x0,0x0
+BENCH,state_loop,ce,3,50000,475600,22723848,0x0,0x0
+BENCH,state_loop,ce,4,50000,479500,22723848,0x0,0x0
+BENCH,state_loop,manual,4,50000,459400,22723848,0x0,0x0
+BENCH,state_loop,manual,5,50000,466400,22723848,0x0,0x0
+BENCH,state_loop,ce,5,50000,461700,22723848,0x0,0x0
+BENCH,state_loop,ce,6,50000,459600,22723848,0x0,0x0
+BENCH,state_loop,manual,6,50000,459600,22723848,0x0,0x0
+BENCH,state_loop,manual,7,50000,464900,22723848,0x0,0x0
+BENCH,state_loop,ce,7,50000,474600,22723848,0x0,0x0
+BENCH,state_loop,ce,8,50000,479600,22723848,0x0,0x0
+BENCH,state_loop,manual,8,50000,458800,22723848,0x0,0x0
+BENCH,state_variable,ce,0,50000,15763100,75748904511,0x0,0x0
+BENCH,state_variable,manual,0,50000,15742100,75748904511,0x0,0x0
+BENCH,state_variable,manual,1,50000,15379200,75748904511,0x0,0x0
+BENCH,state_variable,ce,1,50000,15129900,75748904511,0x0,0x0
+BENCH,state_variable,ce,2,50000,15515400,75748904511,0x0,0x0
+BENCH,state_variable,manual,2,50000,15078500,75748904511,0x0,0x0
+BENCH,state_variable,manual,3,50000,15706900,75748904511,0x0,0x0
+BENCH,state_variable,ce,3,50000,16683200,75748904511,0x0,0x0
+BENCH,state_variable,ce,4,50000,16575900,75748904511,0x0,0x0
+BENCH,state_variable,manual,4,50000,15751900,75748904511,0x0,0x0
+BENCH,state_variable,manual,5,50000,15132200,75748904511,0x0,0x0
+BENCH,state_variable,ce,5,50000,14772900,75748904511,0x0,0x0
+BENCH,state_variable,ce,6,50000,14696000,75748904511,0x0,0x0
+BENCH,state_variable,manual,6,50000,15604200,75748904511,0x0,0x0
+BENCH,state_variable,manual,7,50000,15083600,75748904511,0x0,0x0
+BENCH,state_variable,ce,7,50000,15333500,75748904511,0x0,0x0
+BENCH,state_variable,ce,8,50000,16255100,75748904511,0x0,0x0
+BENCH,state_variable,manual,8,50000,16148200,75748904511,0x0,0x0
+BENCH,state_variable_while,ce,0,50000,16473800,75748904511,0x0,0x0
+BENCH,state_variable_while,manual,0,50000,16456200,75748904511,0x0,0x0
+BENCH,state_variable_while,manual,1,50000,16750300,75748904511,0x0,0x0
+BENCH,state_variable_while,ce,1,50000,17264900,75748904511,0x0,0x0
+BENCH,state_variable_while,ce,2,50000,16762600,75748904511,0x0,0x0
+BENCH,state_variable_while,manual,2,50000,17356300,75748904511,0x0,0x0
+BENCH,state_variable_while,manual,3,50000,16854900,75748904511,0x0,0x0
+BENCH,state_variable_while,ce,3,50000,16656700,75748904511,0x0,0x0
+BENCH,state_variable_while,ce,4,50000,16680600,75748904511,0x0,0x0
+BENCH,state_variable_while,manual,4,50000,16305300,75748904511,0x0,0x0
+BENCH,state_variable_while,manual,5,50000,15595400,75748904511,0x0,0x0
+BENCH,state_variable_while,ce,5,50000,15156000,75748904511,0x0,0x0
+BENCH,state_variable_while,ce,6,50000,15198500,75748904511,0x0,0x0
+BENCH,state_variable_while,manual,6,50000,15456500,75748904511,0x0,0x0
+BENCH,state_variable_while,manual,7,50000,15424500,75748904511,0x0,0x0
+BENCH,state_variable_while,ce,7,50000,16164200,75748904511,0x0,0x0
+BENCH,state_variable_while,ce,8,50000,16106300,75748904511,0x0,0x0
+BENCH,state_variable_while,manual,8,50000,15847200,75748904511,0x0,0x0
+CE benchmarks OK

@@ -1,0 +1,82 @@
+{
+  "RecordedAt": "2026-10-12T23:58:49.7179824+02:00",
+  "Mode": "interpreter",
+  "Iterations": 50000,
+  "Samples": 9,
+  "Compiler": "C:\\src\\daslang-0.6.4\\daslang_bundle\\bin\\daslang.exe",
+  "CompilerSha256": "7EC8681F5E0F5B2786ECC26515039B79C99A3B4A1BEE92CE17295A230FEE3D55",
+  "Processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+  "OperatingSystem": "Microsoft Windows NT 10.0.26200.0",
+  "SourceHashes": [
+    {
+      "File": "benchmark_state.das",
+      "Sha256": "A9D5FBC4287D1AD1E2D00446CBC4F898210A10F330152CD96E275F5FE933289D"
+    },
+    {
+      "File": "benchmark_workloads.das",
+      "Sha256": "03AC12CA9293F71BCCDE0CBE467444500E798846AF42ACFF936FF9F06F51B186"
+    },
+    {
+      "File": "computation_macro.das",
+      "Sha256": "C71E67E008743DF323964F92C669A20FCB2C5CC7A15A06C5F3A2701D751252AC"
+    },
+    {
+      "File": "computation_builders.das",
+      "Sha256": "15D1208FFA9DE046CB6CCD0557F27FA2EE954A445E7B5F5FB0E6AA3DA40A4C93"
+    },
+    {
+      "File": "computation_effects.das",
+      "Sha256": "0AE1DB7C9F66151EBE11D3E105BD68350B43960E5B711F2C658A58A8791C821F"
+    },
+    {
+      "File": "list_builder.das",
+      "Sha256": "57699E0DF8E2CE89A65616B6AFDF81700DB504183EFB2007ACE39460AAEF8F54"
+    },
+    {
+      "File": "sequence_builder.das",
+      "Sha256": "B4EEAD88E8F46D6A09EFD3633BA65F6459A718FAC0CBEE913A435799CC806145"
+    },
+    {
+      "File": "sequence_runtime.das",
+      "Sha256": "843E474866B53EEC5B6CB100FBA2F5539AA6FD4BC4D089178E7CAD6BADCA62A4"
+    },
+    {
+      "File": "builder_protocol.das",
+      "Sha256": "15E14C4F0A01D6E443300E338237C84EA1A8BBF3D3038EEC083D9AB25FD0E1C4"
+    },
+    {
+      "File": "computation_resources.das",
+      "Sha256": "7F9DF1B890F32D87A9AF2CCA204ED7C79EA5B4D80288E78B044C9CB639C7F2A7"
+    },
+    {
+      "File": "zip_runtime.das",
+      "Sha256": "1940A28BA0988E3104A2FFE0BA942FBE68CB449826BC369286421B163174B947"
+    }
+  ],
+  "Results": [
+    {
+      "Case": "state_loop",
+      "CeNsPerOperation": 2314.19,
+      "ManualNsPerOperation": 112.97,
+      "MedianPairedRatio": 19.574,
+      "CeMinNs": 2154.2,
+      "CeMaxNs": 2471.99
+    },
+    {
+      "Case": "state_variable",
+      "CeNsPerOperation": 6308.47,
+      "ManualNsPerOperation": 1073.93,
+      "MedianPairedRatio": 6.377,
+      "CeMinNs": 5758.73,
+      "CeMaxNs": 9244.19
+    },
+    {
+      "Case": "state_variable_while",
+      "CeNsPerOperation": 7466.76,
+      "ManualNsPerOperation": 1002.61,
+      "MedianPairedRatio": 7.652,
+      "CeMinNs": 6153.85,
+      "CeMaxNs": 10584.62
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+[I] LLVM JIT: 13 functions in 0.274947 sec (codegen, O3)
+Result fail_at=0: steps=1/1/1, return=1
+Option fail_at=0: steps=1/1/1, return=1
+Result fail_at=1: steps=1/0/0, return=0
+Option fail_at=1: steps=1/0/0, return=0
+Result fail_at=2: steps=1/1/0, return=0
+Option fail_at=2: steps=1/1/0, return=0
+Result fail_at=3: steps=1/1/1, return=0
+Option fail_at=3: steps=1/1/1, return=0
+computation checks OK

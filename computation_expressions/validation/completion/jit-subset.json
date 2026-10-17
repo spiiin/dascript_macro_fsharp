@@ -1,0 +1,40 @@
+{
+  "Compiler": "C:\\src\\daslang-0.6.4\\daslang_bundle\\bin\\daslang.exe",
+  "CompilerSha256": "7EC8681F5E0F5B2786ECC26515039B79C99A3B4A1BEE92CE17295A230FEE3D55",
+  "RecordedAt": "2026-10-17T16:21:31.1470695+02:00",
+  "Scope": "explicit subset; AOT generation is NOT runtime execution",
+  "Results": [
+    {
+      "Mode": "Jit",
+      "File": "tests/test_computation.das",
+      "Status": "passed",
+      "ExitCode": 0,
+      "ElapsedMs": 22324.8144,
+      "Log": "jit/Jit-test_computation.log"
+    },
+    {
+      "Mode": "Jit",
+      "File": "tests/test_composition_laws.das",
+      "Status": "passed",
+      "ExitCode": 0,
+      "ElapsedMs": 16315.3191,
+      "Log": "jit/Jit-test_composition_laws.log"
+    },
+    {
+      "Mode": "Jit",
+      "File": "tests/test_state_operations.das",
+      "Status": "passed",
+      "ExitCode": 0,
+      "ElapsedMs": 15358.4244,
+      "Log": "jit/Jit-test_state_operations.log"
+    },
+    {
+      "Mode": "Jit",
+      "File": "tests/test_list_benchmarks.das",
+      "Status": "passed",
+      "ExitCode": 0,
+      "ElapsedMs": 13690.2786,
+      "Log": "jit/Jit-test_list_benchmarks.log"
+    }
+  ]
+}

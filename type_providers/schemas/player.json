@@ -1,0 +1,7 @@
+{
+  "fields": [
+    { "name": "name", "type": "string" },
+    { "name": "health", "type": "int" },
+    { "name": "alive", "type": "bool" }
+  ]
+}

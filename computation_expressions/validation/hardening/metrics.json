@@ -1,0 +1,113 @@
+{
+  "Mode": "interpreter",
+  "Compiler": "C:\\src\\daslang-0.6.4\\daslang_bundle\\bin\\daslang.exe",
+  "CompilerSha256": "7EC8681F5E0F5B2786ECC26515039B79C99A3B4A1BEE92CE17295A230FEE3D55",
+  "CompileAndSimulateMs": [
+    3917.7921,
+    3251.6849,
+    2814.352
+  ],
+  "MedianCompileAndSimulateMs": 3251.6849,
+  "CompileScope": "fresh compiler process, no module cache; includes startup and simulation, not benchmark execution",
+  "ExpansionBytes": 9675,
+  "ExpansionLines": 235,
+  "ExpansionFunctionDeclarations": 4,
+  "ExpansionScope": "entry-program compiler log; imported modules may be omitted, not machine code size",
+  "FocusedExpansions": [
+    {
+      "File": "state_expansion_demo.das",
+      "Bytes": 8023,
+      "Lines": 174,
+      "FunctionDeclarations": 6
+    },
+    {
+      "File": "list_fusion_demo.das",
+      "Bytes": 6351,
+      "Lines": 150,
+      "FunctionDeclarations": 6
+    }
+  ],
+  "AllocationScope": "daScript context heap counters; cumulative deltas, excludes native/OS allocations",
+  "AllocationResults": [
+    {
+      "Case": "list_product",
+      "Implementation": "ce",
+      "AllocationsPerOperation": 1.0,
+      "AllocatedBytesPerOperation": 64.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "list_product",
+      "Implementation": "manual",
+      "AllocationsPerOperation": 1.0,
+      "AllocatedBytesPerOperation": 64.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "result_mixed",
+      "Implementation": "ce",
+      "AllocationsPerOperation": 0.0,
+      "AllocatedBytesPerOperation": 0.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "result_mixed",
+      "Implementation": "manual",
+      "AllocationsPerOperation": 0.0,
+      "AllocatedBytesPerOperation": 0.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "sequence_protected",
+      "Implementation": "ce",
+      "AllocationsPerOperation": 4.0,
+      "AllocatedBytesPerOperation": 264.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "sequence_protected",
+      "Implementation": "manual",
+      "AllocationsPerOperation": 4.0,
+      "AllocatedBytesPerOperation": 264.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "state_loop",
+      "Implementation": "ce",
+      "AllocationsPerOperation": 0.0,
+      "AllocatedBytesPerOperation": 0.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "state_loop",
+      "Implementation": "manual",
+      "AllocationsPerOperation": 0.0,
+      "AllocatedBytesPerOperation": 0.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "state_variable",
+      "Implementation": "ce",
+      "AllocationsPerOperation": 0.0,
+      "AllocatedBytesPerOperation": 0.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "state_variable",
+      "Implementation": "manual",
+      "AllocationsPerOperation": 0.0,
+      "AllocatedBytesPerOperation": 0.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    }
+  ]
+}

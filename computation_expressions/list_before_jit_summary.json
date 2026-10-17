@@ -1,0 +1,86 @@
+{
+  "RecordedAt": "2026-10-13T00:18:20.5610005+02:00",
+  "Mode": "jit",
+  "Iterations": 30000,
+  "Samples": 9,
+  "Compiler": "C:\\src\\daslang-0.6.4\\daslang_bundle\\bin\\daslang.exe",
+  "CompilerSha256": "7EC8681F5E0F5B2786ECC26515039B79C99A3B4A1BEE92CE17295A230FEE3D55",
+  "Processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+  "OperatingSystem": "Microsoft Windows NT 10.0.26200.0",
+  "SourceHashes": [
+    {
+      "File": "benchmark_list.das",
+      "Sha256": "2597C6791DEFD773A208E3B2E1ADFDADECAC3EEACCB5950F0DE808295CE25D54"
+    },
+    {
+      "File": "benchmark_workloads.das",
+      "Sha256": "03AC12CA9293F71BCCDE0CBE467444500E798846AF42ACFF936FF9F06F51B186"
+    },
+    {
+      "File": "list_benchmark_workloads.das",
+      "Sha256": "1AC44788E3D8C2A312EBC57B0CDD9BE29341C00331103349DE07CDBDB2E57CEC"
+    },
+    {
+      "File": "computation_macro.das",
+      "Sha256": "C71E67E008743DF323964F92C669A20FCB2C5CC7A15A06C5F3A2701D751252AC"
+    },
+    {
+      "File": "computation_builders.das",
+      "Sha256": "15D1208FFA9DE046CB6CCD0557F27FA2EE954A445E7B5F5FB0E6AA3DA40A4C93"
+    },
+    {
+      "File": "computation_effects.das",
+      "Sha256": "0AE1DB7C9F66151EBE11D3E105BD68350B43960E5B711F2C658A58A8791C821F"
+    },
+    {
+      "File": "list_builder.das",
+      "Sha256": "57699E0DF8E2CE89A65616B6AFDF81700DB504183EFB2007ACE39460AAEF8F54"
+    },
+    {
+      "File": "sequence_builder.das",
+      "Sha256": "B4EEAD88E8F46D6A09EFD3633BA65F6459A718FAC0CBEE913A435799CC806145"
+    },
+    {
+      "File": "sequence_runtime.das",
+      "Sha256": "843E474866B53EEC5B6CB100FBA2F5539AA6FD4BC4D089178E7CAD6BADCA62A4"
+    },
+    {
+      "File": "builder_protocol.das",
+      "Sha256": "15E14C4F0A01D6E443300E338237C84EA1A8BBF3D3038EEC083D9AB25FD0E1C4"
+    },
+    {
+      "File": "computation_resources.das",
+      "Sha256": "7F9DF1B890F32D87A9AF2CCA204ED7C79EA5B4D80288E78B044C9CB639C7F2A7"
+    },
+    {
+      "File": "zip_runtime.das",
+      "Sha256": "1940A28BA0988E3104A2FFE0BA942FBE68CB449826BC369286421B163174B947"
+    }
+  ],
+  "Results": [
+    {
+      "Case": "list_product",
+      "CeNsPerOperation": 615.51,
+      "ManualNsPerOperation": 46.78,
+      "MedianPairedRatio": 13.011,
+      "CeMinNs": 598.46,
+      "CeMaxNs": 884.87
+    },
+    {
+      "Case": "list_variable",
+      "CeNsPerOperation": 871.32,
+      "ManualNsPerOperation": 221.03,
+      "MedianPairedRatio": 3.653,
+      "CeMinNs": 738.85,
+      "CeMaxNs": 1029.64
+    },
+    {
+      "Case": "list_owned",
+      "CeNsPerOperation": 1237.55,
+      "ManualNsPerOperation": 371.41,
+      "MedianPairedRatio": 3.317,
+      "CeMinNs": 1222.65,
+      "CeMaxNs": 1455.1
+    }
+  ]
+}

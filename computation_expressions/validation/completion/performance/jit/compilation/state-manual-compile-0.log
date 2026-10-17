@@ -1,0 +1,207 @@
+compiler took 0.008095, builtin (C:/src/daslang-0.6.4/daslang_bundle/daslib/builtin.das) -- 0 functions
+	parse    0.006675
+	infer    0.000459 (2 passes)
+	optimize 6.1e-05
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.005354, llvm_host (C:/src/daslang-0.6.4/daslang_bundle/modules/dasLLVM/bindings/llvm_host.das) -- 4 functions
+	parse    0.004836
+	infer    2.3e-05 (1 passes)
+	optimize 2.7e-05
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.002114, rtti (C:/src/daslang-0.6.4/daslang_bundle/daslib/rtti.das) -- 5 functions
+	parse    0.000657
+	infer    0.000598 (4 passes)
+	optimize 0.000235
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.009443, strings_boost (C:/src/daslang-0.6.4/daslang_bundle/daslib/strings_boost.das) -- 29 functions
+	parse    0.00097
+	infer    0.004378 (14 passes)
+	optimize 0.002585
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.008242, ast (C:/src/daslang-0.6.4/daslang_bundle/daslib/ast.das) -- 0 functions
+	parse    0.004424
+	infer    0.001643 (3 passes)
+	optimize 0.000392
+	macro (in infer) 0
+	macro mods 0
+simulate (including init script) took 0.003125, ast_boost (C:/src/daslang-0.6.4/daslang_bundle/daslib/ast_boost.das)
+compiler took 0.104941, ast_boost (C:/src/daslang-0.6.4/daslang_bundle/daslib/ast_boost.das) -- 178 functions
+	parse    0.004629
+	infer    0.066599 (17 passes)
+	optimize 0.015164
+	macro (in infer) 0
+	macro mods 0.004064
+simulate (including init script) took 0.000996, templates (C:/src/daslang-0.6.4/daslang_bundle/daslib/templates.das)
+compiler took 0.010414, templates (C:/src/daslang-0.6.4/daslang_bundle/daslib/templates.das) -- 30 functions
+	parse    0.000482
+	infer    0.005729 (13 passes)
+	optimize 0.001446
+	macro (in infer) 0.000103
+	macro mods 0.001396
+simulate (including init script) took 0.002009, contracts (C:/src/daslang-0.6.4/daslang_bundle/daslib/contracts.das)
+compiler took 0.036734, contracts (C:/src/daslang-0.6.4/daslang_bundle/daslib/contracts.das) -- 124 functions
+	parse    0.001272
+	infer    0.022955 (17 passes)
+	optimize 0.004204
+	macro (in infer) 8e-05
+	macro mods 0.002668
+compiler took 0.001586, array_boost (C:/src/daslang-0.6.4/daslang_bundle/daslib/array_boost.das) -- 0 functions
+	parse    0.000953
+	infer    3.6e-05 (1 passes)
+	optimize 0.000125
+	macro (in infer) 4.4e-05
+	macro mods 0
+compiler took 0.002315, algorithm (C:/src/daslang-0.6.4/daslang_bundle/daslib/algorithm.das) -- 0 functions
+	parse    0.001634
+	infer    5.5e-05 (1 passes)
+	optimize 7.1e-05
+	macro (in infer) 8.6e-05
+	macro mods 0
+simulate (including init script) took 0.003661, quote (C:/src/daslang-0.6.4/daslang_bundle/daslib/quote.das)
+compiler took 0.036483, quote (C:/src/daslang-0.6.4/daslang_bundle/daslib/quote.das) -- 60 functions
+	parse    0.001931
+	infer    0.017783 (15 passes)
+	optimize 0.006547
+	macro (in infer) 7.4e-05
+	macro mods 0.004795
+simulate (including init script) took 0.005273, templates_boost (C:/src/daslang-0.6.4/daslang_bundle/daslib/templates_boost.das)
+compiler took 0.184468, templates_boost (C:/src/daslang-0.6.4/daslang_bundle/daslib/templates_boost.das) -- 105 functions
+	parse    0.006132
+	infer    0.123215 (18 passes)
+	optimize 0.023716
+	macro (in infer) 0.000529
+	macro mods 0.007591
+compiler took 0.026217, llvm_dll_utils (C:/src/daslang-0.6.4/daslang_bundle/modules/dasLLVM/daslib/llvm_dll_utils.das) -- 74 functions
+	parse    0.001321
+	infer    0.017269 (15 passes)
+	optimize 0.003775
+	macro (in infer) 0.000419
+	macro mods 0
+compiler took 0.019205, fio (C:/src/daslang-0.6.4/daslang_bundle/daslib/fio.das) -- 24 functions
+	parse    0.002001
+	infer    0.008219 (18 passes)
+	optimize 0.004026
+	macro (in infer) 0
+	macro mods 0
+simulate (including init script) took 0.003282, macro_boost (C:/src/daslang-0.6.4/daslang_bundle/daslib/macro_boost.das)
+compiler took 0.047476, macro_boost (C:/src/daslang-0.6.4/daslang_bundle/daslib/macro_boost.das) -- 76 functions
+	parse    0.001838
+	infer    0.028728 (22 passes)
+	optimize 0.00588
+	macro (in infer) 0.000376
+	macro mods 0.004627
+simulate (including init script) took 0.006739, typemacro_boost (C:/src/daslang-0.6.4/daslang_bundle/daslib/typemacro_boost.das)
+compiler took 0.072974, typemacro_boost (C:/src/daslang-0.6.4/daslang_bundle/daslib/typemacro_boost.das) -- 206 functions
+	parse    0.003203
+	infer    0.041158 (15 passes)
+	optimize 0.010697
+	macro (in infer) 0.001125
+	macro mods 0.008559
+simulate (including init script) took 0.003162, option (C:/src/daslang-0.6.4/daslang_bundle/daslib/option.das)
+compiler took 0.011342, option (C:/src/daslang-0.6.4/daslang_bundle/daslib/option.das) -- 82 functions
+	parse    0.000941
+	infer    0.003005 (15 passes)
+	optimize 0.001328
+	macro (in infer) 0.000677
+	macro mods 0.00407
+simulate (including init script) took 0.003179, result (C:/src/daslang-0.6.4/daslang_bundle/daslib/result.das)
+compiler took 0.011896, result (C:/src/daslang-0.6.4/daslang_bundle/daslib/result.das) -- 82 functions
+	parse    0.001105
+	infer    0.003327 (15 passes)
+	optimize 0.001368
+	macro (in infer) 0.000703
+	macro mods 0.004068
+simulate (including init script) took 0.003271, enum_trait (C:/src/daslang-0.6.4/daslang_bundle/daslib/enum_trait.das)
+compiler took 0.011581, enum_trait (C:/src/daslang-0.6.4/daslang_bundle/daslib/enum_trait.das) -- 97 functions
+	parse    0.000613
+	infer    0.003472 (14 passes)
+	optimize 0.001538
+	macro (in infer) 0.000261
+	macro mods 0.00422
+simulate (including init script) took 0.006153, clargs (C:/src/daslang-0.6.4/daslang_bundle/daslib/clargs.das)
+compiler took 0.143306, clargs (C:/src/daslang-0.6.4/daslang_bundle/daslib/clargs.das) -- 147 functions
+	parse    0.004196
+	infer    0.083362 (27 passes)
+	optimize 0.021528
+	macro (in infer) 0.003037
+	macro mods 0.008158
+compiler took 0.011257, env_registry (C:/src/daslang-0.6.4/daslang_bundle/daslib/env_registry.das) -- 35 functions
+	parse    0.000814
+	infer    0.004684 (12 passes)
+	optimize 0.002236
+	macro (in infer) 4.1e-05
+	macro mods 0
+compiler took 0.007951, llvm_env (C:/src/daslang-0.6.4/daslang_bundle/modules/dasLLVM/daslib/llvm_env.das) -- 43 functions
+	parse    0.001334
+	infer    0.003624 (22 passes)
+	optimize 0.001512
+	macro (in infer) 0.000869
+	macro mods 0
+compiler took 0.004757, llvm_cpu_class (C:/src/daslang-0.6.4/daslang_bundle/modules/dasLLVM/daslib/llvm_cpu_class.das) -- 27 functions
+	parse    0.000376
+	infer    0.001691 (14 passes)
+	optimize 0.001102
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.013286, llvm_jit_cli (C:/src/daslang-0.6.4/daslang_bundle/modules/dasLLVM/daslib/llvm_jit_cli.das) -- 75 functions
+	parse    0.00141
+	infer    0.007408 (22 passes)
+	optimize 0.002181
+	macro (in infer) 0.00248
+	macro mods 0
+compiler took 0.114376, llvm_jit_plan (C:/src/daslang-0.6.4/daslang_bundle/modules/dasLLVM/daslib/llvm_jit_plan.das) -- 164 functions
+	parse    0.003864
+	infer    0.081799 (21 passes)
+	optimize 0.012253
+	macro (in infer) 0.000781
+	macro mods 0
+compiler took 0.002974, debugger (C:/src/daslang-0.6.4/daslang_bundle/daslib/debugger.das) -- 9 functions
+	parse    0.001222
+	infer    0.000497 (3 passes)
+	optimize 0.000288
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.001856, cross_context (C:/src/daslang-0.6.4/daslang_bundle/daslib/cross_context.das) -- 3 functions
+	parse    0.000206
+	infer    0.000342 (4 passes)
+	optimize 0.00046
+	macro (in infer) 0
+	macro mods 0
+simulate (including init script) took 0.00845, llvm_jit_link (C:/src/daslang-0.6.4/daslang_bundle/modules/dasLLVM/daslib/llvm_jit_link.das)
+compiler took 0.01825, llvm_jit_link (C:/src/daslang-0.6.4/daslang_bundle/modules/dasLLVM/daslib/llvm_jit_link.das) -- 227 functions
+	parse    0.000552
+	infer    0.003036 (13 passes)
+	optimize 0.001993
+	macro (in infer) 3.1e-05
+	macro mods 0.010743
+compiler took 0.000869, just_in_time (C:/src/daslang-0.6.4/daslang_bundle/daslib/just_in_time.das) -- 0 functions
+	parse    9.9e-05
+	infer    1.7e-05 (1 passes)
+	optimize 0.000195
+	macro (in infer) 0
+	macro mods 0
+total compile took 0.957527, C:\src\dascript_macro_fsharp\computation_expressions\benchmarks\metrics\state-manual.das -- 3 functions
+	require  0.008494
+	cache read 0 (0 modules, decode 0, finalize 0 of which macro simulate 0)
+	parse    0.059808
+	infer    0.535287
+	optimize 0.127425
+	macro (in infer) 0.011725
+	macro mods 0.064959
+[I] LLVM JIT: 2 functions in 0.017919 sec (codegen, O3)
+simulate (including init script) took 7.864688, C:\src\dascript_macro_fsharp\computation_expressions\benchmarks\metrics\state-manual.das
+dry run: C:\src\dascript_macro_fsharp\computation_expressions\benchmarks\metrics\state-manual.das
+startup: main total 8.939994
+	arguments 0.000113
+	builtin modules 0.016909
+	module scan 0.007873
+	initialize 0.001214
+	compile  0.95773
+	simulate 7.864707
+	run      0
+	teardown 0.000323
+	shutdown 0.091103

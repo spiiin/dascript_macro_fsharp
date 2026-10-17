@@ -1,0 +1,11 @@
+{
+  "fields": [
+    { "name": "name", "type": "string" },
+    { "name": "health", "type": "int" },
+    { "name": "alive", "type": "bool" },
+    { "name": "team", "type": "ref", "target": "Team" },
+    { "name": "archive", "type": "ref", "target": "Broken" },
+    { "name": "absent", "type": "ref", "target": "NotDownloaded" },
+    { "name": "future", "type": "unsupported_until_accessed" }
+  ]
+}

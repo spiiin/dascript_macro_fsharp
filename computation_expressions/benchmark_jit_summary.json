@@ -1,0 +1,90 @@
+{
+  "RecordedAt": "2026-10-12T23:43:53.7943946+02:00",
+  "Mode": "jit",
+  "Iterations": 200000,
+  "Samples": 9,
+  "Compiler": "C:\\src\\daslang-0.6.4\\daslang_bundle\\bin\\daslang.exe",
+  "CompilerSha256": "7EC8681F5E0F5B2786ECC26515039B79C99A3B4A1BEE92CE17295A230FEE3D55",
+  "Processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+  "OperatingSystem": "Microsoft Windows NT 10.0.26200.0",
+  "SourceHashes": [
+    {
+      "File": "benchmark_ce.das",
+      "Sha256": "0D7509FC4A64816562C858BDA70FC8EE878AA1FF867EB432FB75FF7288677167"
+    },
+    {
+      "File": "benchmark_workloads.das",
+      "Sha256": "318B7AFAED58AAC1DEB190AE70D48BEF67C0928CBDB3B1AED4EFB4AA52FA06E5"
+    },
+    {
+      "File": "computation_macro.das",
+      "Sha256": "C71E67E008743DF323964F92C669A20FCB2C5CC7A15A06C5F3A2701D751252AC"
+    },
+    {
+      "File": "computation_builders.das",
+      "Sha256": "15D1208FFA9DE046CB6CCD0557F27FA2EE954A445E7B5F5FB0E6AA3DA40A4C93"
+    },
+    {
+      "File": "computation_effects.das",
+      "Sha256": "280C80147A80EE31FC1F771F746C641BFFBC7568A3801AE7475CF5BBE4D79389"
+    },
+    {
+      "File": "list_builder.das",
+      "Sha256": "57699E0DF8E2CE89A65616B6AFDF81700DB504183EFB2007ACE39460AAEF8F54"
+    },
+    {
+      "File": "sequence_builder.das",
+      "Sha256": "B4EEAD88E8F46D6A09EFD3633BA65F6459A718FAC0CBEE913A435799CC806145"
+    },
+    {
+      "File": "sequence_runtime.das",
+      "Sha256": "843E474866B53EEC5B6CB100FBA2F5539AA6FD4BC4D089178E7CAD6BADCA62A4"
+    },
+    {
+      "File": "builder_protocol.das",
+      "Sha256": "15E14C4F0A01D6E443300E338237C84EA1A8BBF3D3038EEC083D9AB25FD0E1C4"
+    },
+    {
+      "File": "computation_resources.das",
+      "Sha256": "7F9DF1B890F32D87A9AF2CCA204ED7C79EA5B4D80288E78B044C9CB639C7F2A7"
+    },
+    {
+      "File": "zip_runtime.das",
+      "Sha256": "1940A28BA0988E3104A2FFE0BA942FBE68CB449826BC369286421B163174B947"
+    }
+  ],
+  "Results": [
+    {
+      "Case": "result_mixed",
+      "CeNsPerOperation": 18.8,
+      "ManualNsPerOperation": 7.54,
+      "MedianPairedRatio": 2.484,
+      "CeMinNs": 18.48,
+      "CeMaxNs": 19.13
+    },
+    {
+      "Case": "state_loop",
+      "CeNsPerOperation": 130.44,
+      "ManualNsPerOperation": 6.65,
+      "MedianPairedRatio": 19.417,
+      "CeMinNs": 129.17,
+      "CeMaxNs": 134.84
+    },
+    {
+      "Case": "list_product",
+      "CeNsPerOperation": 529.97,
+      "ManualNsPerOperation": 45.3,
+      "MedianPairedRatio": 11.697,
+      "CeMinNs": 526.12,
+      "CeMaxNs": 539.69
+    },
+    {
+      "Case": "sequence_protected",
+      "CeNsPerOperation": 2188.31,
+      "ManualNsPerOperation": 2177.7,
+      "MedianPairedRatio": 1.006,
+      "CeMinNs": 2181.13,
+      "CeMaxNs": 2394.94
+    }
+  ]
+}

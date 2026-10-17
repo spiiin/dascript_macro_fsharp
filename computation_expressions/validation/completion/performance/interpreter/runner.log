@@ -1,0 +1,37 @@
+
+Case               CeNsPerOperation ManualNsPerOperation MedianPairedRatio CeMinNs CeMaxNs
+----               ---------------- -------------------- ----------------- ------- -------
+result_mixed                 222,95               126,92              1,79  219,05  226,97
+state_loop                  2199,61               104,90             20,55 1942,07 2921,22
+state_variable              6098,60               801,42              7,52 5989,52 6233,01
+list_product                1704,35               761,81              2,26 1694,69 1768,49
+sequence_protected          7136,08              6789,35              1,03 6839,79 7922,30
+
+Raw samples and metadata: C:\src\dascript_macro_fsharp\computation_expressions\validation\completion\performance\interpreter
+
+Case   CeCompileAndSimulateMs ManualCompileAndSimulateMs CompileRatio CeExpansionBytes ManualExpansionBytes ExpansionRat
+                                                                                                                      io
+----   ---------------------- -------------------------- ------------ ---------------- -------------------- ------------
+result                 966,73                      83,67        11,55             6295                 1641         3,84
+state                  856,71                      85,27        10,05             8257                  628        13,15
+list                   830,21                      82,96        10,01             6687                 1550         4,31
+
+
+Case               Implementation AllocationsPerOperation AllocatedBytesPerOperation StringAllocationsPerOperation Strin
+                                                                                                                   gByte
+                                                                                                                   sPerO
+                                                                                                                   perat
+                                                                                                                     ion
+----               -------------- ----------------------- -------------------------- ----------------------------- -----
+list_product       ce                                1,00                      64,00                          0,00  0,00
+list_product       manual                            1,00                      64,00                          0,00  0,00
+result_mixed       ce                                0,00                       0,00                          0,00  0,00
+result_mixed       manual                            0,00                       0,00                          0,00  0,00
+sequence_protected ce                                4,00                     264,00                          0,00  0,00
+sequence_protected manual                            4,00                     264,00                          0,00  0,00
+state_loop         ce                                0,00                       0,00                          0,00  0,00
+state_loop         manual                            0,00                       0,00                          0,00  0,00
+state_variable     ce                                0,00                       0,00                          0,00  0,00
+state_variable     manual                            0,00                       0,00                          0,00  0,00
+
+Runtime, allocations and separate CE/manual compilation metrics: C:\src\dascript_macro_fsharp\computation_expressions\validation\completion\performance\interpreter/metrics.json

@@ -1,0 +1,27 @@
+require builtin
+
+/*FULLY INFERRED*/
+[nosideeffects]
+def public work(seed:int const) : int64 const {
+	var state:int = seed;
+	for ( i in range(0,16) ) {
+		state += i;
+	}
+	let result:tuple<value:int;state:int> const = tuple<tuple<value:int;state:int>>((state * 2),state);
+	return int64(result.value) + int64(result.state);
+}
+
+/*FULLY INFERRED*/
+// [modify_external][capture_string]
+// 
+[export]
+[$::export]
+def public main : void {
+	var checksum:int64 = 0;
+	for ( seed in range(0,64) ) {
+		checksum += work(seed);
+	}
+	print(string_builder_temp("CHECKSUM,", checksum, "\n"),__context__,__lineinfo__);
+}
+
+

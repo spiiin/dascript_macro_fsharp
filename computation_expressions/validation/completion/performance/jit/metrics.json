@@ -1,0 +1,385 @@
+{
+  "SchemaVersion": 2,
+  "RecordedAt": "2026-10-17T16:31:20.1677408+02:00",
+  "Mode": "jit",
+  "Compiler": "C:\\src\\daslang-0.6.4\\daslang_bundle\\bin\\daslang.exe",
+  "CompilerSha256": "7EC8681F5E0F5B2786ECC26515039B79C99A3B4A1BEE92CE17295A230FEE3D55",
+  "Iterations": 10000,
+  "Samples": 5,
+  "RuntimeResults": [
+    {
+      "Case": "result_mixed",
+      "CeNsPerOperation": 33.01,
+      "ManualNsPerOperation": 13.56,
+      "MedianPairedRatio": 2.369,
+      "CeMinNs": 32.12,
+      "CeMaxNs": 44.73
+    },
+    {
+      "Case": "state_loop",
+      "CeNsPerOperation": 11.15,
+      "ManualNsPerOperation": 11.33,
+      "MedianPairedRatio": 0.973,
+      "CeMinNs": 11.02,
+      "CeMaxNs": 13.43
+    },
+    {
+      "Case": "state_variable",
+      "CeNsPerOperation": 509.94,
+      "ManualNsPerOperation": 507.67,
+      "MedianPairedRatio": 1.011,
+      "CeMinNs": 413.62,
+      "CeMaxNs": 549.83
+    },
+    {
+      "Case": "list_product",
+      "CeNsPerOperation": 300.33,
+      "ManualNsPerOperation": 131.38,
+      "MedianPairedRatio": 2.377,
+      "CeMinNs": 198.27,
+      "CeMaxNs": 317.42
+    },
+    {
+      "Case": "sequence_protected",
+      "CeNsPerOperation": 5198.94,
+      "ManualNsPerOperation": 4829.79,
+      "MedianPairedRatio": 0.984,
+      "CeMinNs": 3742.55,
+      "CeMaxNs": 6401.47
+    }
+  ],
+  "AllocationResults": [
+    {
+      "Case": "list_product",
+      "Implementation": "ce",
+      "AllocationsPerOperation": 1.0,
+      "AllocatedBytesPerOperation": 64.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "list_product",
+      "Implementation": "manual",
+      "AllocationsPerOperation": 1.0,
+      "AllocatedBytesPerOperation": 64.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "result_mixed",
+      "Implementation": "ce",
+      "AllocationsPerOperation": 0.0,
+      "AllocatedBytesPerOperation": 0.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "result_mixed",
+      "Implementation": "manual",
+      "AllocationsPerOperation": 0.0,
+      "AllocatedBytesPerOperation": 0.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "sequence_protected",
+      "Implementation": "ce",
+      "AllocationsPerOperation": 4.0,
+      "AllocatedBytesPerOperation": 264.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "sequence_protected",
+      "Implementation": "manual",
+      "AllocationsPerOperation": 4.0,
+      "AllocatedBytesPerOperation": 264.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "state_loop",
+      "Implementation": "ce",
+      "AllocationsPerOperation": 0.0,
+      "AllocatedBytesPerOperation": 0.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "state_loop",
+      "Implementation": "manual",
+      "AllocationsPerOperation": 0.0,
+      "AllocatedBytesPerOperation": 0.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "state_variable",
+      "Implementation": "ce",
+      "AllocationsPerOperation": 0.0,
+      "AllocatedBytesPerOperation": 0.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    },
+    {
+      "Case": "state_variable",
+      "Implementation": "manual",
+      "AllocationsPerOperation": 0.0,
+      "AllocatedBytesPerOperation": 0.0,
+      "StringAllocationsPerOperation": 0.0,
+      "StringBytesPerOperation": 0.0
+    }
+  ],
+  "AllocationScope": "cumulative context heap deltas; excludes native/OS allocations",
+  "Compilation": {
+    "Mode": "jit",
+    "Samples": 3,
+    "Compiler": "C:\\src\\daslang-0.6.4\\daslang_bundle\\bin\\daslang.exe",
+    "CompilerSha256": "7EC8681F5E0F5B2786ECC26515039B79C99A3B4A1BEE92CE17295A230FEE3D55",
+    "CompileScope": "fresh process, no AST cache; startup + compile + simulate; JIT cache disabled; no workload execution in timed samples",
+    "ExpansionScope": "entry-program textual compiler log, not machine code or complete imported-module AST",
+    "Comparison": [
+      {
+        "Case": "result",
+        "CeCompileAndSimulateMs": 11577.0264,
+        "ManualCompileAndSimulateMs": 10906.5162,
+        "CompileRatio": 1.0614779447171225,
+        "CeExpansionBytes": 6295,
+        "ManualExpansionBytes": 1641,
+        "ExpansionRatio": 3.8360755636806827
+      },
+      {
+        "Case": "state",
+        "CeCompileAndSimulateMs": 8439.5845,
+        "ManualCompileAndSimulateMs": 10219.461,
+        "CompileRatio": 0.8258346012573463,
+        "CeExpansionBytes": 8257,
+        "ManualExpansionBytes": 628,
+        "ExpansionRatio": 13.148089171974522
+      },
+      {
+        "Case": "list",
+        "CeCompileAndSimulateMs": 7500.1815,
+        "ManualCompileAndSimulateMs": 6847.2269,
+        "CompileRatio": 1.0953604443866174,
+        "CeExpansionBytes": 6687,
+        "ManualExpansionBytes": 1550,
+        "ExpansionRatio": 4.314193548387097
+      }
+    ],
+    "Expansions": [
+      {
+        "Case": "result",
+        "Implementation": "ce",
+        "Bytes": 6295,
+        "Lines": 137,
+        "Functions": 2,
+        "Dump": "result-ce-expansion.txt"
+      },
+      {
+        "Case": "result",
+        "Implementation": "manual",
+        "Bytes": 1641,
+        "Lines": 59,
+        "Functions": 2,
+        "Dump": "result-manual-expansion.txt"
+      },
+      {
+        "Case": "state",
+        "Implementation": "ce",
+        "Bytes": 8257,
+        "Lines": 184,
+        "Functions": 7,
+        "Dump": "state-ce-expansion.txt"
+      },
+      {
+        "Case": "state",
+        "Implementation": "manual",
+        "Bytes": 628,
+        "Lines": 28,
+        "Functions": 2,
+        "Dump": "state-manual-expansion.txt"
+      },
+      {
+        "Case": "list",
+        "Implementation": "ce",
+        "Bytes": 6687,
+        "Lines": 164,
+        "Functions": 7,
+        "Dump": "list-ce-expansion.txt"
+      },
+      {
+        "Case": "list",
+        "Implementation": "manual",
+        "Bytes": 1550,
+        "Lines": 52,
+        "Functions": 4,
+        "Dump": "list-manual-expansion.txt"
+      }
+    ],
+    "Checksums": {
+      "state-ce": "29088",
+      "state-manual": "29088",
+      "result-manual": "4904",
+      "result-ce": "4904",
+      "list-manual": "773120",
+      "list-ce": "773120"
+    },
+    "SourceHashes": [
+      {
+        "File": "lib/builder_protocol.das",
+        "Sha256": "333AD71D8DFB173215A283E6F0991475A9208345DE66BDC493D5E3EFA05D7562"
+      },
+      {
+        "File": "lib/computation_builders.das",
+        "Sha256": "56EF214C05808509C45F6C8DAEA648BDF86AB5A0C912B4F77E037E443F9B08E5"
+      },
+      {
+        "File": "lib/computation_effects.das",
+        "Sha256": "C6987404AA56BADAFE1D5802627D95BE38C083447DE8C78D43274C90D20C7583"
+      },
+      {
+        "File": "lib/computation_macro.das",
+        "Sha256": "D02A260A461F381979CE08CD6FC8C936ADDD44EAE56BFA1CA1681129EC9063A0"
+      },
+      {
+        "File": "lib/computation_resources.das",
+        "Sha256": "7F9DF1B890F32D87A9AF2CCA204ED7C79EA5B4D80288E78B044C9CB639C7F2A7"
+      },
+      {
+        "File": "lib/computation.das",
+        "Sha256": "CD399CE79F2C80B33B88CA3B8487458D2808FF4AC8FCC195BEDE1D73FFC32908"
+      },
+      {
+        "File": "lib/coroutine_builder.das",
+        "Sha256": "D91C55A04C473A0CD126A7452AE4C7CE27259CCA9F3BCD14F31B268B607A022E"
+      },
+      {
+        "File": "lib/coroutine_scheduler.das",
+        "Sha256": "9BA18AFD1D9800D8ECB9FE251E83CC1F67D43BBB1EC631B356850C0703FF3D62"
+      },
+      {
+        "File": "lib/deferred_computation.das",
+        "Sha256": "18D23B2051CADC9F2B4B55C34F7E97D729F87AE8315BAF53E9339F2F97C386DE"
+      },
+      {
+        "File": "lib/deferred_runtime.das",
+        "Sha256": "2C5C4CFC9144A20FBD1F004503A11557D5FF08335EDB1036A219DFA99971B0B4"
+      },
+      {
+        "File": "lib/list_builder.das",
+        "Sha256": "0C3A3CB7E4275FB62F3D7865F6ECFFB3F81683F822D3117C78823E80524E42B3"
+      },
+      {
+        "File": "lib/move_builders.das",
+        "Sha256": "F62224452E427ADF07C8862C6051843B15C6D189C082F4FAC1B32318A2D18C9C"
+      },
+      {
+        "File": "lib/reader_builder.das",
+        "Sha256": "23AFE8A2F914D1A3C5526F4FE82171D9069A205300C1658BC43A171B48F4906A"
+      },
+      {
+        "File": "lib/reader_result_builder.das",
+        "Sha256": "CACF4C754C92816189368C1CFE6459C15E1289F9E1644EBEC2E327311CE0B806"
+      },
+      {
+        "File": "lib/sequence_builder.das",
+        "Sha256": "636391F433342F774E96EDFF7EE10E8028B8C3676240698F483D640FF3F6D16E"
+      },
+      {
+        "File": "lib/sequence_runtime.das",
+        "Sha256": "69586E0704450CC0A07427DAA921980D943E809D867F4612EFFC2AED7C40EFFB"
+      },
+      {
+        "File": "lib/state_result_builder.das",
+        "Sha256": "5A1AA2B3D82E77CAADCF5C9DF94D3BBD3BCE517F176B1CAD50626AC56C4BC22B"
+      },
+      {
+        "File": "lib/state_writer_result_builder.das",
+        "Sha256": "860D93715C9CBCAF5657B6EAE531AC657BE336A4BCA7D7893EF0AB1C4C9543A7"
+      },
+      {
+        "File": "lib/validation_builder.das",
+        "Sha256": "5717AB613E4AB31C517EA7F446DC0B47F89B3DCDC6B69E17F92F01907CCA99FA"
+      },
+      {
+        "File": "lib/writer_result_builder.das",
+        "Sha256": "41FD7F1313F66A57D65FCD8333F96BA4455D21C4BD98545683EF7D30D9D2D462"
+      },
+      {
+        "File": "lib/zip_runtime.das",
+        "Sha256": "B47BDB8C16DD06EB4BD6C9D23725B83422A2264508D1DE4B82FBF77FBE9C1F50"
+      },
+      {
+        "File": "benchmarks/metrics/list-ce.das",
+        "Sha256": "550F6C746280DE320D10015BB9EABEC5FD4DD2F40623C4277CB9F99BCDB28F9F"
+      },
+      {
+        "File": "benchmarks/metrics/list-manual.das",
+        "Sha256": "623ED9700B3F6FA9AC649C451FFA4E0F6013BDB7096CC674BF5E5F7C721D48BA"
+      },
+      {
+        "File": "benchmarks/metrics/result-ce.das",
+        "Sha256": "6B8D2AEF9BD3435E5ACC448E69A514CF3DF2AFF5CCBB935F941091B5D9FE188C"
+      },
+      {
+        "File": "benchmarks/metrics/result-manual.das",
+        "Sha256": "5FAB53A19AA7F0A391D187B1449C383DEB73FF43744F02F8660AD9DF2C62E1C1"
+      },
+      {
+        "File": "benchmarks/metrics/state-ce.das",
+        "Sha256": "371ABB9C66E05B13FAFB67CA35C7C66ACE2B05D6A0439B56A4AAEF47F41DE245"
+      },
+      {
+        "File": "benchmarks/metrics/state-manual.das",
+        "Sha256": "65069E391A46BB98ADCBF616291F9362948E29B56D884C585674833DBBAB2717"
+      }
+    ]
+  },
+  "SourceHashes": [
+    {
+      "File": "benchmarks/benchmark_ce.das",
+      "Sha256": "61CAE71B5E26AF78CD111545EAF685D6E7D6DC647DE5B7EF403BE1F6C75C9A07"
+    },
+    {
+      "File": "benchmarks/benchmark_workloads.das",
+      "Sha256": "CC432BBF4005C4AB61CE9B1A7E50AEEE9B46B328913E2F4F366F0DC87C8984D1"
+    },
+    {
+      "File": "lib/computation_macro.das",
+      "Sha256": "D02A260A461F381979CE08CD6FC8C936ADDD44EAE56BFA1CA1681129EC9063A0"
+    },
+    {
+      "File": "lib/computation_builders.das",
+      "Sha256": "56EF214C05808509C45F6C8DAEA648BDF86AB5A0C912B4F77E037E443F9B08E5"
+    },
+    {
+      "File": "lib/computation_effects.das",
+      "Sha256": "C6987404AA56BADAFE1D5802627D95BE38C083447DE8C78D43274C90D20C7583"
+    },
+    {
+      "File": "lib/list_builder.das",
+      "Sha256": "0C3A3CB7E4275FB62F3D7865F6ECFFB3F81683F822D3117C78823E80524E42B3"
+    },
+    {
+      "File": "lib/sequence_builder.das",
+      "Sha256": "636391F433342F774E96EDFF7EE10E8028B8C3676240698F483D640FF3F6D16E"
+    },
+    {
+      "File": "lib/sequence_runtime.das",
+      "Sha256": "69586E0704450CC0A07427DAA921980D943E809D867F4612EFFC2AED7C40EFFB"
+    },
+    {
+      "File": "lib/builder_protocol.das",
+      "Sha256": "333AD71D8DFB173215A283E6F0991475A9208345DE66BDC493D5E3EFA05D7562"
+    },
+    {
+      "File": "lib/computation_resources.das",
+      "Sha256": "7F9DF1B890F32D87A9AF2CCA204ED7C79EA5B4D80288E78B044C9CB639C7F2A7"
+    },
+    {
+      "File": "lib/zip_runtime.das",
+      "Sha256": "B47BDB8C16DD06EB4BD6C9D23725B83422A2264508D1DE4B82FBF77FBE9C1F50"
+    }
+  ]
+}

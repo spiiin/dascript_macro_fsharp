@@ -1,0 +1,258 @@
+require rtti_core
+require strings
+require ast_core
+require math
+require builtin
+require rtti
+require computation_resources
+require builder_protocol
+require sequence_runtime
+require zip_runtime
+require ast
+require strings_boost
+require ast_boost
+require templates
+require contracts
+require array_boost
+require algorithm
+require quote
+require templates_boost
+require computation_macro
+require computation_builders
+require computation_effects
+require writer_result_builder
+require state_result_builder
+require list_builder
+require sequence_builder
+require move_builders
+require computation
+
+/*FULLY INFERRED*/
+// [modify_argument]
+// from generic computation_effects::ce_loop_append(builder: tuple<kind:computation_effects::StateContext;state:auto(S)> -const; first: tuple<value:builder_protocol::CeUnit;state:S> const; step: tuple<value:builder_protocol::CeUnit;state:S> const): auto
+def private computation_effects`ce_loop_append`16261113990359708002(var builder:tuple<kind:computation_effects::StateContext;state:int aka S> explicit; first:tuple<value:builder_protocol::CeUnit;state:int aka S> const; step:tuple<value:builder_protocol::CeUnit;state:int aka S> const) : tuple<value:builder_protocol::CeUnit;state:int aka S> const {
+	builder.state = step.state;
+	return step;
+}
+
+/*FULLY INFERRED*/
+// [modify_external][modify_argument]
+// 
+// from generic sequence_runtime::sequence_close(source: iterator<auto(T)> -const): auto
+def private sequence_runtime`sequence_close`7885459273324044017(var source:iterator<int aka T> explicit) : void {
+	var owned:iterator<int aka T> <- source;
+	_builtin_iterator_delete(owned,__context__);
+}
+
+/*FULLY INFERRED*/
+// [modify_external][modify_argument]
+// 
+[fastcall]
+// from generic zip_runtime::ce_zip_next(cursor: tuple<stream:iterator<auto(T)>;slot:auto;mode:auto> -const): bool
+def private zip_runtime`ce_zip_next`10604987806312675850(var cursor:tuple<stream:iterator<int aka T>;slot:int;mode:zip_runtime::CeZipReadOnly> explicit) : bool const {
+	return _builtin_iterator_iterate(cursor.stream,addr(cursor.slot),__context__);
+}
+
+/*FULLY INFERRED*/
+// [modify_external][modify_argument][capture_string]
+// 
+[fastcall]
+[has_try_recover]
+// from generic zip_runtime::ce_zip_close(cursor: tuple<stream:iterator<auto>;slot:auto;mode:auto> -const; message: string& -const): auto
+def private zip_runtime`ce_zip_close`4360391636621370492(var cursor:tuple<stream:iterator<int>;slot:int;mode:zip_runtime::CeZipReadOnly> explicit; var message:string& -const) : void {
+	try {
+		__::sequence_runtime`sequence_close`7885459273324044017(cursor.stream);
+	} recover {
+		if ( empty(message) ) {
+			message = string_builder(this_context(__context__).last_exception);
+		}
+	}
+}
+
+/*FULLY INFERRED*/
+// [modify_argument]
+// from generic zip_runtime::ce_zip_pack(source: iterator<auto(T)> -const; mode: auto const): auto
+def private zip_runtime`ce_zip_pack`15559632050639654693(var source:iterator<int aka T> explicit; mode:zip_runtime::CeZipReadOnly const explicit) : tuple<stream:iterator<int aka T>;slot:int;mode:zip_runtime::CeZipReadOnly> {
+	return <- tuple<tuple<stream:iterator<int aka T>;slot:int;mode:zip_runtime::CeZipReadOnly>>(source,0,mode);
+}
+
+/*FULLY INFERRED*/
+// [modify_external]
+// [nodiscard]
+[$::generic,$::nodiscard]
+// from generic builtin::each(rng: range const): iterator<int>
+def private builtin`each`2064909482164135579(rng:range const) : iterator<int> {
+	var it:iterator<int> -const;
+	_builtin_make_range_iterator(it,rng,__context__,__lineinfo__);
+	return <- it;
+}
+
+/*FULLY INFERRED*/
+// [modify_external]
+// 
+// from generic zip_runtime::ce_zip_cursor(source: auto const ==const): auto
+def private zip_runtime`ce_zip_cursor`8827200995544369442(source:range const explicit ==const) : tuple<stream:iterator<int aka T>;slot:int;mode:zip_runtime::CeZipReadOnly> {
+	var stream:iterator<int> <- __::builtin`each`2064909482164135579(source);
+	return <- __::zip_runtime`ce_zip_pack`15559632050639654693(stream,struct<zip_runtime::CeZipReadOnly>(uninitialized ));
+}
+
+/*FULLY INFERRED*/
+[nosideeffects]
+// from generic computation_effects::state_result(value: auto(T) const; state: auto(S) const): tuple<value:T -const;state:S -const>
+def private computation_effects`state_result`1030098215053763(value:builder_protocol::CeUnit aka T const explicit; state:int aka S const explicit) : tuple<value:builder_protocol::CeUnit;state:int> {
+	return tuple<tuple<value:builder_protocol::CeUnit aka T;state:int aka S>>(value,state);
+}
+
+/*FULLY INFERRED*/
+[nosideeffects]
+// from generic computation_effects::ce_zero(builder: tuple<kind:computation_effects::StateContext;state:auto(S)> const): auto
+def private computation_effects`ce_zero`2451325231943730818(builder:tuple<kind:computation_effects::StateContext;state:int aka S> const explicit) : tuple<value:builder_protocol::CeUnit;state:int> {
+	return __::computation_effects`state_result`1030098215053763(struct<builder_protocol::CeUnit>(uninitialized ),builder.state);
+}
+
+/*FULLY INFERRED*/
+[nosideeffects]
+// from generic computation_effects::state_put(value: auto(S) const): tuple<operation:computation_effects::StatePut;state:S -const>
+def private computation_effects`state_put`8627864096686221759(value:int aka S const explicit) : tuple<operation:computation_effects::StatePut;state:int> {
+	return tuple<tuple<operation:computation_effects::StatePut;state:int aka S>>(struct<computation_effects::StatePut>(uninitialized ),value);
+}
+
+/*FULLY INFERRED*/
+[nosideeffects]
+// from generic computation_effects::state_result(value: auto(T) const; state: auto(S) const): tuple<value:T -const;state:S -const>
+def private computation_effects`state_result`1030098215053763(value:int aka T const explicit; state:int aka S const explicit) : tuple<value:int;state:int> {
+	return tuple<tuple<value:int aka T;state:int aka S>>(value,state);
+}
+
+/*FULLY INFERRED*/
+[nosideeffects]
+// from generic computation_effects::StateBuilder(initial: auto(S) const): tuple<kind:computation_effects::StateContext;state:S -const>
+def private computation_effects`StateBuilder`4395036099668822102(initial:int aka S const explicit) : tuple<kind:computation_effects::StateContext;state:int> {
+	return tuple<tuple<kind:computation_effects::StateContext;state:int aka S>>(struct<computation_effects::StateContext>(uninitialized ),initial);
+}
+
+/*FULLY INFERRED*/
+// [modify_external][invoke][capture_string][call_capture_string]
+// 
+[export]
+[has_try_recover]
+[$::export]
+def public main : void {
+	let result:tuple<value:int;state:int> const = invoke($(var __ce_input_3_0x5_0xf:tuple<kind:computation_effects::StateContext;state:int>):tuple<value:int;state:int> {
+		var __ce_builder_3_0x5_0xf:tuple<kind:computation_effects::StateContext;state:int> = __ce_input_3_0x5_0xf;
+		var __ce_run_outcome_0x5_0xf:tuple<value:int;state:int> = invoke($():tuple<value:int;state:int> {
+			var _inl14_res:tuple<value:int;state:int>;
+			{
+				let _inl14_arg_first:tuple<value:builder_protocol::CeUnit;state:int> const = invoke($():tuple<value:builder_protocol::CeUnit;state:int> {
+					return invoke($():tuple<value:builder_protocol::CeUnit;state:int> {
+						return invoke($():tuple<value:builder_protocol::CeUnit;state:int> {
+							var __ce_accumulated_0x6_0x8:tuple<value:builder_protocol::CeUnit;state:int> = __::computation_effects`ce_zero`2451325231943730818(__ce_builder_3_0x5_0xf);
+							invoke($():bool const {
+								return invoke($():bool const {
+									return invoke($(__ce_fallback_source_0_0x6_0x8:range const):bool const {
+										return invoke($():bool const {
+											var __ce_zip_cursor_0_0x6_0x8:tuple<stream:iterator<int aka T>;slot:int;mode:zip_runtime::CeZipReadOnly>;
+											var __ce_zip_error_0x6_0x8:string = "";
+											try {
+												__ce_zip_cursor_0_0x6_0x8 <- __::zip_runtime`ce_zip_cursor`8827200995544369442(__ce_fallback_source_0_0x6_0x8);
+												var __ce_zip_first_0x6_0x8:bool = true;
+												while ( true ) {
+													var __ce_zip_more_0x6_0x8:bool = true;
+													if ( !__::zip_runtime`ce_zip_next`10604987806312675850(__ce_zip_cursor_0_0x6_0x8) ) {
+														__ce_zip_more_0x6_0x8 = false;
+														if ( !__ce_zip_first_0x6_0x8 ) {
+															break;
+														}
+													}
+													__ce_zip_first_0x6_0x8 = false;
+													if ( !__ce_zip_more_0x6_0x8 ) {
+														break;
+													} else {
+														let i:int const& = reinterpret<int const&> __ce_zip_cursor_0_0x6_0x8.slot;
+														var _inl52_res:tuple<value:builder_protocol::CeUnit;state:int>;
+														{
+															var _inl63_res:tuple<value:builder_protocol::CeUnit;state:int>;
+															{
+																var _inl79_res:tuple<value:builder_protocol::CeUnit;state:int>;
+																{
+																	let _inl79_l_snapshot:int const = __ce_builder_3_0x5_0xf.state;
+																	var _inl84_res:tuple<value:builder_protocol::CeUnit;state:int>;
+																	{
+																		let _inl84_lu_inl72_lu_inl63_lu_inl52_l_state:int const = _inl79_l_snapshot;
+																		var _inl89_res:tuple<value:builder_protocol::CeUnit;state:int>;
+																		{
+																			let _inl92_argu_inl89_lu_inl84_lu_inl72_lu_inl63_lu_inl52_luu_ce_group_source_0x8_0x22:tuple<operation:computation_effects::StatePut;state:int> const = __::computation_effects`state_put`8627864096686221759(_inl84_lu_inl72_lu_inl63_lu_inl52_l_state + i);
+																			var _inl94_res:tuple<value:builder_protocol::CeUnit;state:int>;
+																			{
+																				__ce_builder_3_0x5_0xf.state = _inl92_argu_inl89_lu_inl84_lu_inl72_lu_inl63_lu_inl52_luu_ce_group_source_0x8_0x22.state;
+																				var _inl95_res:tuple<value:builder_protocol::CeUnit;state:int>;
+																				_inl95_res = __::computation_effects`ce_zero`2451325231943730818(__ce_builder_3_0x5_0xf);
+																				_inl94_res = _inl95_res;
+																			}
+																			_inl89_res = _inl94_res;
+																		}
+																		_inl84_res = _inl89_res;
+																	}
+																	_inl79_res = _inl84_res;
+																}
+																_inl63_res = _inl79_res;
+															}
+															_inl52_res = _inl63_res;
+														}
+														let __ce_iteration_0x6_0x8:tuple<value:builder_protocol::CeUnit;state:int> const = _inl52_res;
+														__ce_accumulated_0x6_0x8 = __::computation_effects`ce_loop_append`16261113990359708002(__ce_builder_3_0x5_0xf,__ce_accumulated_0x6_0x8,__ce_iteration_0x6_0x8);
+													}
+												}
+											} recover {
+												__ce_zip_error_0x6_0x8 = ce_zip_exception();
+											}
+											__::zip_runtime`ce_zip_close`4360391636621370492(__ce_zip_cursor_0_0x6_0x8,__ce_zip_error_0x6_0x8);
+											if ( !empty(__ce_zip_error_0x6_0x8) ) {
+												panic(__ce_zip_error_0x6_0x8,__context__,__lineinfo__);
+											}
+											return true;
+										});
+									},range(0,16));
+								});
+							});
+							return __ce_accumulated_0x6_0x8;
+						});
+					});
+				});
+				{
+					__ce_builder_3_0x5_0xf.state = _inl14_arg_first.state;
+					var _inl47_res:tuple<value:int;state:int>;
+					{
+						var _inl59_res:tuple<value:int;state:int>;
+						{
+							var _inl77_res:tuple<value:int;state:int>;
+							{
+								var _inl83_res:tuple<value:int;state:int>;
+								{
+									let _inl83_l_snapshot:int const = __ce_builder_3_0x5_0xf.state;
+									var _inl88_res:int;
+									{
+										let _inl88_lu_inl77_lu_inl69_lu_inl59_lu_inl47_l_state:int const = _inl83_l_snapshot;
+										_inl88_res = _inl88_lu_inl77_lu_inl69_lu_inl59_lu_inl47_l_state * 2;
+									}
+									let _inl83_l_mapped:int const = _inl88_res;
+									_inl83_res = __::computation_effects`state_result`1030098215053763(_inl83_l_mapped,__ce_builder_3_0x5_0xf.state);
+								}
+								_inl77_res = _inl83_res;
+							}
+							_inl59_res = _inl77_res;
+						}
+						_inl47_res = _inl59_res;
+					}
+					_inl14_res = _inl47_res;
+				}
+			}
+			return _inl14_res;
+		});
+		return __ce_run_outcome_0x5_0xf;
+	},__::computation_effects`StateBuilder`4395036099668822102(5));
+	print(string_builder_temp(result, "\n"),__context__,__lineinfo__);
+}
+
+
+( 250, 125)

@@ -1,0 +1,1920 @@
+2
+20
+30
+move-only resources demo OK
+sequence_next_move demo OK
+deferred move-only collections demo OK
+move-only collections demo OK
+move-only CE demo OK
+Result: 85
+Option: Hello, Alice
+Error: negative number; None: true; skipped steps executed: 0
+computation demo OK
+accepted even 0
+accepted even 2
+Result: rejected 3; completed=3; after=0
+Option: None; completed=3; after=0
+control flow demo OK
+health=85, gold=8; turns=1
+state demo OK
+score=30
+turn started
+reward +3
+reward accepted
+event 0
+event 1
+writer demo OK
+Success: potion
+purchase started
+find item 1
+checks passed
+Error: insufficient gold
+Retained log:
+purchase started
+find item 1
+Completed purchases: 1
+writer/result demo OK
+Success: health=60, gold=20
+start; buy potion; damage 10; commit; 
+Error: hero defeated; rollback: health=50, gold=30
+start; buy potion; damage 100; 
+state/writer/result demo OK
+Success: health=60, gold=20, turns=1
+Error: hero defeated; rollback: health=50, gold=30, turns=0
+Reached steps before error: 2 (external counter is not rolled back)
+state/result demo OK
+Success and Error: opened=2, closed=2, finally=2
+resources demo OK
+Combinations: [ 11, 21, 12, 22]
+Equipment: [ sword:level1, sword:level2, sword:level3, bow:level2, bow:level3]
+Filtered loop: [ 0, 4, 16]
+list demo OK
+coroutine scope demo OK
+Reused slot 1: generation 0x1 -> 0x2
+coroutine slots demo OK
+guard: start
+scout: start
+enemy: start
+guard: move
+guard: done
+Enemy error: enemy: path unavailable
+
+
+
+coroutine scheduler demo OK
+frame 1: position=0, active=true
+frame 2: position=10, active=true
+frame 3: position=10, active=true
+frame 4: position=20, active=true
+frame 5: position=20, active=true
+frame 6: position=20, active=false
+start; arrive 10; leave 10; arrive 20; leave 20; done; 
+coroutine demo OK
+enemy level: 10
+enemy level: 11
+enemy level: 12
+sword:1
+sword:2
+sword:3
+bow:2
+bow:3
+sequence demo OK
+first health: 42
+scope closed
+health: 42
+health: 43
+scope closed
+before error: 42
+scope closed
+caught: enemy update failed
+
+
+
+
+scope closed
+caught consumer error
+sequence resources demo OK
+health=75
+cleanup: health=65, hits=2
+health=70
+sequence shared capture demo OK
+using default after: configuration unavailable
+
+health=90
+connection scope closed; health=70
+recovery: connection lost
+
+
+health=70
+health=75
+health=76
+try_with demo OK
+Damage: 34; rejected: Level too low
+reader/result demo OK
+reader demo OK: damage=30
+Name must not be empty
+Level must be between 1 and 100
+validation demo OK
+Validation:
+Name is empty
+Level must be positive
+Result: Mage, level 12
+Option: Sword +3
+Loadout: Mage/Fire
+Loadout: Mage/Ice
+Loadout: Knight/Fire
+Loadout: Knight/Ice
+and_bind demo OK
+bind_return demo OK
+XP: 5; rollback gold=10; reward=50
+effect bind_return demo OK
+bind2_return demo OK
+bind2 demo OK
+Buy sword: gold left 20
+Buy sword: Not enough gold
+run demo OK
+deferred demo OK
+deferred sequence demo OK
+loop protocol demo OK: patrol stopped at budget; battle completed 3 turns
+zip for demo OK
+Target 100, health 25
+Target 101, health 25
+Target 102, health 25
+source protocol demo OK
+First reward: 20
+Reward: 20
+Reward: 40
+Recovered after closing feed: enemy feed disconnected
+
+
+
+
+
+
+Reward: -1
+nested Sequence cleanup demo OK
+Closed loot feed: loot feed disconnected
+
+
+
+
+
+
+fallback cleanup demo OK
+Recovered after closing feed: damage feed disconnected
+
+
+
+
+single For cleanup demo OK
+Recovered after closing feed: damage feed disconnected
+
+
+
+
+
+zip cleanup demo OK
+Composition laws OK
+State operations OK
+List custom array finalizer checks OK
+List fusion effects and ownership OK
+List benchmark equivalence OK
+State optimized loops checks OK
+saved builder checks OK
+error[50503]: computation: missing ce_protocol for builder UnknownBuilder const&; define ce_protocol(builder) returning CeValueProtocol, CeCollectProtocol or ce_sequence_protocol(type<T>)
+test_saved_builder_missing_protocol.das:7:15
+    let result=computation(builder) {return 1}
+               ^^^^^^^^^^^
+benchmark workload equivalence checks OK
+coroutine scheduler safety checks OK
+coroutine slot checks OK
+coroutine scheduler checks OK
+coroutine checks OK
+state/writer/result checks OK
+reader/result checks OK
+error[30952]: can't write to a constant value, int const& = int const
+test_reader_result_readonly.das:9:20
+        config.limit=99
+                    ^
+move-only resource checks OK
+error[50503]: use_resource: borrow ownership with 'var resource & = source |> use_resource'
+test_move_resource_binding.das:5:15
+    let result=computation(ResultBuilder()) {
+
+               ^^^^^^^^^^^
+error[30341]: no matching functions or generics: ce_dispose(Resource)
+computation_macro.das:733:77
+                        $(var $i(argument):typedecl($e(call.arguments[0]))) {ce_dispose($i(argument))})
+
+                                                                             ^^^^^^^^^^
+ce_dispose(Resource)
+while compiling: main: void
+
+candidate function:
+	sequence_runtime::ce_dispose(cell: tuple<tag:sequence_runtime::CeSequenceCellTag;value:auto(T)>? -const): auto at sequence_runtime.das:101:4
+		invalid argument 'cell' (0). expecting 'tuple<tag:sequence_runtime::CeSequenceCellTag;value:auto(T)>? -const', passing 'Resource'
+
+
+sequence_next_move ownership checks OK
+error[31400]: sequence_next_move requires a move-only element; use next for copyable values
+test_sequence_next_move_copy.das:7:13
+    let more=sequence_next_move(stream,value)
+
+             ^^^^^^^^^^^^^^^^^^
+
+concept_assert at sequence_runtime.das:201:8
+while compiling sequence_runtime`sequence_next_move`9449909195311188074(source: iterator<int aka T> explicit; value: int aka T): bool const
+instanced from main: void at test_sequence_next_move_copy.das:7:13
+
+deferred move-only collection checks OK
+error[50503]: deferred: builder and snapshot must own their data; pointers, blocks, lambdas, iterators and native handles are unsupported
+test_deferred_move_pointer.das:7:24
+    var inscope task <- deferred(SequenceBuilder(type<UnsafeLoot>)) {yield <- UnsafeLoot()}
+
+                        ^^^^^^^^
+error[31211]: typeinfo(ce_deferred_result ...) macro reported error; deferred: iterator elements must own their data; references, pointers and nested iterators cannot escape a run snapshot
+deferred_computation.das:108:26
+            static_assert(typeinfo ce_deferred_result($e(inner)))
+
+                          ^^^^^^^^
+move-only collection checks OK
+error[31400]: move-only List: use return <- or yield <-
+computation_macro.das:134:41
+        static_if ((typeinfo can_copy($e(source))) || (typeinfo ce_source_is_borrowed($e(source)))) {
+
+                                         ^^^^^^
+
+concept_assert at list_builder.das:294:4
+while compiling list_builder`ce_return`7630259896696370568(builder: tuple<kind:list_builder::MoveListContext;element:move_collection_support::Loot aka T?> const explicit; value: move_collection_support::Loot aka T const): array<move_collection_support::Loot>
+instanced from main: void at computation_macro.das:134:41
+
+error[30949]: can't move from a constant value move_collection_support::Loot aka A const (+1 more on this line)
+builder_protocol.das:21:18
+    return (first=first, second=second)
+
+                  ^^^^^
+
+while compiling builder_protocol`ce_source_pair`2072392840191497081(first: move_collection_support::Loot aka A const explicit; second: move_collection_support::Loot aka B const explicit): tuple<first:move_collection_support::Loot;second:move_collection_support::Loot>
+instanced from list_builder`ce_list_merge_sources`15044877134339322844(left: array<move_collection_support::Loot aka T> const explicit; right: array<move_collection_support::Loot aka T> const explicit): array<tuple<first:move_collection_support::Loot;second:move_collection_support::Loot>> at list_builder.das:152:40
+instanced from list_builder`ce_merge_sources`4719289768023194882(builder: tuple<kind:list_builder::MoveListContext;element:move_collection_support::Loot aka T?> const explicit; left: array<move_collection_support::Loot aka T> const explicit; right: array<move_collection_support::Loot aka T> const explicit): array<tuple<first:move_collection_support::Loot;second:move_collection_support::Loot>> at list_builder.das:341:14
+instanced from main: void at computation_macro.das:108:70
+
+error[31400]: move-only List: and_bind Cartesian product requires copyable input elements
+computation_macro.das:108:70
+        var merged = qmacro(typeinfo ce_checked_merge(ce_merge_origin(ce_merge_sources($i(builder), $e(left), $e(right)), $i(builder), $v(location))))
+
+                                                                      ^^^^^^^^^^^^^^^^
+
+concept_assert at list_builder.das:340:4
+while compiling list_builder`ce_merge_sources`4719289768023194882(builder: tuple<kind:list_builder::MoveListContext;element:move_collection_support::Loot aka T?> const explicit; left: array<move_collection_support::Loot aka T> const explicit; right: array<move_collection_support::Loot aka T> const explicit): array<tuple<first:move_collection_support::Loot;second:move_collection_support::Loot>>
+instanced from main: void at computation_macro.das:108:70
+
+error[31400]: can't push value, which can't be copied
+list_builder.das:154:37
+        for (b in right) { values |> push(ce_source_pair(a,b)) }
+
+                                     ^^^^
+
+concept_assert at C:/src/daslang-0.6.4/daslang_bundle/daslib/builtin.das:332:8
+while compiling builtin`push`3472358209330120892(Arr: array<tuple<first:move_collection_support::Loot;second:move_collection_support::Loot> aka numT> explicit; value: tuple<first:move_collection_support::Loot;second:move_collection_support::Loot> aka numT ==const): void
+instanced from list_builder`ce_list_merge_sources`15044877134339322844(left: array<move_collection_support::Loot aka T> const explicit; right: array<move_collection_support::Loot aka T> const explicit): array<tuple<first:move_collection_support::Loot;second:move_collection_support::Loot>> at list_builder.das:154:37
+instanced from list_builder`ce_merge_sources`4719289768023194882(builder: tuple<kind:list_builder::MoveListContext;element:move_collection_support::Loot aka T?> const explicit; left: array<move_collection_support::Loot aka T> const explicit; right: array<move_collection_support::Loot aka T> const explicit): array<tuple<first:move_collection_support::Loot;second:move_collection_support::Loot>> at list_builder.das:341:14
+instanced from main: void at computation_macro.das:108:70
+
+move-only CE checks OK
+error[50503]: owned CE: bind borrows its payload; use 'var value & = source |> bind'
+test_move_bind_move.das:5:21
+    var inscope r <- computation(MoveResultBuilder()) {
+
+                     ^^^^^^^^^^^
+error[31400]: owned CE: use return <- value for a move-only payload
+computation_macro.das:618:27
+                    return ce_return($i(builder), $e(ret.subexpr))
+
+                           ^^^^^^^^^
+
+concept_assert at move_builders.das:18:4
+while compiling move_builders`ce_return`1612479210653536356(builder: move_builders::MoveResultBuilder const; value: array<int> aka T const explicit): variant<ok:array<int>;error:string>
+instanced from main: void at computation_macro.das:618:27
+
+error[30951]: field ok can't be copied; array<int> explicit
+move_builders.das:19:51
+    return <- variant<ok:T -const -&;error:string>(ok=value)
+
+                                                   ^^
+
+while compiling move_builders`ce_return`1612479210653536356(builder: move_builders::MoveResultBuilder const; value: array<int> aka T const explicit): variant<ok:array<int>;error:string>
+instanced from main: void at computation_macro.das:618:27
+
+	use <- instead
+error[31403]: owned CE: value must be moved; use 'return <- value'
+test_move_copy.das:7:8
+        return items
+
+        ^^^^^^
+source protocol checks OK
+error[31211]: typeinfo(ce_resolved_source ...) macro reported error; computation: ce_source must return a source, not void
+computation_macro.das:123:45
+            static_if ((typeinfo can_copy($e(source))) || (typeinfo ce_source_is_borrowed($e(source)))) {
+
+                                             ^^^^^^
+error[31211]: typeinfo(ce_resolved_source ...) macro reported error; computation: ce_source must return a source, not void
+computation_macro.das:123:93
+            static_if ((typeinfo can_copy($e(source))) || (typeinfo ce_source_is_borrowed($e(source)))) {
+
+                                                                                             ^^^^^^
+error[30341]: no matching functions or generics: ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30231]: argument of format string can't be `auto` or alias
+test_source_void.das:6:96
+def main() {let value=computation(ResultBuilder()) {let n=BadSource() |> bind;return n};print("{value}")}
+
+                                                                                                ^^^^^
+nested Sequence cleanup checks OK
+fallback cleanup checks OK
+single For exception cleanup checks OK
+zip cursor value checks OK
+zip exception cleanup checks OK
+error[30910]: numeric operator '+=' left side can't be constant.
+test_zip_readonly.das:6:76
+    let result=computation(ResultBuilder()) {for (v,i in values,range(2)) {v+=1}}
+
+                                                                            ^^
+zip for checks OK
+zip dispatch checks OK
+error[31211]: typeinfo(ce_has_loop ...) macro reported error; computation: loop hook must return a builder outcome
+computation_macro.das:270:19
+        static_if (typeinfo ce_has_loop($e(custom))) { return $e(custom) }
+
+                   ^^^^^^^^
+error[30341]: no matching functions or generics: ce_delay(InvalidZip&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(InvalidZip&, block<auto> const)
+while compiling: main: void
+
+candidate function:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30231]: argument of format string can't be `auto` or alias
+test_zip_void.das:8:93
+def main() {let value=computation(InvalidZip()) {for (a,b in range(2),range(3)) {}}; print("{value}")}
+
+                                                                                             ^^^^^
+error[31211]: typeinfo(ce_has_loop ...) macro reported error; computation: loop hook must return a builder outcome
+computation_macro.das:270:19
+        static_if (typeinfo ce_has_loop($e(custom))) { return $e(custom) }
+
+                   ^^^^^^^^
+error[30341]: no matching functions or generics: ce_delay(InvalidLoop&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(InvalidLoop&, block<auto> const)
+while compiling: main: void
+
+candidate function:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30231]: argument of format string can't be `auto` or alias
+test_loop_void.das:8:76
+def main() {let value=computation(InvalidLoop()) {while(false) {}}; print("{value}")}
+
+                                                                            ^^^^^
+loop dispatch checks OK
+loop protocol checks OK
+deferred sequence lifetime checks OK
+error[31211]: typeinfo(ce_deferred_result ...) macro reported error; deferred: iterator elements must own their data; references, pointers and nested iterators cannot escape a run snapshot
+deferred_computation.das:108:26
+            static_assert(typeinfo ce_deferred_result($e(inner)))
+
+                          ^^^^^^^^
+deferred behavior and lifetime checks OK
+deferred snapshot checks OK
+deferred ordering checks OK
+error[30838]: can't locate variable 'local'
+computation_macro.das:618:53
+                    return ce_return($i(builder), $e(ret.subexpr))
+
+                                                     ^^^^^^^^^^^
+error[50503]: deferred: builder and snapshot must own their data; pointers, blocks, lambdas, iterators and native handles are unsupported
+test_deferred_pointer.das:9:24
+    var inscope task <- deferred(ResultBuilder(),data) $(snapshot) { return 1 }
+
+                        ^^^^^^^^
+deferred iterator checks OK
+error[50503]: deferred: use an untyped snapshot argument; its type is inferred from the supplied data
+test_deferred_annotation.das:6:24
+    var inscope task <- deferred(ResultBuilder(),7) $(snapshot:string) { return snapshot }
+
+                        ^^^^^^^^
+error[30197]: local variable copy can only be move-initialized
+test_deferred_copy.das:7:8
+    var copy=task
+
+        ^^^^
+	use <- for that
+run protocol checks OK
+collect temporary checks OK
+error[31211]: typeinfo(ce_has_run ...) macro reported error; computation: ce_run must return a value, not void
+computation_macro.das:957:22
+        static_if ($e(supported)) {
+
+                      ^^^^^^^^^
+bind2 dispatch checks OK
+bind2 value checks OK
+bind2 list checks OK: heap before first map 0x400 < 0x8200
+bind2_return dispatch checks OK
+bind2_return value checks OK
+bind2_return list checks OK: heap before first map 0x400 < 0x8200
+effect bind_return checks OK
+bind_return dispatch checks OK
+bind_return behavior and lifetime checks OK
+bind_return type checks OK
+and_bind value checks OK
+and_bind list lifetime checks OK
+and_bind reference checks OK
+and_bind external protocol OK
+error[50503]: computation: expected 'left |> and_bind(right) |> bind'
+test_and_bind_arity.das:5:16
+    let value = computation(ResultBuilder()) { let p = result_ok(1) |> and_bind() |> bind; return p }
+                ^^^^^^^^^^^
+error[30231]: argument of format string can't be `auto` or alias
+test_and_bind_arity.das:6:12
+    print("{value}")
+            ^^^^^
+error[30303]: block argument type can't be inferred, it needs an initializer or to be passed to the function with the explicit block definition
+computation_macro.das:687:43
+            var continuation = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                           ^^^^^^^^
+error[30107]: don't know what 'typedecl(ce_unwrap(__ce_builder_1_0x5_0x10,typeinfo(ce_checked_merge __::builder_protocol`ce_merge_origin`750829116337108075(__::builder_protocol`ce_merge_sources`16565957710098855778(__ce_builder_1_0x5_0x10,__::computation_builders`result_ok`6545333498825399481(1),__::computation_builders`some`7108990599799321010(2)),__ce_builder_1_0x5_0x10,"test_and_bind_mixed.das:5:71")))) const' is
+computation_macro.das:687:43
+            var continuation = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                           ^^^^^^^^
+error[30803]: undefined block argument type 'typedecl(ce_unwrap(__ce_builder_1_0x5_0x10,typeinfo(ce_checked_merge __::builder_protocol`ce_merge_origin`750829116337108075(__::builder_protocol`ce_merge_sources`16565957710098855778(__ce_builder_1_0x5_0x10,__::computation_builders`result_ok`6545333498825399481(1),__::computation_builders`some`7108990599799321010(2)),__ce_builder_1_0x5_0x10,"test_and_bind_mixed.das:5:71")))) const'
+computation_macro.das:687:43
+            var continuation = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                           ^^^^^^^^
+	can't infer type for 'typeDecl'
+
+
+error[31211]: typeinfo(ce_checked_merge ...) macro reported error; computation: and_bind is unsupported for builder computation_builders::ResultBuilder& and these sources at test_and_bind_mixed.das:5:71; define ce_merge_sources(builder, left, right) or use sequential bind
+computation_macro.das:687:90
+            var continuation = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                                                                          ^^^^^^
+error[30341]: no matching functions or generics: ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30200]: local variable p initialization type can't be inferred, auto const = typedecl(ce_unwrap(__ce_builder_1_0x5_0x10,typeinfo(ce_checked_merge __::builder_protocol`ce_merge_origin`750829116337108075(__::builder_protocol`ce_merge_sources`16565957710098855778(__ce_builder_1_0x5_0x10,__::computation_builders`result_ok`6545333498825399481(1),__::computation_builders`some`7108990599799321010(2)),__ce_builder_1_0x5_0x10,"test_and_bind_mixed.das:5:71")))) const&
+test_and_bind_mixed.das:5:51
+    let value = computation(ResultBuilder()) { let p = result_ok(1) |> and_bind(some(2)) |> bind; return p }
+                                                   ^
+error[30231]: argument of format string can't be `auto` or alias
+test_and_bind_mixed.das:6:12
+    print("{value}")
+            ^^^^^
+error[30303]: block argument type can't be inferred, it needs an initializer or to be passed to the function with the explicit block definition
+computation_macro.das:687:43
+            var continuation = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                           ^^^^^^^^
+error[30107]: don't know what 'typedecl(ce_unwrap(__ce_builder_3_0x6_0x10,typeinfo(ce_checked_merge __::builder_protocol`ce_merge_origin`750829116337108075(__::builder_protocol`ce_merge_sources`16565957710098855778(__ce_builder_3_0x6_0x10,__::reader_builder`reader_value`2375744682439098424(1),__::reader_builder`reader_value`2375744682439098424(2)),__ce_builder_3_0x6_0x10,"test_and_bind_unsupported.das:6:75")))) const' is
+computation_macro.das:687:43
+            var continuation = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                           ^^^^^^^^
+error[30803]: undefined block argument type 'typedecl(ce_unwrap(__ce_builder_3_0x6_0x10,typeinfo(ce_checked_merge __::builder_protocol`ce_merge_origin`750829116337108075(__::builder_protocol`ce_merge_sources`16565957710098855778(__ce_builder_3_0x6_0x10,__::reader_builder`reader_value`2375744682439098424(1),__::reader_builder`reader_value`2375744682439098424(2)),__ce_builder_3_0x6_0x10,"test_and_bind_unsupported.das:6:75")))) const'
+computation_macro.das:687:43
+            var continuation = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                           ^^^^^^^^
+	can't infer type for 'typeDecl'
+
+
+error[31211]: typeinfo(ce_checked_merge ...) macro reported error; computation: and_bind is unsupported for builder tuple<kind:reader_builder::ReaderContext;environment:int aka E>& and these sources at test_and_bind_unsupported.das:6:75; define ce_merge_sources(builder, left, right) or use sequential bind
+computation_macro.das:687:90
+            var continuation = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                                                                          ^^^^^^
+error[30341]: no matching functions or generics: ce_delay(tuple<kind:reader_builder::ReaderContext;environment:int aka E>&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(tuple<kind:reader_builder::ReaderContext;environment:int aka E>&, block<auto> const)
+while compiling: main: void
+
+candidate function:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30200]: local variable p initialization type can't be inferred, auto const = typedecl(ce_unwrap(__ce_builder_3_0x6_0x10,typeinfo(ce_checked_merge __::builder_protocol`ce_merge_origin`750829116337108075(__::builder_protocol`ce_merge_sources`16565957710098855778(__ce_builder_3_0x6_0x10,__::reader_builder`reader_value`2375744682439098424(1),__::reader_builder`reader_value`2375744682439098424(2)),__ce_builder_3_0x6_0x10,"test_and_bind_unsupported.das:6:75")))) const&
+test_and_bind_unsupported.das:6:52
+    let value = computation(ReaderBuilder(0)) { let p = reader_value(1) |> and_bind(reader_value(2)) |> bind; return p }
+                                                    ^
+error[30231]: argument of format string can't be `auto` or alias
+test_and_bind_unsupported.das:7:12
+    print("{value}")
+            ^^^^^
+error[30341]: no matching functions or generics: ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30341]: no matching functions or generics: and_bind(variant<ok:int const;error:string>, variant<ok:int const;error:string>)
+test_and_bind_no_bind.das:5:71
+    let value = computation(ResultBuilder()) { let p = result_ok(1) |> and_bind(result_ok(2)); return p }
+                                                                       ^^^^^^^^
+and_bind(variant<ok:int const;error:string>, variant<ok:int const;error:string>)
+while compiling: main: void
+there are no good matching candidates out of 0 total functions with the same name
+
+
+error[30231]: argument of format string can't be `auto` or alias
+test_and_bind_no_bind.das:6:12
+    print("{value}")
+            ^^^^^
+validation checks OK
+error[30303]: block argument type can't be inferred, it needs an initializer or to be passed to the function with the explicit block definition
+computation_macro.das:687:43
+            var continuation = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                           ^^^^^^^^
+error[30107]: don't know what 'typedecl(ce_unwrap(__ce_builder_1_0x6_0x10,__::computation_builders`result_ok`6545333498825399481(1))) const' is
+computation_macro.das:687:43
+            var continuation = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                           ^^^^^^^^
+error[30803]: undefined block argument type 'typedecl(ce_unwrap(__ce_builder_1_0x6_0x10,__::computation_builders`result_ok`6545333498825399481(1))) const'
+computation_macro.das:687:43
+            var continuation = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                           ^^^^^^^^
+	can't infer type for 'typeDecl'
+
+
+error[30341]: no matching functions or generics: ce_unwrap(validation_builder::ValidationBuilder&, variant<ok:int const;error:string>)
+computation_macro.das:687:64
+            var continuation = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                                                ^^^^^^^^^
+ce_unwrap(validation_builder::ValidationBuilder&, variant<ok:int const;error:string>)
+while compiling: main: void
+candidates:
+	computation_builders::ce_unwrap(builder: computation_builders::ResultBuilder const; value: variant<ok:auto(T);error:string> const): T at computation_builders.das:11:4
+		invalid argument 'builder' (0). expecting 'computation_builders::ResultBuilder const', passing 'validation_builder::ValidationBuilder&'
+	writer_result_builder::ce_unwrap(builder: writer_result_builder::WriterResultBuilder const; value: variant<ok:auto(T);error:string> const): T at writer_result_builder.das:28:4
+		invalid argument 'builder' (0). expecting 'writer_result_builder::WriterResultBuilder const', passing 'validation_builder::ValidationBuilder&'
+	state_result_builder::ce_unwrap(builder: tuple<kind:state_result_builder::StateResultContext;initial:auto(S);state:S> const; op: variant<ok:auto(T);error:string> const): T at state_result_builder.das:35:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:state_result_builder::StateResultContext;initial:auto(S);state:S> const', passing 'validation_builder::ValidationBuilder&'
+	move_builders::ce_unwrap(builder: move_builders::MoveResultBuilder const; source: variant<ok:auto(T);error:string> -const): T& at move_builders.das:16:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'validation_builder::ValidationBuilder&'
+	validation_builder::ce_unwrap(builder: validation_builder::ValidationBuilder const; source: variant<valid:auto(T);invalid:validation_builder::ValidationErrors> const): T at validation_builder.das:35:4
+		invalid argument 'source' (1). expecting 'variant<valid:auto(T);invalid:validation_builder::ValidationErrors> const', passing 'variant<ok:int const;error:string>'
+also 15 more candidates
+
+
+error[30341]: no matching functions or generics: ce_delay(validation_builder::ValidationBuilder&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(validation_builder::ValidationBuilder&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'validation_builder::ValidationBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'validation_builder::ValidationBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'validation_builder::ValidationBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'validation_builder::ValidationBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30200]: local variable x initialization type can't be inferred, auto const = typedecl(ce_unwrap(__ce_builder_1_0x6_0x10,__::computation_builders`result_ok`6545333498825399481(1))) const&
+test_validation_mixed.das:6:55
+    let value = computation(ValidationBuilder()) { let x = result_ok(1) |> bind; return x }
+                                                       ^
+error[30231]: argument of format string can't be `auto` or alias
+test_validation_mixed.das:7:12
+    print("{value}")
+            ^^^^^
+error[30341]: no matching functions or generics: ce_loop_append(validation_builder::ValidationBuilder&, variant<valid:builder_protocol::CeUnit;invalid:validation_builder::ValidationErrors>&, variant<valid:int;invalid:validation_builder::ValidationErrors> const&)
+computation_macro.das:812:36
+                    $i(accumulated)=ce_loop_append($i(builder),$i(accumulated),$i(step))
+
+                                    ^^^^^^^^^^^^^^
+ce_loop_append(validation_builder::ValidationBuilder&, variant<valid:builder_protocol::CeUnit;invalid:validation_builder::ValidationErrors>&, variant<valid:int;invalid:validation_builder::ValidationErrors> const&)
+while compiling: main: void
+
+candidate function:
+	validation_builder::ce_loop_append(builder: validation_builder::ValidationBuilder const; first: variant<valid:builder_protocol::CeUnit;invalid:validation_builder::ValidationErrors> const; step: variant<valid:builder_protocol::CeUnit;invalid:validation_builder::ValidationErrors> const): variant<valid:builder_protocol::CeUnit;invalid:validation_builder::ValidationErrors> const at validation_builder.das:51:4
+		invalid argument 'step' (2). expecting 'variant<valid:builder_protocol::CeUnit;invalid:validation_builder::ValidationErrors> const', passing 'variant<valid:int;invalid:validation_builder::ValidationErrors> const&'
+
+
+reader checks OK
+builder protocol checks OK
+error[50503]: computation: missing ce_protocol for builder MissingBuilder; define ce_protocol(builder) returning CeValueProtocol, CeCollectProtocol or ce_sequence_protocol(type<T>)
+test_protocol_missing.das:5:25
+def main() { let value = computation(MissingBuilder()) { return 1 }; print("{value}") }
+
+                         ^^^^^^^^^^^
+error[30231]: argument of format string can't be `auto` or alias
+test_protocol_missing.das:5:77
+def main() { let value = computation(MissingBuilder()) { return 1 }; print("{value}") }
+
+                                                                             ^^^^^
+error[50503]: computation: ce_protocol must return a builder_protocol descriptor; builder InvalidBuilder returned int const; expected CeValueProtocol, CeCollectProtocol, CeOwnedProtocol or ce_sequence_protocol(type<T>)
+test_protocol_invalid.das:6:25
+def main() { let value = computation(InvalidBuilder()) { return 1 }; print("{value}") }
+
+                         ^^^^^^^^^^^
+error[30231]: argument of format string can't be `auto` or alias
+test_protocol_invalid.das:6:77
+def main() { let value = computation(InvalidBuilder()) { return 1 }; print("{value}") }
+
+                                                                             ^^^^^
+error[30341]: no matching functions or generics: ce_return(IncompleteBuilder&, int const)
+computation_macro.das:618:27
+                    return ce_return($i(builder), $e(ret.subexpr))
+
+                           ^^^^^^^^^
+ce_return(IncompleteBuilder&, int const)
+while compiling: main: void
+there are no good matching candidates out of 0 total functions with the same name
+
+
+error[30341]: no matching functions or generics: ce_delay(IncompleteBuilder&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(IncompleteBuilder&, block<auto> const)
+while compiling: main: void
+
+candidate function:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30231]: argument of format string can't be `auto` or alias
+test_protocol_operation.das:6:80
+def main() { let value = computation(IncompleteBuilder()) { return 1 }; print("{value}") }
+
+                                                                                ^^^^^
+error[30341]: no matching functions or generics: ce_loop_append(tuple<kind:reader_builder::ReaderContext;environment:int aka E>&, tuple<value:builder_protocol::CeUnit aka T>&, tuple<value:int aka T> const&)
+computation_macro.das:812:36
+                    $i(accumulated)=ce_loop_append($i(builder),$i(accumulated),$i(step))
+
+                                    ^^^^^^^^^^^^^^
+ce_loop_append(tuple<kind:reader_builder::ReaderContext;environment:int aka E>&, tuple<value:builder_protocol::CeUnit aka T>&, tuple<value:int aka T> const&)
+while compiling: main: void
+
+candidate function:
+	reader_builder::ce_loop_append(builder: tuple<kind:reader_builder::ReaderContext;environment:auto(E)> const; first: tuple<value:builder_protocol::CeUnit> const; step: tuple<value:builder_protocol::CeUnit> const): auto at reader_builder.das:23:4
+		invalid argument 'step' (2). expecting 'tuple<value:builder_protocol::CeUnit> const', passing 'tuple<value:T> const&'
+		where 'T = int'
+
+
+Result fail_at=0: steps=1/1/1, return=1
+Option fail_at=0: steps=1/1/1, return=1
+Result fail_at=1: steps=1/0/0, return=0
+Option fail_at=1: steps=1/0/0, return=0
+Result fail_at=2: steps=1/1/0, return=0
+Option fail_at=2: steps=1/1/0, return=0
+Result fail_at=3: steps=1/1/1, return=0
+Option fail_at=3: steps=1/1/1, return=0
+computation checks OK
+error[30303]: block argument type can't be inferred, it needs an initializer or to be passed to the function with the explicit block definition
+computation_macro.das:687:43
+            var continuation = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                           ^^^^^^^^
+error[30107]: don't know what 'typedecl(ce_unwrap(__ce_builder_1_0x5_0xe,__::computation_builders`some`7108990599799321010(1))) const' is
+computation_macro.das:687:43
+            var continuation = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                           ^^^^^^^^
+error[30803]: undefined block argument type 'typedecl(ce_unwrap(__ce_builder_1_0x5_0xe,__::computation_builders`some`7108990599799321010(1))) const'
+computation_macro.das:687:43
+            var continuation = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                           ^^^^^^^^
+	can't infer type for 'typeDecl'
+
+
+error[30341]: no matching functions or generics: ce_unwrap(computation_builders::ResultBuilder&, variant<some:int const;none:bool>)
+computation_macro.das:687:64
+            var continuation = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                                                ^^^^^^^^^
+ce_unwrap(computation_builders::ResultBuilder&, variant<some:int const;none:bool>)
+while compiling: main: void
+candidates:
+	computation_builders::ce_unwrap(builder: computation_builders::ResultBuilder const; value: variant<ok:auto(T);error:string> const): T at computation_builders.das:11:4
+		invalid argument 'value' (1). expecting 'variant<ok:auto(T);error:string> const', passing 'variant<some:int const;none:bool>'
+	computation_builders::ce_unwrap(builder: computation_builders::OptionBuilder const; value: variant<some:auto(T);none:bool> const): T at computation_builders.das:14:4
+		invalid argument 'builder' (0). expecting 'computation_builders::OptionBuilder const', passing 'computation_builders::ResultBuilder&'
+	move_builders::ce_unwrap(builder: move_builders::MoveOptionBuilder const; source: variant<some:auto(T);none:bool> -const): T& at move_builders.das:61:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'computation_builders::ResultBuilder&'
+also 16 more candidates
+
+
+error[30341]: no matching functions or generics: ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30200]: local variable value initialization type can't be inferred, auto const = typedecl(ce_unwrap(__ce_builder_1_0x5_0xe,__::computation_builders`some`7108990599799321010(1))) const&
+test_computation_mixed.das:6:12
+        let value = some(1) |> bind
+            ^^^^^
+error[30231]: argument of format string can't be `auto` or alias
+test_computation_mixed.das:9:12
+    print("{bad}\n")
+            ^^^
+error[30344]: local variable value initialization type mismatch; string const = int const&
+test_computation_annotation.das:6:12
+        let value : string = some(1) |> bind
+            ^^^^^
+not the same type
+
+no return: successful Unit OK
+control flow checks OK: Result/Option, branches, empty scopes, for/while, nested loops, exact effects
+error[50503]: computation: return must be the final statement of its scope and have a value
+test_computation_return_position.das:5:14
+    let bad = computation(ResultBuilder()) {
+              ^^^^^^^^^^^
+error[30231]: argument of format string can't be `auto` or alias
+test_computation_return_position.das:9:12
+    print("{bad}\n")
+            ^^^
+error[30341]: no matching functions or generics: ce_loop_append(computation_builders::ResultBuilder const, variant<ok:builder_protocol::CeUnit;error:string>&, variant<ok:int const;error:string>)
+computation_builders.das:163:19
+            result=ce_loop_append(builder,result,invoke(body,value))
+
+                   ^^^^^^^^^^^^^^
+ce_loop_append(computation_builders::ResultBuilder const, variant<ok:builder_protocol::CeUnit;error:string>&, variant<ok:int const;error:string>)
+while compiling: computation_builders`ce_for_values`927063529666843568(builder: computation_builders::ResultBuilder const explicit; source: range const explicit; body: block<(i:int const):variant<ok:int const;error:string>> const explicit): variant<ok:builder_protocol::CeUnit;error:string>
+candidates:
+	computation_builders::ce_loop_append(builder: computation_builders::ResultBuilder const; first: variant<ok:builder_protocol::CeUnit;error:string> const; step: variant<ok:builder_protocol::CeUnit;error:string> const): variant<ok:builder_protocol::CeUnit;error:string> const at computation_builders.das:83:4
+		invalid argument 'step' (2). expecting 'variant<ok:builder_protocol::CeUnit;error:string> const', passing 'variant<ok:int const;error:string>'
+	list_builder::ce_list_append(accumulated: array<auto(T)> -const; step: array<T> const): auto at list_builder.das:90:4
+		name is similar, typo?
+		invalid argument 'accumulated' (0). expecting 'array<auto(T)> -const', passing 'computation_builders::ResultBuilder const'
+		can't ref types can only add constness
+		invalid argument 'step' (1). expecting 'array<T> const', passing 'variant<ok:builder_protocol::CeUnit;error:string>&'
+		module list_builder is not visible directly from computation_builders
+also 5 more candidates
+
+
+while compiling computation_builders`ce_for_values`927063529666843568(builder: computation_builders::ResultBuilder const explicit; source: range const explicit; body: block<(i:int const):variant<ok:int const;error:string>> const explicit): variant<ok:builder_protocol::CeUnit;error:string>
+instanced from computation_builders`ce_for`10075473851382255078(builder: computation_builders::ResultBuilder const; source: range const explicit; body: block<(i:int const):variant<ok:int const;error:string>> const explicit): variant<ok:builder_protocol::CeUnit;error:string> at computation_builders.das:207:67
+instanced from main: void at computation_macro.das:315:47
+
+error[30341]: no matching functions or generics: ce_combine(computation_builders::ResultBuilder&, variant<ok:int const;error:string>, block<variant<ok:int const;error:string>> const)
+computation_macro.das:925:60
+                output |> push <| qmacro_expr() { return $e(combined) }
+
+                                                            ^^^^^^^^
+ce_combine(computation_builders::ResultBuilder&, variant<ok:int const;error:string>, block<variant<ok:int const;error:string>> const)
+while compiling: main: void
+
+most likely candidate:
+	computation_builders::ce_combine(builder: computation_builders::ResultBuilder const; first: variant<ok:builder_protocol::CeUnit;error:string> const; next: block<auto(R)> const): R at computation_builders.das:63:4
+		invalid argument 'first' (1). expecting 'variant<ok:builder_protocol::CeUnit;error:string> const', passing 'variant<ok:int const;error:string>'
+also 9 more candidates
+
+
+error[30341]: no matching functions or generics: ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30231]: argument of format string can't be `auto` or alias
+test_computation_combine_value.das:9:12
+    print("{bad}\n")
+            ^^^
+error[30341]: no matching functions or generics: ce_for(computation_builders::ResultBuilder&, range const, block<(i:int const):auto> const)
+computation_macro.das:315:47
+            static_if (typeinfo ce_has_loop($e(custom))) { return $e(execution) }
+
+                                               ^^^^^^
+ce_for(computation_builders::ResultBuilder&, range const, block<(i:int const):auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_for(builder: auto const; source: auto const; body: auto const): auto at builder_protocol.das:56:4
+		invalid argument 'body' (2). expecting 'auto const', passing 'block<(i:int const):auto> const'
+	computation_builders::ce_for(builder: computation_builders::ResultBuilder const; source: auto const; body: auto const): auto at computation_builders.das:207:4
+		invalid argument 'body' (2). expecting 'auto const', passing 'block<(i:int const):auto> const'
+also 8 more candidates
+
+
+error[30303]: block argument type can't be inferred, it needs an initializer or to be passed to the function with the explicit block definition
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30107]: don't know what 'typedecl(ce_unwrap(__ce_builder_1_0x5_0xe,__::computation_builders`some`7108990599799321010(i))) const' is
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30803]: undefined block argument type 'typedecl(ce_unwrap(__ce_builder_1_0x5_0xe,__::computation_builders`some`7108990599799321010(i))) const'
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+	can't infer type for 'typeDecl'
+
+
+error[30341]: no matching functions or generics: ce_unwrap(computation_builders::ResultBuilder&, variant<some:int const;none:bool>)
+computation_macro.das:662:60
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                                            ^^^^^^^^^
+ce_unwrap(computation_builders::ResultBuilder&, variant<some:int const;none:bool>)
+while compiling: main: void
+candidates:
+	computation_builders::ce_unwrap(builder: computation_builders::ResultBuilder const; value: variant<ok:auto(T);error:string> const): T at computation_builders.das:11:4
+		invalid argument 'value' (1). expecting 'variant<ok:auto(T);error:string> const', passing 'variant<some:int const;none:bool>'
+	computation_builders::ce_unwrap(builder: computation_builders::OptionBuilder const; value: variant<some:auto(T);none:bool> const): T at computation_builders.das:14:4
+		invalid argument 'builder' (0). expecting 'computation_builders::OptionBuilder const', passing 'computation_builders::ResultBuilder&'
+	move_builders::ce_unwrap(builder: move_builders::MoveOptionBuilder const; source: variant<some:auto(T);none:bool> -const): T& at move_builders.das:61:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'computation_builders::ResultBuilder&'
+also 16 more candidates
+
+
+error[30341]: no matching functions or generics: ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+computation_macro.das:876:31
+                        return ce_delay($i(builder), $ { $e(body); })
+
+                               ^^^^^^^^
+ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30341]: no matching functions or generics: ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30231]: argument of format string can't be `auto` or alias
+test_computation_loop_mixed.das:8:12
+    print("{bad}\n")
+            ^^^
+state/writer checks OK: snapshots, isolation, composition, loops, exact log order
+error[30303]: block argument type can't be inferred, it needs an initializer or to be passed to the function with the explicit block definition
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30107]: don't know what 'typedecl(ce_unwrap(__ce_builder_6_0x5_0x12,__::computation_effects`state_put`8627864096686221759(42))) const' is
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30803]: undefined block argument type 'typedecl(ce_unwrap(__ce_builder_6_0x5_0x12,__::computation_effects`state_put`8627864096686221759(42))) const'
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+	can't infer type for 'typeDecl'
+
+
+error[30341]: no matching functions or generics: ce_unwrap(tuple<kind:computation_effects::StateContext;state:game_state_example::GameState>&, tuple<operation:computation_effects::StatePut;state:int>)
+computation_macro.das:662:60
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                                            ^^^^^^^^^
+ce_unwrap(tuple<kind:computation_effects::StateContext;state:game_state_example::GameState>&, tuple<operation:computation_effects::StatePut;state:int>)
+while compiling: main: void
+candidates:
+	computation_effects::ce_unwrap(builder: tuple<kind:computation_effects::StateContext;state:auto(S)> const; op: tuple<operation:computation_effects::StatePut;state:S> const): builder_protocol::CeUnit at computation_effects.das:30:4
+	computation_effects::ce_unwrap(builder: tuple<kind:computation_effects::StateContext;state:auto(S)> const; op: computation_effects::StateGet const): S at computation_effects.das:27:4
+		invalid argument 'op' (1). expecting 'computation_effects::StateGet const', passing 'tuple<operation:computation_effects::StatePut;state:int>'
+	computation_effects::ce_unwrap(builder: tuple<kind:computation_effects::StateContext;state:auto(S)> const; op: tuple<value:auto(T);state:S> const): T at computation_effects.das:34:4
+		invalid argument 'op' (1). expecting 'tuple<value:auto(T);state:S> const', passing 'tuple<operation:computation_effects::StatePut;state:int>'
+	state_result_builder::ce_unwrap(builder: tuple<kind:state_result_builder::StateResultContext;initial:auto(S);state:S> const; op: tuple<operation:computation_effects::StatePut;state:S> const): builder_protocol::CeUnit at state_result_builder.das:33:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:state_result_builder::StateResultContext;initial:auto(S);state:S> const', passing 'tuple<kind:computation_effects::StateContext;state:game_state_example::GameState>&'
+also 15 more candidates
+
+
+error[30341]: no matching functions or generics: ce_delay(tuple<kind:computation_effects::StateContext;state:game_state_example::GameState>&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(tuple<kind:computation_effects::StateContext;state:game_state_example::GameState>&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'tuple<kind:computation_effects::StateContext;state:game_state_example::GameState>&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'tuple<kind:computation_effects::StateContext;state:game_state_example::GameState>&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'tuple<kind:computation_effects::StateContext;state:game_state_example::GameState>&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'tuple<kind:computation_effects::StateContext;state:game_state_example::GameState>&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30231]: argument of format string can't be `auto` or alias
+test_state_wrong_type.das:8:12
+    print("{invalid}\n")
+            ^^^^^^^
+error[30303]: block argument type can't be inferred, it needs an initializer or to be passed to the function with the explicit block definition
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30107]: don't know what 'typedecl(ce_unwrap(__ce_builder_1_0x5_0x12,__::computation_builders`result_ok`6545333498825399481(1))) const' is
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30803]: undefined block argument type 'typedecl(ce_unwrap(__ce_builder_1_0x5_0x12,__::computation_builders`result_ok`6545333498825399481(1))) const'
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+	can't infer type for 'typeDecl'
+
+
+error[30341]: no matching functions or generics: ce_unwrap(computation_effects::WriterBuilder&, variant<ok:int const;error:string>)
+computation_macro.das:662:60
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                                            ^^^^^^^^^
+ce_unwrap(computation_effects::WriterBuilder&, variant<ok:int const;error:string>)
+while compiling: main: void
+candidates:
+	computation_builders::ce_unwrap(builder: computation_builders::ResultBuilder const; value: variant<ok:auto(T);error:string> const): T at computation_builders.das:11:4
+		invalid argument 'builder' (0). expecting 'computation_builders::ResultBuilder const', passing 'computation_effects::WriterBuilder&'
+	computation_effects::ce_unwrap(builder: computation_effects::WriterBuilder const; value: tuple<value:auto(T);log:string> const): T at computation_effects.das:88:4
+		invalid argument 'value' (1). expecting 'tuple<value:auto(T);log:string> const', passing 'variant<ok:int const;error:string>'
+	writer_result_builder::ce_unwrap(builder: writer_result_builder::WriterResultBuilder const; value: variant<ok:auto(T);error:string> const): T at writer_result_builder.das:28:4
+		invalid argument 'builder' (0). expecting 'writer_result_builder::WriterResultBuilder const', passing 'computation_effects::WriterBuilder&'
+	state_result_builder::ce_unwrap(builder: tuple<kind:state_result_builder::StateResultContext;initial:auto(S);state:S> const; op: variant<ok:auto(T);error:string> const): T at state_result_builder.das:35:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:state_result_builder::StateResultContext;initial:auto(S);state:S> const', passing 'computation_effects::WriterBuilder&'
+	move_builders::ce_unwrap(builder: move_builders::MoveResultBuilder const; source: variant<ok:auto(T);error:string> -const): T& at move_builders.das:16:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'computation_effects::WriterBuilder&'
+also 14 more candidates
+
+
+error[30341]: no matching functions or generics: ce_delay(computation_effects::WriterBuilder&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(computation_effects::WriterBuilder&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'computation_effects::WriterBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'computation_effects::WriterBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'computation_effects::WriterBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'computation_effects::WriterBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30231]: argument of format string can't be `auto` or alias
+test_writer_mixed.das:8:12
+    print("{invalid}\n")
+            ^^^^^^^
+error[30341]: no matching functions or generics: ce_loop_append(computation_effects::WriterBuilder&, tuple<value:builder_protocol::CeUnit;log:string>&, tuple<value:int;log:string> const&)
+computation_macro.das:812:36
+                    $i(accumulated)=ce_loop_append($i(builder),$i(accumulated),$i(step))
+
+                                    ^^^^^^^^^^^^^^
+ce_loop_append(computation_effects::WriterBuilder&, tuple<value:builder_protocol::CeUnit;log:string>&, tuple<value:int;log:string> const&)
+while compiling: main: void
+candidates:
+	computation_effects::ce_loop_append(builder: computation_effects::WriterBuilder const; first: tuple<value:builder_protocol::CeUnit;log:string> const; step: tuple<value:builder_protocol::CeUnit;log:string> const): tuple<value:builder_protocol::CeUnit;log:string> at computation_effects.das:109:4
+		invalid argument 'step' (2). expecting 'tuple<value:builder_protocol::CeUnit;log:string> const', passing 'tuple<value:int;log:string> const&'
+	list_builder::ce_list_append(accumulated: array<auto(T)> -const; step: array<T> const): auto at list_builder.das:90:4
+		name is similar, typo?
+		invalid argument 'accumulated' (0). expecting 'array<auto(T)> -const', passing 'computation_effects::WriterBuilder&'
+		invalid argument 'step' (1). expecting 'array<T> const', passing 'tuple<value:builder_protocol::CeUnit;log:string>&'
+also 5 more candidates
+
+
+error[30341]: no matching functions or generics: computation_effects::ce_for(tuple<kind:computation_effects::StateContext;state:int>&, range const, block<(i:int const):tuple<value:int;state:int>> const)
+computation_macro.das:315:47
+            static_if (typeinfo ce_has_loop($e(custom))) { return $e(execution) }
+
+                                               ^^^^^^
+computation_effects::ce_for(tuple<kind:computation_effects::StateContext;state:int>&, range const, block<(i:int const):tuple<value:int;state:int>> const)
+while compiling: main: void
+candidates:
+	computation_effects::ce_for(builder: tuple<kind:computation_effects::StateContext;state:auto(S)> -const; source: range const; body: block<(item:int const):tuple<value:builder_protocol::CeUnit;state:S>> const): auto at computation_effects.das:145:4
+		invalid argument 'body' (2). expecting 'block<(item:int const):tuple<value:builder_protocol::CeUnit;state:S>> const', passing 'block<(i:int const):tuple<value:int;state:int>> const'
+	computation_builders::ce_for(builder: computation_builders::ResultBuilder const; source: auto const; body: auto const): auto at computation_builders.das:207:4
+		invalid argument 'builder' (0). expecting 'computation_builders::ResultBuilder const', passing 'tuple<kind:computation_effects::StateContext;state:int>&'
+	computation_builders::ce_for(builder: computation_builders::OptionBuilder const; source: auto const; body: auto const): auto at computation_builders.das:222:4
+		invalid argument 'builder' (0). expecting 'computation_builders::OptionBuilder const', passing 'tuple<kind:computation_effects::StateContext;state:int>&'
+also 6 more candidates
+
+
+error[30341]: no matching functions or generics: ce_delay(tuple<kind:computation_effects::StateContext;state:int>&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(tuple<kind:computation_effects::StateContext;state:int>&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'tuple<kind:computation_effects::StateContext;state:int>&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'tuple<kind:computation_effects::StateContext;state:int>&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'tuple<kind:computation_effects::StateContext;state:int>&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'tuple<kind:computation_effects::StateContext;state:int>&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30231]: argument of format string can't be `auto` or alias
+test_state_loop_value.das:8:12
+    print("{invalid}\n")
+            ^^^^^^^
+writer/result checks OK: first failure, retained logs, exact order, lifts, branches, nested loops
+error[30303]: block argument type can't be inferred, it needs an initializer or to be passed to the function with the explicit block definition
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30107]: don't know what 'typedecl(ce_unwrap(__ce_builder_1_0x5_0xe,__::computation_builders`some`7108990599799321010(1))) const' is
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30803]: undefined block argument type 'typedecl(ce_unwrap(__ce_builder_1_0x5_0xe,__::computation_builders`some`7108990599799321010(1))) const'
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+	can't infer type for 'typeDecl'
+
+
+error[30341]: no matching functions or generics: ce_unwrap(writer_result_builder::WriterResultBuilder&, variant<some:int const;none:bool>)
+computation_macro.das:662:60
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                                            ^^^^^^^^^
+ce_unwrap(writer_result_builder::WriterResultBuilder&, variant<some:int const;none:bool>)
+while compiling: main: void
+candidates:
+	writer_result_builder::ce_unwrap(builder: writer_result_builder::WriterResultBuilder const; value: tuple<value:builder_protocol::CeUnit;log:string> const): builder_protocol::CeUnit at writer_result_builder.das:32:4
+		invalid argument 'value' (1). expecting 'tuple<value:builder_protocol::CeUnit;log:string> const', passing 'variant<some:int const;none:bool>'
+	computation_builders::ce_unwrap(builder: computation_builders::OptionBuilder const; value: variant<some:auto(T);none:bool> const): T at computation_builders.das:14:4
+		invalid argument 'builder' (0). expecting 'computation_builders::OptionBuilder const', passing 'writer_result_builder::WriterResultBuilder&'
+	writer_result_builder::ce_unwrap(builder: writer_result_builder::WriterResultBuilder const; value: tuple<result:variant<ok:auto(T);error:string>;log:string> const): T at writer_result_builder.das:24:4
+		invalid argument 'value' (1). expecting 'tuple<result:variant<ok:auto(T);error:string>;log:string> const', passing 'variant<some:int const;none:bool>'
+	writer_result_builder::ce_unwrap(builder: writer_result_builder::WriterResultBuilder const; value: variant<ok:auto(T);error:string> const): T at writer_result_builder.das:28:4
+		invalid argument 'value' (1). expecting 'variant<ok:auto(T);error:string> const', passing 'variant<some:int const;none:bool>'
+	move_builders::ce_unwrap(builder: move_builders::MoveOptionBuilder const; source: variant<some:auto(T);none:bool> -const): T& at move_builders.das:61:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'writer_result_builder::WriterResultBuilder&'
+also 14 more candidates
+
+
+error[30341]: no matching functions or generics: ce_delay(writer_result_builder::WriterResultBuilder&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(writer_result_builder::WriterResultBuilder&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'writer_result_builder::WriterResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'writer_result_builder::WriterResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'writer_result_builder::WriterResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'writer_result_builder::WriterResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30231]: argument of format string can't be `auto` or alias
+test_writer_result_option.das:8:12
+    print("{bad}\n")
+            ^^^
+error[30303]: block argument type can't be inferred, it needs an initializer or to be passed to the function with the explicit block definition
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30107]: don't know what 'typedecl(ce_unwrap(__ce_builder_1_0x5_0xe,__::computation_effects`writer_value`15345113623813589907(1,"explicit conversion required"))) const' is
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30803]: undefined block argument type 'typedecl(ce_unwrap(__ce_builder_1_0x5_0xe,__::computation_effects`writer_value`15345113623813589907(1,"explicit conversion required"))) const'
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+	can't infer type for 'typeDecl'
+
+
+error[30341]: no matching functions or generics: ce_unwrap(writer_result_builder::WriterResultBuilder&, tuple<value:int;log:string>)
+computation_macro.das:662:60
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                                            ^^^^^^^^^
+ce_unwrap(writer_result_builder::WriterResultBuilder&, tuple<value:int;log:string>)
+while compiling: main: void
+candidates:
+	writer_result_builder::ce_unwrap(builder: writer_result_builder::WriterResultBuilder const; value: tuple<value:builder_protocol::CeUnit;log:string> const): builder_protocol::CeUnit at writer_result_builder.das:32:4
+		invalid argument 'value' (1). expecting 'tuple<value:builder_protocol::CeUnit;log:string> const', passing 'tuple<value:int;log:string>'
+	computation_effects::ce_unwrap(builder: computation_effects::WriterBuilder const; value: tuple<value:auto(T);log:string> const): T at computation_effects.das:88:4
+		invalid argument 'builder' (0). expecting 'computation_effects::WriterBuilder const', passing 'writer_result_builder::WriterResultBuilder&'
+	writer_result_builder::ce_unwrap(builder: writer_result_builder::WriterResultBuilder const; value: tuple<result:variant<ok:auto(T);error:string>;log:string> const): T at writer_result_builder.das:24:4
+		invalid argument 'value' (1). expecting 'tuple<result:variant<ok:auto(T);error:string>;log:string> const', passing 'tuple<value:int;log:string>'
+	writer_result_builder::ce_unwrap(builder: writer_result_builder::WriterResultBuilder const; value: variant<ok:auto(T);error:string> const): T at writer_result_builder.das:28:4
+		invalid argument 'value' (1). expecting 'variant<ok:auto(T);error:string> const', passing 'tuple<value:int;log:string>'
+also 15 more candidates
+
+
+error[30341]: no matching functions or generics: ce_delay(writer_result_builder::WriterResultBuilder&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(writer_result_builder::WriterResultBuilder&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'writer_result_builder::WriterResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'writer_result_builder::WriterResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'writer_result_builder::WriterResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'writer_result_builder::WriterResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30231]: argument of format string can't be `auto` or alias
+test_writer_result_writer.das:8:12
+    print("{bad}\n")
+            ^^^
+error[30341]: no matching functions or generics: ce_loop_append(writer_result_builder::WriterResultBuilder&, tuple<result:variant<ok:builder_protocol::CeUnit aka T;error:string>;log:string>&, tuple<result:variant<ok:int aka T const;error:string>;log:string> const&)
+computation_macro.das:812:36
+                    $i(accumulated)=ce_loop_append($i(builder),$i(accumulated),$i(step))
+
+                                    ^^^^^^^^^^^^^^
+ce_loop_append(writer_result_builder::WriterResultBuilder&, tuple<result:variant<ok:builder_protocol::CeUnit aka T;error:string>;log:string>&, tuple<result:variant<ok:int aka T const;error:string>;log:string> const&)
+while compiling: main: void
+candidates:
+	writer_result_builder::ce_loop_append(builder: writer_result_builder::WriterResultBuilder const; first: tuple<result:variant<ok:builder_protocol::CeUnit;error:string>;log:string> const; step: tuple<result:variant<ok:builder_protocol::CeUnit;error:string>;log:string> const): tuple<result:variant<ok:builder_protocol::CeUnit;error:string>;log:string> const at writer_result_builder.das:83:4
+		invalid argument 'step' (2). expecting 'tuple<result:variant<ok:builder_protocol::CeUnit;error:string>;log:string> const', passing 'tuple<result:variant<ok:T const;error:string>;log:string> const&'
+		where 'T = int const'
+	list_builder::ce_list_append(accumulated: array<auto(T)> -const; step: array<T> const): auto at list_builder.das:90:4
+		name is similar, typo?
+		invalid argument 'accumulated' (0). expecting 'array<auto(T)> -const', passing 'writer_result_builder::WriterResultBuilder&'
+		invalid argument 'step' (1). expecting 'array<T> const', passing 'tuple<result:variant<ok:T;error:string>;log:string>&'
+		where 'T = builder_protocol::CeUnit'
+also 5 more candidates
+
+
+state/result checks OK: whole-transaction rollback, nested boundaries, exact effects, loops, snapshots
+error[30303]: block argument type can't be inferred, it needs an initializer or to be passed to the function with the explicit block definition
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30107]: don't know what 'typedecl(ce_unwrap(__ce_builder_3_0x5_0xe,__::computation_builders`some`7108990599799321010(1))) const' is
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30803]: undefined block argument type 'typedecl(ce_unwrap(__ce_builder_3_0x5_0xe,__::computation_builders`some`7108990599799321010(1))) const'
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+	can't infer type for 'typeDecl'
+
+
+error[30341]: no matching functions or generics: ce_unwrap(tuple<kind:state_result_builder::StateResultContext;initial:int;state:int>&, variant<some:int const;none:bool>)
+computation_macro.das:662:60
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                                            ^^^^^^^^^
+ce_unwrap(tuple<kind:state_result_builder::StateResultContext;initial:int;state:int>&, variant<some:int const;none:bool>)
+while compiling: main: void
+candidates:
+	computation_builders::ce_unwrap(builder: computation_builders::OptionBuilder const; value: variant<some:auto(T);none:bool> const): T at computation_builders.das:14:4
+		invalid argument 'builder' (0). expecting 'computation_builders::OptionBuilder const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:int;state:int>&'
+	move_builders::ce_unwrap(builder: move_builders::MoveOptionBuilder const; source: variant<some:auto(T);none:bool> -const): T& at move_builders.das:61:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:int;state:int>&'
+also 17 more candidates
+
+
+error[30341]: no matching functions or generics: ce_delay(tuple<kind:state_result_builder::StateResultContext;initial:int;state:int>&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(tuple<kind:state_result_builder::StateResultContext;initial:int;state:int>&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:int;state:int>&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:int;state:int>&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:int;state:int>&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:int;state:int>&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30231]: argument of format string can't be `auto` or alias
+test_state_result_option.das:6:12
+    print("{bad}\n")
+            ^^^
+error[30303]: block argument type can't be inferred, it needs an initializer or to be passed to the function with the explicit block definition
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30107]: don't know what 'typedecl(ce_unwrap(__ce_builder_6_0x5_0xe,__::computation_effects`state_put`8627864096686221759(42))) const' is
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30803]: undefined block argument type 'typedecl(ce_unwrap(__ce_builder_6_0x5_0xe,__::computation_effects`state_put`8627864096686221759(42))) const'
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+	can't infer type for 'typeDecl'
+
+
+error[30341]: no matching functions or generics: ce_unwrap(tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&, tuple<operation:computation_effects::StatePut;state:int>)
+computation_macro.das:662:60
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                                            ^^^^^^^^^
+ce_unwrap(tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&, tuple<operation:computation_effects::StatePut;state:int>)
+while compiling: main: void
+candidates:
+	computation_effects::ce_unwrap(builder: tuple<kind:computation_effects::StateContext;state:auto(S)> const; op: tuple<operation:computation_effects::StatePut;state:S> const): builder_protocol::CeUnit at computation_effects.das:30:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:computation_effects::StateContext;state:auto(S)> const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&'
+	state_result_builder::ce_unwrap(builder: tuple<kind:state_result_builder::StateResultContext;initial:auto(S);state:S> const; op: tuple<operation:computation_effects::StatePut;state:S> const): builder_protocol::CeUnit at state_result_builder.das:33:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:state_result_builder::StateResultContext;initial:auto(S);state:S> const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&'
+also 17 more candidates
+
+
+error[30341]: no matching functions or generics: ce_delay(tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30231]: argument of format string can't be `auto` or alias
+test_state_result_wrong_type.das:6:12
+    print("{bad}\n")
+            ^^^
+error[30303]: block argument type can't be inferred, it needs an initializer or to be passed to the function with the explicit block definition
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30107]: don't know what 'typedecl(ce_unwrap(__ce_builder_6_0x5_0xe,__::state_result_builder`state_result_ok`6900353916390067891(1,42))) const' is
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30803]: undefined block argument type 'typedecl(ce_unwrap(__ce_builder_6_0x5_0xe,__::state_result_builder`state_result_ok`6900353916390067891(1,42))) const'
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+	can't infer type for 'typeDecl'
+
+
+error[30341]: no matching functions or generics: ce_unwrap(tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&, tuple<result:variant<ok:int aka T const;error:string>;state:int aka S>)
+computation_macro.das:662:60
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                                            ^^^^^^^^^
+ce_unwrap(tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&, tuple<result:variant<ok:int aka T const;error:string>;state:int aka S>)
+while compiling: main: void
+there are no good matching candidates out of 19 total functions with the same name
+
+
+error[30341]: no matching functions or generics: ce_delay(tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:game_transaction::AdventureState;state:game_transaction::AdventureState>&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30231]: argument of format string can't be `auto` or alias
+test_state_result_foreign_state.das:8:12
+    print("{bad}\n")
+            ^^^
+error[30341]: no matching functions or generics: ce_loop_append(tuple<kind:state_result_builder::StateResultContext;initial:int;state:int>&, tuple<result:variant<ok:builder_protocol::CeUnit aka T;error:string>;state:int aka S>&, tuple<result:variant<ok:int aka T const;error:string>;state:int aka S> const&)
+computation_macro.das:812:36
+                    $i(accumulated)=ce_loop_append($i(builder),$i(accumulated),$i(step))
+
+                                    ^^^^^^^^^^^^^^
+ce_loop_append(tuple<kind:state_result_builder::StateResultContext;initial:int;state:int>&, tuple<result:variant<ok:builder_protocol::CeUnit aka T;error:string>;state:int aka S>&, tuple<result:variant<ok:int aka T const;error:string>;state:int aka S> const&)
+while compiling: main: void
+
+most likely candidate:
+	list_builder::ce_list_append(accumulated: array<auto(T)> -const; step: array<T> const): auto at list_builder.das:90:4
+		name is similar, typo?
+		invalid argument 'accumulated' (0). expecting 'array<auto(T)> -const', passing 'tuple<kind:state_result_builder::StateResultContext;initial:int;state:int>&'
+		invalid argument 'step' (1). expecting 'array<T> const', passing 'tuple<result:variant<ok:T;error:string>;state:S>&'
+		where 'T = builder_protocol::CeUnit'; 'S = int'
+also 6 more candidates
+
+
+resources checks OK: six builders, LIFO, loops, short circuit, panic, acquisition/disposal failures
+error[30341]: no matching functions or generics: ce_dispose(NoDisposer)
+computation_macro.das:739:77
+                    $(var $i(argument) : typedecl($e(call.arguments[0])) ) { ce_dispose($i(argument)) })
+
+                                                                             ^^^^^^^^^^
+ce_dispose(NoDisposer)
+while compiling: main: void
+
+candidate function:
+	sequence_runtime::ce_dispose(cell: tuple<tag:sequence_runtime::CeSequenceCellTag;value:auto(T)>? -const): auto at sequence_runtime.das:101:4
+		invalid argument 'cell' (0). expecting 'tuple<tag:sequence_runtime::CeSequenceCellTag;value:auto(T)>? -const', passing 'NoDisposer'
+
+
+error[30341]: no matching functions or generics: ce_try_finally(computation_builders::ResultBuilder&, block<variant<ok:int const;error:string>> const, block<int const> const)
+computation_macro.das:913:60
+                output |> push <| qmacro_expr() { return $e(computation) }
+
+                                                            ^^^^^^^^^^^
+ce_try_finally(computation_builders::ResultBuilder&, block<variant<ok:int const;error:string>> const, block<int const> const)
+while compiling: main: void
+candidates:
+	computation_resources::ce_try_finally(builder: auto const; body: block<auto(R)> const; cleanup: block<void> const): R at computation_resources.das:6:4
+		invalid argument 'cleanup' (2). expecting 'block<void> const', passing 'block<int const> const'
+	list_builder::ce_try_finally(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const; cleanup: block<void> const): array<T> at list_builder.das:93:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<variant<ok:int const;error:string>> const'
+		invalid argument 'cleanup' (2). expecting 'block<void> const', passing 'block<int const> const'
+	list_builder::ce_try_finally(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const; cleanup: block<void> const): array<T> at list_builder.das:344:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<variant<ok:int const;error:string>> const'
+		invalid argument 'cleanup' (2). expecting 'block<void> const', passing 'block<int const> const'
+	move_builders::ce_try_finally(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const; cleanup: block<void> const): R at move_builders.das:105:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'cleanup' (2). expecting 'block<void> const', passing 'block<int const> const'
+	move_builders::ce_try_finally(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const; cleanup: block<void> const): R at move_builders.das:137:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'cleanup' (2). expecting 'block<void> const', passing 'block<int const> const'
+
+
+error[30341]: no matching functions or generics: ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30231]: argument of format string can't be `auto` or alias
+test_resources_cleanup_value.das:8:12
+    print("{bad}\n")
+            ^^^
+error[50503]: computation: try_finally expects two blocks (body, cleanup)
+test_resources_bad_blocks.das:5:14
+    let bad = computation(ResultBuilder()) { try_finally(1, 2) }
+              ^^^^^^^^^^^
+error[30231]: argument of format string can't be `auto` or alias
+test_resources_bad_blocks.das:6:12
+    print("{bad}\n")
+            ^^^
+error[50503]: computation: expected 'let resource = expression |> use_resource'
+test_resources_no_binding.das:5:14
+    let bad = computation(ResultBuilder()) { 42 |> use_resource }
+              ^^^^^^^^^^^
+error[30231]: argument of format string can't be `auto` or alias
+test_resources_no_binding.das:6:12
+    print("{bad}\n")
+            ^^^
+list checks OK: products, order, empty sources, effects, typed results, loops, resources
+error[30303]: block argument type can't be inferred, it needs an initializer or to be passed to the function with the explicit block definition
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30107]: don't know what 'typedecl(ce_unwrap(__ce_builder_3_0x5_0x1b,__::computation_builders`result_ok`6545333498825399481(1))) const' is
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+error[30803]: undefined block argument type 'typedecl(ce_unwrap(__ce_builder_3_0x5_0x1b,__::computation_builders`result_ok`6545333498825399481(1))) const'
+computation_macro.das:662:39
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                       ^^^^^^^^
+	can't infer type for 'typeDecl'
+
+
+error[30341]: no matching functions or generics: ce_unwrap(tuple<kind:list_builder::ListContext;element:int>&, variant<ok:int const;error:string>)
+computation_macro.das:662:60
+            var ordinary = qmacro($($i(argument) : typedecl(ce_unwrap($i(builder), $e(source)))) { $b(rest); })
+
+                                                            ^^^^^^^^^
+ce_unwrap(tuple<kind:list_builder::ListContext;element:int>&, variant<ok:int const;error:string>)
+while compiling: main: void
+candidates:
+	computation_builders::ce_unwrap(builder: computation_builders::ResultBuilder const; value: variant<ok:auto(T);error:string> const): T at computation_builders.das:11:4
+		invalid argument 'builder' (0). expecting 'computation_builders::ResultBuilder const', passing 'tuple<kind:list_builder::ListContext;element:int>&'
+	writer_result_builder::ce_unwrap(builder: writer_result_builder::WriterResultBuilder const; value: variant<ok:auto(T);error:string> const): T at writer_result_builder.das:28:4
+		invalid argument 'builder' (0). expecting 'writer_result_builder::WriterResultBuilder const', passing 'tuple<kind:list_builder::ListContext;element:int>&'
+	state_result_builder::ce_unwrap(builder: tuple<kind:state_result_builder::StateResultContext;initial:auto(S);state:S> const; op: variant<ok:auto(T);error:string> const): T at state_result_builder.das:35:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:state_result_builder::StateResultContext;initial:auto(S);state:S> const', passing 'tuple<kind:list_builder::ListContext;element:int>&'
+	list_builder::ce_unwrap(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; source: auto(U) const[]): U at list_builder.das:27:4
+		invalid argument 'source' (1). expecting 'auto(U) const[]', passing 'variant<ok:int const;error:string>'
+	list_builder::ce_unwrap(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; source: array<auto(U)> const): U at list_builder.das:28:4
+		invalid argument 'source' (1). expecting 'array<auto(U)> const', passing 'variant<ok:int const;error:string>'
+	move_builders::ce_unwrap(builder: move_builders::MoveResultBuilder const; source: variant<ok:auto(T);error:string> -const): T& at move_builders.das:16:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'tuple<kind:list_builder::ListContext;element:int>&'
+also 13 more candidates
+
+
+error[30341]: no matching functions or generics: ce_return(tuple<kind:list_builder::ListContext;element:string>&, int const)
+computation_macro.das:618:27
+                    return ce_return($i(builder), $e(ret.subexpr))
+
+                           ^^^^^^^^^
+ce_return(tuple<kind:list_builder::ListContext;element:string>&, int const)
+while compiling: main: void
+candidates:
+	list_builder::ce_return(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; value: T const): array<T> at list_builder.das:22:4
+	computation_builders::ce_return(builder: computation_builders::ResultBuilder const; value: auto(T) const): auto at computation_builders.das:31:4
+		invalid argument 'builder' (0). expecting 'computation_builders::ResultBuilder const', passing 'tuple<kind:list_builder::ListContext;element:string>&'
+	computation_builders::ce_return(builder: computation_builders::OptionBuilder const; value: auto(T) const): auto at computation_builders.das:34:4
+		invalid argument 'builder' (0). expecting 'computation_builders::OptionBuilder const', passing 'tuple<kind:list_builder::ListContext;element:string>&'
+	computation_effects::ce_return(builder: tuple<kind:computation_effects::StateContext;state:auto(S)> const; value: auto(T) const): auto at computation_effects.das:56:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:computation_effects::StateContext;state:auto(S)> const', passing 'tuple<kind:list_builder::ListContext;element:string>&'
+	computation_effects::ce_return(builder: computation_effects::WriterBuilder const; value: auto(T) const): auto at computation_effects.das:96:4
+		invalid argument 'builder' (0). expecting 'computation_effects::WriterBuilder const', passing 'tuple<kind:list_builder::ListContext;element:string>&'
+	writer_result_builder::ce_return(builder: writer_result_builder::WriterResultBuilder const; value: auto(T) const): auto at writer_result_builder.das:53:4
+		invalid argument 'builder' (0). expecting 'writer_result_builder::WriterResultBuilder const', passing 'tuple<kind:list_builder::ListContext;element:string>&'
+	state_result_builder::ce_return(builder: tuple<kind:state_result_builder::StateResultContext;initial:auto(S);state:S> const; value: auto(T) const): auto at state_result_builder.das:62:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:state_result_builder::StateResultContext;initial:auto(S);state:S> const', passing 'tuple<kind:list_builder::ListContext;element:string>&'
+	list_builder::ce_return(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; value: T const): array<T> at list_builder.das:293:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'tuple<kind:list_builder::ListContext;element:string>&'
+	move_builders::ce_return(builder: move_builders::MoveResultBuilder const; value: auto(T) const): variant<ok:T -const -&;error:string> at move_builders.das:17:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'tuple<kind:list_builder::ListContext;element:string>&'
+	move_builders::ce_return(builder: move_builders::MoveOptionBuilder const; value: auto(T) const): variant<some:T -const -&;none:bool> at move_builders.das:62:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'tuple<kind:list_builder::ListContext;element:string>&'
+
+
+error[30344]: local variable x initialization type mismatch; string const = int const&
+test_list_annotation.das:6:12
+        let x : string = [1, 2] |> bind
+            ^
+not the same type
+
+sequence checks OK
+list yield checks OK
+error[30915]: can only copy compatible type; int& = string const
+test_sequence_type.das:5:53
+ var inscope seq <- computation(SequenceBuilder()) { yield "wrong" }
+                                                     ^^^^^
+not the same type
+
+error[50503]: sequence: use yield or expression |> yield_from, not return
+test_sequence_return.das:5:20
+ var inscope seq <- computation(SequenceBuilder()) { return 1 }
+                    ^^^^^^^^^^^
+sequence resource checks OK
+error[50503]: sequence: expected 'let resource = expression |> use_resource'
+test_sequence_resource_binding.das:5:20
+ var inscope seq <- computation(SequenceBuilder()) {
+                    ^^^^^^^^^^^
+error[30341]: no matching functions or generics: ce_dispose(int&)
+computation_macro.das:1220:41
+                var cleanup = qmacro($ { ce_dispose($i(owned)) })
+
+                                         ^^^^^^^^^^
+ce_dispose(int&)
+while compiling: _lambda_thismodule_1220_2`function(__this: _lambda_thismodule_1220_2 explicit): void
+
+candidate function:
+	sequence_runtime::ce_dispose(cell: tuple<tag:sequence_runtime::CeSequenceCellTag;value:auto(T)>? -const): auto at sequence_runtime.das:101:4
+		invalid argument 'cell' (0). expecting 'tuple<tag:sequence_runtime::CeSequenceCellTag;value:auto(T)>? -const', passing 'int&'
+
+
+error[30341]: no matching functions or generics: ce_sequence_scoped(iterator<int>&, lambda<int const>&)
+computation_macro.das:1361:18
+        return <- ce_sequence_scoped($i(child), $i(finish))
+
+                  ^^^^^^^^^^^^^^^^^^
+ce_sequence_scoped(iterator<int>&, lambda<int const>&)
+while compiling: main: void
+
+candidate function:
+	sequence_runtime::ce_sequence_scoped(source: iterator<auto(T)> -const; cleanup: lambda<void> -const): iterator<T> at sequence_runtime.das:75:4
+		invalid argument 'cleanup' (1). expecting 'lambda<void> -const', passing 'lambda<int const>&'
+
+
+error[30295]: can't yield from inside the block
+computation_macro.das:1372:70
+                    static_if (typeinfo can_copy(type<$t(element)>)) {yield $i(item)}
+
+                                                                      ^^^^^
+error[30838]: can't locate variable '__seq_scoped_finally_0x6_0x2'
+computation_macro.das:1372:79
+                    static_if (typeinfo can_copy(type<$t(element)>)) {yield $i(item)}
+
+                                                                               ^^^^
+error[50503]: sequence: try_finally expects two blocks (body, cleanup)
+test_sequence_cleanup_blocks.das:5:20
+ var inscope seq <- computation(SequenceBuilder()) {
+                    ^^^^^^^^^^^
+error[31003]: implicit capture by move requires unsafe, while capturing input
+computation_macro.das:1039:30
+                var source <- generator<$t(element)> {
+
+                              ^^^^^^^^^
+error[30295]: can't yield from inside the block
+test_sequence_capture.das:9:2
+  yield v
+  ^^^^^
+error[30192]: unsupported iteration type auto& -const for the loop variable v, iterating over auto& -const
+test_sequence_capture.das:11:1
+ for(v in seq) { print("{v}\n") }
+ ^^^
+error[30838]: can't locate variable 'v'
+test_sequence_capture.das:11:25
+ for(v in seq) { print("{v}\n") }
+                         ^
+sequence shared capture checks OK
+sequence cell lifetime checks OK
+error[30344]: local variable __seq_initial_x_0x6_0x2 initialization type mismatch; int -const = string const
+test_sequence_shared_type.das:6:6
+  var x:int="wrong"
+      ^
+not the same type
+
+error[50503]: sequence: shared locals require copyable values, without explicit reference, inscope, move or clone
+test_sequence_shared_owned.das:5:20
+ var inscope seq <- computation(SequenceBuilder()) {
+                    ^^^^^^^^^^^
+try_with eager checks OK
+try_with sequence checks OK
+heap 0x0 0x0
+try_with lifetime checks OK
+error[50503]: computation: try_with expects a body block and a handler block
+test_try_with_blocks.das:5:12
+ let result=computation(ResultBuilder()) {try_with($ {return 1}, 42)}
+            ^^^^^^^^^^^
+error[50503]: computation: try_with body takes no arguments; handler takes one string message
+test_try_with_arguments.das:5:12
+ let result=computation(ResultBuilder()) {try_with($ {return 1}, $ {return 2})}
+            ^^^^^^^^^^^
+error[30341]: no matching functions or generics: ce_try_with(computation_builders::ResultBuilder&, block<variant<ok:int const;error:string>> const, block<(message:int const):variant<ok:int const;error:string>> const)
+computation_macro.das:913:60
+                output |> push <| qmacro_expr() { return $e(computation) }
+
+                                                            ^^^^^^^^^^^
+ce_try_with(computation_builders::ResultBuilder&, block<variant<ok:int const;error:string>> const, block<(message:int const):variant<ok:int const;error:string>> const)
+while compiling: main: void
+candidates:
+	computation_resources::ce_try_with(builder: auto const; body: block<auto(R)> const; handler: block<(message:string const):R> const): R at computation_resources.das:37:4
+		invalid argument 'handler' (2). expecting 'block<(message:string const):R> const', passing 'block<(message:int const):variant<ok:int const;error:string>> const'
+	list_builder::ce_try_with(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const; handler: block<(message:string const):array<T>> const): array<T> at list_builder.das:134:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<variant<ok:int const;error:string>> const'
+		invalid argument 'handler' (2). expecting 'block<(message:string const):array<T>> const', passing 'block<(message:int const):variant<ok:int const;error:string>> const'
+	list_builder::ce_try_with(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const; handler: block<(message:string const):array<T>> const): array<T> at list_builder.das:377:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<variant<ok:int const;error:string>> const'
+		invalid argument 'handler' (2). expecting 'block<(message:string const):array<T>> const', passing 'block<(message:int const):variant<ok:int const;error:string>> const'
+	move_builders::ce_try_with(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const; handler: block<(message:string const):R> const): R at move_builders.das:97:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'handler' (2). expecting 'block<(message:string const):R> const', passing 'block<(message:int const):variant<ok:int const;error:string>> const'
+	move_builders::ce_try_with(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const; handler: block<(message:string const):R> const): R at move_builders.das:129:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'handler' (2). expecting 'block<(message:string const):R> const', passing 'block<(message:int const):variant<ok:int const;error:string>> const'
+
+
+error[30341]: no matching functions or generics: ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+error[30341]: no matching functions or generics: ce_try_with(computation_builders::ResultBuilder&, block<variant<ok:int const;error:string>> const, block<(message:string const):variant<ok:string const;error:string>> const)
+computation_macro.das:913:60
+                output |> push <| qmacro_expr() { return $e(computation) }
+
+                                                            ^^^^^^^^^^^
+ce_try_with(computation_builders::ResultBuilder&, block<variant<ok:int const;error:string>> const, block<(message:string const):variant<ok:string const;error:string>> const)
+while compiling: main: void
+candidates:
+	computation_resources::ce_try_with(builder: auto const; body: block<auto(R)> const; handler: block<(message:string const):R> const): R at computation_resources.das:37:4
+	list_builder::ce_try_with(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const; handler: block<(message:string const):array<T>> const): array<T> at list_builder.das:134:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<variant<ok:int const;error:string>> const'
+		invalid argument 'handler' (2). expecting 'block<(message:string const):array<T>> const', passing 'block<(message:string const):variant<ok:string const;error:string>> const'
+	list_builder::ce_try_with(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const; handler: block<(message:string const):array<T>> const): array<T> at list_builder.das:377:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<variant<ok:int const;error:string>> const'
+		invalid argument 'handler' (2). expecting 'block<(message:string const):array<T>> const', passing 'block<(message:string const):variant<ok:string const;error:string>> const'
+	move_builders::ce_try_with(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const; handler: block<(message:string const):R> const): R at move_builders.das:97:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'computation_builders::ResultBuilder&'
+	move_builders::ce_try_with(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const; handler: block<(message:string const):R> const): R at move_builders.das:129:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'computation_builders::ResultBuilder&'
+
+
+error[30341]: no matching functions or generics: ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+computation_macro.das:980:45
+    return qmacro_block() { var $i(input)=$e(outcome); $e(finish); }
+
+                                             ^^^^^^^
+ce_delay(computation_builders::ResultBuilder&, block<auto> const)
+while compiling: main: void
+candidates:
+	builder_protocol::ce_delay(builder: auto const; body: block<auto(R)> const): R at builder_protocol.das:17:4
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; body: block<array<T>> const): array<T> at list_builder.das:73:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::ListContext;element:auto(T)> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	list_builder::ce_delay(builder: tuple<kind:list_builder::MoveListContext;element:auto(T)?> const; body: block<array<T>> const): auto at list_builder.das:323:4
+		invalid argument 'builder' (0). expecting 'tuple<kind:list_builder::MoveListContext;element:auto(T)?> const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<array<T>> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveResultBuilder const; body: block<auto(R)> const): R at move_builders.das:23:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveResultBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+	move_builders::ce_delay(builder: move_builders::MoveOptionBuilder const; body: block<auto(R)> const): R at move_builders.das:68:4
+		invalid argument 'builder' (0). expecting 'move_builders::MoveOptionBuilder const', passing 'computation_builders::ResultBuilder&'
+		invalid argument 'body' (1). expecting 'block<auto(R)> const', passing 'block<auto> const'
+
+
+BindReturn expansion verified: fused List map.
+State expansion verified: native range loop.
+List expansion verified: one output buffer.
+All computation checks passed.

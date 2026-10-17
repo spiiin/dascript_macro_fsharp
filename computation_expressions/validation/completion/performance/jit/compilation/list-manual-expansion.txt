@@ -1,0 +1,51 @@
+require builtin
+
+/*FULLY INFERRED*/
+// [modify_argument]
+[fastcall]
+[$::unused_argument(Arr:bool=true,value:bool=true)]
+// from generic builtin::push(Arr: array<auto(numT)> -const; value: numT const ==const -#): auto
+def private builtin`push`4379756157886752001(var Arr:array<int aka numT> explicit; value:int aka numT const ==const) : void {
+	Arr[__builtin_array_push_back(Arr,4,__context__,__lineinfo__)] = value;
+}
+
+/*FULLY INFERRED*/
+// [modify_external][modify_argument]
+[fastcall]
+// from generic builtin::finalize(a: array<auto(TT)> -const): auto
+def private builtin`finalize`4179837999686245486(var a:array<int aka TT> explicit) : void {
+	__builtin_array_free(a,4,__context__,__lineinfo__);
+}
+
+/*FULLY INFERRED*/
+// [modify_external]
+def public work(seed:int const) : int64 const {
+	var inscope values/*used_in_finally*/:array<int> -const;
+	for ( x in fixed_array<int>(seed, (seed + 1), (seed + 2), (seed + 3)) ) {
+		for ( y in fixed_array<int>(1, 2, 3, 4) ) {
+			__::builtin`push`4379756157886752001(values,x * y);
+		}
+	}
+	var total:int64 = 0;
+	for ( i in range(length(values)) ) {
+		total += (int64(i + 1) * int64(values[i]));
+	}
+	return total;
+} finally {
+	__::builtin`finalize`4179837999686245486(values);
+}
+
+/*FULLY INFERRED*/
+// [modify_external][capture_string]
+// 
+[export]
+[$::export]
+def public main : void {
+	var checksum:int64 = 0;
+	for ( seed in range(0,64) ) {
+		checksum += work(seed);
+	}
+	print(string_builder_temp("CHECKSUM,", checksum, "\n"),__context__,__lineinfo__);
+}
+
+

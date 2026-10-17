@@ -1,0 +1,6 @@
+{
+  "fields": [
+    { "name": "title", "type": "string" },
+    { "name": "leader", "type": "ref", "target": "Player" }
+  ]
+}

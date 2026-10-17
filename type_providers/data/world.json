@@ -1,0 +1,9 @@
+{
+  "name": "Alice",
+  "health": 100,
+  "alive": true,
+  "team": {
+    "title": "Explorers",
+    "leader": { "name": "Bob", "health": 80, "alive": true }
+  }
+}

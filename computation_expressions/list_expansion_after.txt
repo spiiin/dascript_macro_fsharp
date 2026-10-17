@@ -1,0 +1,150 @@
+require rtti_core
+require strings
+require ast_core
+require math
+require builtin
+require rtti
+require computation_resources
+require builder_protocol
+require sequence_runtime
+require zip_runtime
+require ast
+require strings_boost
+require ast_boost
+require templates
+require contracts
+require array_boost
+require algorithm
+require quote
+require templates_boost
+require computation_macro
+require computation_builders
+require computation_effects
+require writer_result_builder
+require state_result_builder
+require list_builder
+require sequence_builder
+require move_builders
+require computation
+
+/*FULLY INFERRED*/
+// [modify_argument]
+[fastcall]
+[$::unused_argument(Arr:bool=true,value:bool=true)]
+// from generic builtin::push(Arr: array<auto(numT)> -const; value: numT const ==const -#): auto
+def private builtin`push`4379756157886752001(var Arr:array<int aka numT> explicit; value:int aka numT const ==const) : void {
+	Arr[__builtin_array_push_back(Arr,4,__context__,__lineinfo__)] = value;
+}
+
+/*FULLY INFERRED*/
+// [modify_argument]
+[fastcall]
+// from generic list_builder::ce_collect_emit(builder: tuple<kind:list_builder::ListContext;element:auto(T)> const; output: array<T> -const; value: T const): auto
+def private list_builder`ce_collect_emit`472143036232013249(builder:tuple<kind:list_builder::ListContext;element:int aka T> const explicit; var output:array<int aka T> -const; value:int aka T const) : void {
+	__::builtin`push`4379756157886752001(output,value);
+}
+
+/*FULLY INFERRED*/
+// [modify_external][modify_argument][capture_string]
+// 
+// from generic list_builder::ce_list_rethrow(values: array<auto(T)> -const): auto
+def private list_builder`ce_list_rethrow`12708381206920742376(var values:array<int aka T> explicit) : void {
+	let failure:string const = string_builder_temp(this_context(__context__).last_exception);
+	__::builtin`finalize`4179837999686245486(values);
+	panic(failure,__context__,__lineinfo__);
+}
+
+/*FULLY INFERRED*/
+// [modify_external][invoke][capture_string][call_capture_string]
+// 
+[has_try_recover]
+// from generic list_builder::ce_collect_into(builder: auto const; body: block<(var output:array<auto(T)> -const):builder_protocol::CeUnit> const): array<T>
+def private list_builder`ce_collect_into`8189992607245250333(builder:tuple<kind:list_builder::ListContext;element:int> const explicit; body:block<(var __ce_sink_0x5_0x35:array<int aka T>):builder_protocol::CeUnit> const explicit) : array<int> {
+	var inscope output/*used_in_finally*/:array<int> -const;
+	try {
+		invoke(body,output);
+	} recover {
+		__::list_builder`ce_list_rethrow`12708381206920742376(output);
+	}
+	return <- output;
+} finally {
+	__::builtin`finalize`4179837999686245486(output);
+}
+
+/*FULLY INFERRED*/
+// [modify_external][modify_argument]
+[fastcall]
+// from generic builtin::finalize(a: array<auto(TT)> -const): auto
+def private builtin`finalize`4179837999686245486(var a:array<int aka TT> explicit) : void {
+	__builtin_array_free(a,4,__context__,__lineinfo__);
+}
+
+/*FULLY INFERRED*/
+// [modify_external][invoke][capture_string][call_capture_string]
+// 
+[export]
+[$::export]
+def public main : void {
+	var _inl0_res:array<int>;
+	{
+		var _inl0_arguu_ce_input_3_0x5_0x1a:tuple<kind:list_builder::ListContext;element:int> = ListBuilder();
+		var _inl0_luu_ce_builder_3_0x5_0x1a:tuple<kind:list_builder::ListContext;element:int> = _inl0_arguu_ce_input_3_0x5_0x1a;
+		{
+			var _inl9_res:array<int>;
+			{
+				var _inl17_res:array<int aka T>;
+				{
+					var _inl25_res:array<int>;
+					_inl25_res <- __::list_builder`ce_collect_into`8189992607245250333(_inl0_luu_ce_builder_3_0x5_0x1a,$(var _inl25_lu_inl17_lu_inl0_luu_ce_sink_0x5_0x35:array<int>):builder_protocol::CeUnit {
+						var _inl32_res:builder_protocol::CeUnit;
+						{
+							let _inl38_argu_inl32_lu_inl25_lu_inl17_lu_inl0_luu_ce_sink_source_0x6_0x8:int const[4] = fixed_array<int>(1, 2, 3, 4);
+							var _inl47_res:builder_protocol::CeUnit;
+							for ( _inl47_l_i in range(0,4) ) {
+								let _inl47_l_snapshot:int const = _inl38_argu_inl32_lu_inl25_lu_inl17_lu_inl0_luu_ce_sink_source_0x6_0x8[_inl47_l_i];
+								var _inl54_res:builder_protocol::CeUnit;
+								{
+									let _inl54_lu_inl38_lu_inl32_lu_inl25_lu_inl17_lu_inl0_l_a:int const = _inl47_l_snapshot;
+									var _inl54_lu_inl51_res:builder_protocol::CeUnit;
+									{
+										let _inl57_argu_inl54_lu_inl51_lu_inl38_lu_inl32_lu_inl25_lu_inl17_lu_inl0_luu_ce_sink_source_0x7_0x8:int const[4] = fixed_array<int>(10, 20, 30, 40);
+										var _inl62_res:builder_protocol::CeUnit;
+										for ( _inl62_l_i in range(0,4) ) {
+											let _inl62_l_snapshot:int const = _inl57_argu_inl54_lu_inl51_lu_inl38_lu_inl32_lu_inl25_lu_inl17_lu_inl0_luu_ce_sink_source_0x7_0x8[_inl62_l_i];
+											var _inl64_res:builder_protocol::CeUnit;
+											{
+												let _inl64_lu_inl57_lu_inl54_lu_inl51_lu_inl38_lu_inl32_lu_inl25_lu_inl17_lu_inl0_l_b:int const = _inl62_l_snapshot;
+												__::list_builder`ce_collect_emit`472143036232013249(_inl0_luu_ce_builder_3_0x5_0x1a,_inl25_lu_inl17_lu_inl0_luu_ce_sink_0x5_0x35,_inl54_lu_inl38_lu_inl32_lu_inl25_lu_inl17_lu_inl0_l_a * _inl64_lu_inl57_lu_inl54_lu_inl51_lu_inl38_lu_inl32_lu_inl25_lu_inl17_lu_inl0_l_b);
+												_inl64_res = struct<builder_protocol::CeUnit>(uninitialized );
+											}
+										}
+										_inl62_res = struct<builder_protocol::CeUnit>(uninitialized );
+										_inl54_lu_inl51_res = _inl62_res;
+									}
+									_inl54_res = _inl54_lu_inl51_res;
+								}
+							}
+							_inl47_res = struct<builder_protocol::CeUnit>(uninitialized );
+							_inl32_res = _inl47_res;
+						}
+						return _inl32_res;
+					});
+					_inl17_res <- _inl25_res;
+				}
+				_inl9_res <- _inl17_res;
+			}
+			var inscope _inl0_luu_ce_run_outcome_0x5_0x1a/*used_in_finally*/:array<int> <- _inl9_res;
+			_inl0_res <- _inl0_luu_ce_run_outcome_0x5_0x1a;
+		} finally {
+			__::builtin`finalize`4179837999686245486(_inl0_luu_ce_run_outcome_0x5_0x1a);
+		}
+	}
+	var inscope values/*used_in_finally*/:array<int> <- _inl0_res;
+	assert(((length(values) == 16) && (values[0] == 10)) && (values[15] == 160));
+	print("List fused demo OK\n",__context__,__lineinfo__);
+} finally {
+	__::builtin`finalize`4179837999686245486(values);
+}
+
+
+List fused demo OK

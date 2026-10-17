@@ -1,0 +1,152 @@
+options gen2
+module computation_effects public
+require ./computation_builders.das public
+
+// Eager, scoped state: the macro copies the initial state into a mutable local.
+struct StateContext {}
+struct StateGet {}
+struct StatePut {}
+
+def StateBuilder(initial : auto(S)) : tuple<kind : StateContext; state : S -const> {
+    return (kind = StateContext(), state = initial)
+}
+def state_get() { return StateGet() }
+// The CE macro supplies the current builder. Blocks never escape the operation.
+def ce_state_modify(builder:auto; update:auto) {
+    return state_put(invoke(update,builder.state))
+}
+def ce_state_gets(builder:tuple<kind:StateContext;state:auto(S)>; project:auto) {
+    return ce_return(builder,invoke(project,builder.state))
+}
+def state_put(value : auto(S)) : tuple<operation : StatePut; state : S -const> {
+    return (operation = StatePut(), state = value)
+}
+def state_result(value : auto(T); state : auto(S)) : tuple<value : T -const; state : S -const> {
+    return (value = value, state = state)
+}
+def ce_unwrap(builder : tuple<kind : StateContext; state : auto(S)>; op : StateGet) : S {
+    return builder.state
+}
+def ce_unwrap(builder : tuple<kind : StateContext; state : auto(S)>;
+              op : tuple<operation : StatePut; state : S>) : CeUnit {
+    return CeUnit()
+}
+def ce_unwrap(builder : tuple<kind : StateContext; state : auto(S)>;
+              op : tuple<value : auto(T); state : S>) : T {
+    return op.value
+}
+def ce_bind(var builder : tuple<kind : StateContext; state : auto(S)>; op : StateGet;
+            next : block<(value : S) : auto(R)>) : R {
+    // Snapshot before invoking the continuation; it may replace the state.
+    let snapshot = builder.state
+    return invoke(next, snapshot)
+}
+def ce_bind(var builder : tuple<kind : StateContext; state : auto(S)>;
+            op : tuple<operation : StatePut; state : S>;
+            next : block<(value : CeUnit) : auto(R)>) : R {
+    builder.state = op.state
+    return invoke(next, CeUnit())
+}
+def ce_bind(var builder : tuple<kind : StateContext; state : auto(S)>;
+            op : tuple<value : auto(T); state : S>;
+            next : block<(value : T) : auto(R)>) : R {
+    builder.state = op.state
+    return invoke(next, op.value)
+}
+def ce_return(builder : tuple<kind : StateContext; state : auto(S)>; value : auto(T)) {
+    return state_result(value, builder.state)
+}
+def ce_zero(builder : tuple<kind : StateContext; state : auto(S)>) {
+    return state_result(CeUnit(), builder.state)
+}
+def ce_return_from(var builder : tuple<kind : StateContext; state : auto(S)>;
+                   value : tuple<value : auto(T); state : S>) {
+    builder.state = value.state
+    return value
+}
+def ce_combine(var builder : tuple<kind : StateContext; state : auto(S)>;
+               first : tuple<value : CeUnit; state : S>; next : block<() : auto(R)>) : R {
+    builder.state = first.state
+    return ce_delay(builder, next)
+}
+def ce_loop_failed(builder : tuple<kind : StateContext; state : auto(S)>;
+                   value : tuple<value : CeUnit; state : S>) : bool {
+    return false
+}
+def ce_loop_append(var builder : tuple<kind : StateContext; state : auto(S)>;
+                   first, step : tuple<value : CeUnit; state : S>) {
+    builder.state = step.state
+    return step
+}
+
+// A Writer carries a copyable value plus a string log. No global log/sink.
+struct WriterBuilder {}
+def writer_value(value : auto(T); log : string = "") : tuple<value : T -const; log : string> {
+    return (value = value, log = log)
+}
+def tell(message : string) { return writer_value(CeUnit(), message) }
+def ce_unwrap(builder : WriterBuilder; value : tuple<value : auto(T); log : string>) : T {
+    return value.value
+}
+def ce_bind(builder : WriterBuilder; value : tuple<value : auto(T); log : string>;
+            next : block<(item : T) : auto(R)>) : R {
+    let rest = invoke(next, value.value)
+    return writer_value(rest.value, value.log + rest.log)
+}
+def ce_return(builder : WriterBuilder; value : auto(T)) { return writer_value(value) }
+def ce_zero(builder : WriterBuilder) { return tell("") }
+def ce_return_from(builder : WriterBuilder; value : tuple<value : auto(T); log : string>) {
+    return value
+}
+def ce_combine(builder : WriterBuilder; first : tuple<value : CeUnit; log : string>;
+               next : block<() : auto(R)>) : R {
+    let rest = ce_delay(builder, next)
+    return writer_value(rest.value, first.log + rest.log)
+}
+def ce_loop_failed(builder : WriterBuilder; step : tuple<value : CeUnit; log : string>) : bool {
+    return false
+}
+def ce_loop_append(builder : WriterBuilder; first, step : tuple<value : CeUnit; log : string>) {
+    return tell(first.log + step.log)
+}
+
+
+
+def ce_protocol(builder : tuple<kind:StateContext;state:auto(S)>) { return CeValueProtocol() }
+def ce_protocol(builder : WriterBuilder) { return CeValueProtocol() }
+
+def ce_bind_return(builder : WriterBuilder; source : tuple<value:auto(T);log:string>;
+                   mapper : block<(value:T):auto(U)>) { return writer_value(invoke(mapper, source.value), source.log) }
+
+// Snapshot/update before mapping; read the final state only after the mapper.
+def ce_bind_return(var builder:tuple<kind:StateContext;state:auto(S)>; op:StateGet;
+                   mapper:block<(value:S):auto(U)>) : typedecl(ce_return(builder,default<U>)) {
+    let snapshot=builder.state
+    let mapped=invoke(mapper,snapshot)
+    return state_result(mapped,builder.state)
+}
+def ce_bind_return(var builder:tuple<kind:StateContext;state:auto(S)>;
+                   op:tuple<operation:StatePut;state:S>;
+                   mapper:block<(value:CeUnit):auto(U)>) : typedecl(ce_return(builder,default<U>)) {
+    builder.state=op.state
+    let mapped=invoke(mapper,CeUnit())
+    return state_result(mapped,builder.state)
+}
+def ce_bind_return(var builder:tuple<kind:StateContext;state:auto(S)>;
+                   op:tuple<value:auto(T);state:S>;
+                   mapper:block<(value:T):auto(U)>) : typedecl(ce_return(builder,default<U>)) {
+    builder.state=op.state
+    let mapped=invoke(mapper,op.value)
+    return state_result(mapped,builder.state)
+}
+// State never short-circuits. A numeric range owns no resource: use a native
+// loop instead of allocating the generic protected iterator/cursor. Keep the
+// body outcome authoritative, just as ce_loop_append does in the fallback.
+def ce_for(var builder:tuple<kind:StateContext;state:auto(S)>; source:range;
+           body:block<(item:int):tuple<value:CeUnit;state:S>>) {
+    for (item in source) {
+        let step=invoke(body,item)
+        builder.state=step.state
+    }
+    return ce_zero(builder)
+}

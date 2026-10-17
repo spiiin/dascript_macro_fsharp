@@ -1,0 +1,58 @@
+require builtin
+
+/*FULLY INFERRED*/
+[nosideeffects]
+// 
+def public work(seed:int const) : int64 const {
+	var _inl0_res:variant<ok:int;error:string>;
+	if ( (seed % 7) == 0 ) {
+		_inl0_res = [[variant<ok:int;error:string> error = "invalid"]];
+	} else {
+		_inl0_res = [[variant<ok:int;error:string> ok = (seed + 1)]];
+	}
+	let a:variant<ok:int;error:string> const = _inl0_res;
+	if ( a is error ) {
+		return -1;
+	} else {
+		var _inl1_res/*early_out*/:variant<ok:int;error:string>;
+		{
+			let _inl1_arg_n:int const = (a as ok * 2);
+			if ( (_inl1_arg_n % 7) == 0 ) {
+				_inl1_res = [[variant<ok:int;error:string> error = "invalid"]];
+			} else {
+				_inl1_res = [[variant<ok:int;error:string> ok = (_inl1_arg_n + 1)]];
+			}
+		}
+		let b/*early_out*/:variant<ok:int;error:string> const = _inl1_res;
+		if ( b is error ) {
+			return -1;
+		} else {
+			var _inl2_res/*early_out*/:variant<ok:int;error:string>;
+			{
+				let _inl2_arg_n:int const = (b as ok + 3);
+				if ( (_inl2_arg_n % 7) == 0 ) {
+					_inl2_res = [[variant<ok:int;error:string> error = "invalid"]];
+				} else {
+					_inl2_res = [[variant<ok:int;error:string> ok = (_inl2_arg_n + 1)]];
+				}
+			}
+			let c/*early_out*/:variant<ok:int;error:string> const = _inl2_res;
+			return c is error ? -1 : (int64(c as ok) * 2);
+		}
+	}
+}
+
+/*FULLY INFERRED*/
+// [modify_external][capture_string][call_capture_string]
+// 
+[export]
+[$::export]
+def public main : void {
+	var checksum:int64 = 0;
+	for ( seed in range(0,64) ) {
+		checksum += work(seed);
+	}
+	print(string_builder_temp("CHECKSUM,", checksum, "\n"),__context__,__lineinfo__);
+}
+
+

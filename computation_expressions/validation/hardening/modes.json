@@ -1,0 +1,152 @@
+{
+  "Compiler": "C:\\src\\daslang-0.6.4\\daslang_bundle\\bin\\daslang.exe",
+  "CompilerSha256": "7EC8681F5E0F5B2786ECC26515039B79C99A3B4A1BEE92CE17295A230FEE3D55",
+  "RecordedAt": "2026-10-17T15:45:49.4529263+02:00",
+  "Scope": "explicit subset; AOT generation is NOT runtime execution",
+  "Results": [
+    {
+      "Mode": "Interpreter",
+      "File": "test_computation.das",
+      "Status": "passed",
+      "ExitCode": 0,
+      "ElapsedMs": 1924.036,
+      "Log": "Interpreter-test_computation.log"
+    },
+    {
+      "Mode": "Interpreter",
+      "File": "test_composition_laws.das",
+      "Status": "passed",
+      "ExitCode": 0,
+      "ElapsedMs": 2012.7541,
+      "Log": "Interpreter-test_composition_laws.log"
+    },
+    {
+      "Mode": "Interpreter",
+      "File": "test_state_operations.das",
+      "Status": "passed",
+      "ExitCode": 0,
+      "ElapsedMs": 2209.4196,
+      "Log": "Interpreter-test_state_operations.log"
+    },
+    {
+      "Mode": "Interpreter",
+      "File": "test_list_benchmarks.das",
+      "Status": "passed",
+      "ExitCode": 0,
+      "ElapsedMs": 2483.8986,
+      "Log": "Interpreter-test_list_benchmarks.log"
+    },
+    {
+      "Mode": "Interpreter",
+      "File": "repro_jit_tuple_recover.das",
+      "Status": "passed",
+      "ExitCode": 0,
+      "ElapsedMs": 154.7635,
+      "Log": "Interpreter-repro_jit_tuple_recover.log"
+    },
+    {
+      "Mode": "Interpreter",
+      "File": "repro_jit_state_recover.das",
+      "Status": "passed",
+      "ExitCode": 0,
+      "ElapsedMs": 1393.7931,
+      "Log": "Interpreter-repro_jit_state_recover.log"
+    },
+    {
+      "Mode": "Jit",
+      "File": "test_computation.das",
+      "Status": "passed",
+      "ExitCode": 0,
+      "ElapsedMs": 17041.9135,
+      "Log": "Jit-test_computation.log"
+    },
+    {
+      "Mode": "Jit",
+      "File": "test_composition_laws.das",
+      "Status": "passed",
+      "ExitCode": 0,
+      "ElapsedMs": 31650.1871,
+      "Log": "Jit-test_composition_laws.log"
+    },
+    {
+      "Mode": "Jit",
+      "File": "test_state_operations.das",
+      "Status": "passed",
+      "ExitCode": 0,
+      "ElapsedMs": 24101.0878,
+      "Log": "Jit-test_state_operations.log"
+    },
+    {
+      "Mode": "Jit",
+      "File": "test_list_benchmarks.das",
+      "Status": "passed",
+      "ExitCode": 0,
+      "ElapsedMs": 17090.2822,
+      "Log": "Jit-test_list_benchmarks.log"
+    },
+    {
+      "Mode": "Jit",
+      "File": "repro_jit_tuple_recover.das",
+      "Status": "known_access_violation",
+      "ExitCode": -1073741819,
+      "ElapsedMs": 17003.1901,
+      "Log": "Jit-repro_jit_tuple_recover.log"
+    },
+    {
+      "Mode": "Jit",
+      "File": "repro_jit_state_recover.das",
+      "Status": "known_access_violation",
+      "ExitCode": -1073741819,
+      "ElapsedMs": 13716.0042,
+      "Log": "Jit-repro_jit_state_recover.log"
+    },
+    {
+      "Mode": "AotGenerate",
+      "File": "test_computation.das",
+      "Status": "generated_not_executed",
+      "ExitCode": 0,
+      "ElapsedMs": 6004.8673,
+      "Log": "AotGenerate-test_computation.log"
+    },
+    {
+      "Mode": "AotGenerate",
+      "File": "test_composition_laws.das",
+      "Status": "generated_not_executed",
+      "ExitCode": 0,
+      "ElapsedMs": 6352.8238,
+      "Log": "AotGenerate-test_composition_laws.log"
+    },
+    {
+      "Mode": "AotGenerate",
+      "File": "test_state_operations.das",
+      "Status": "generated_not_executed",
+      "ExitCode": 0,
+      "ElapsedMs": 7997.4138,
+      "Log": "AotGenerate-test_state_operations.log"
+    },
+    {
+      "Mode": "AotGenerate",
+      "File": "test_list_benchmarks.das",
+      "Status": "generated_not_executed",
+      "ExitCode": 0,
+      "ElapsedMs": 5886.1915,
+      "Log": "AotGenerate-test_list_benchmarks.log"
+    },
+    {
+      "Mode": "AotGenerate",
+      "File": "repro_jit_tuple_recover.das",
+      "Status": "generated_not_executed",
+      "ExitCode": 0,
+      "ElapsedMs": 4339.8072,
+      "Log": "AotGenerate-repro_jit_tuple_recover.log"
+    },
+    {
+      "Mode": "AotGenerate",
+      "File": "repro_jit_state_recover.das",
+      "Status": "generated_not_executed",
+      "ExitCode": 0,
+      "ElapsedMs": 5051.2107,
+      "Log": "AotGenerate-repro_jit_state_recover.log"
+    }
+  ]
+}

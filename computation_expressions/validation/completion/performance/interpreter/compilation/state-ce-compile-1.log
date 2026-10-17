@@ -1,0 +1,170 @@
+compiler took 0.007855, builtin (C:/src/daslang-0.6.4/daslang_bundle/daslib/builtin.das) -- 0 functions
+	parse    0.006588
+	infer    0.000412 (2 passes)
+	optimize 5.4e-05
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.001921, rtti (C:/src/daslang-0.6.4/daslang_bundle/daslib/rtti.das) -- 5 functions
+	parse    0.000638
+	infer    0.000461 (4 passes)
+	optimize 0.000245
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.000471, computation_resources (C:/src/dascript_macro_fsharp/computation_expressions/lib/computation_resources.das) -- 0 functions
+	parse    0.000222
+	infer    1.5e-05 (1 passes)
+	optimize 1.6e-05
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.000564, builder_protocol (C:/src/dascript_macro_fsharp/computation_expressions/lib/builder_protocol.das) -- 0 functions
+	parse    0.000269
+	infer    3.8e-05 (2 passes)
+	optimize 2e-05
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.000965, sequence_runtime (C:/src/dascript_macro_fsharp/computation_expressions/lib/sequence_runtime.das) -- 1 functions
+	parse    0.000567
+	infer    5.6e-05 (2 passes)
+	optimize 3.2e-05
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.000612, zip_runtime (C:/src/dascript_macro_fsharp/computation_expressions/lib/zip_runtime.das) -- 1 functions
+	parse    0.000217
+	infer    4.6e-05 (2 passes)
+	optimize 4.5e-05
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.008012, ast (C:/src/daslang-0.6.4/daslang_bundle/daslib/ast.das) -- 0 functions
+	parse    0.004259
+	infer    0.001492 (3 passes)
+	optimize 0.000402
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.009295, strings_boost (C:/src/daslang-0.6.4/daslang_bundle/daslib/strings_boost.das) -- 29 functions
+	parse    0.000965
+	infer    0.00448 (14 passes)
+	optimize 0.002317
+	macro (in infer) 0
+	macro mods 0
+simulate (including init script) took 0.005465, ast_boost (C:/src/daslang-0.6.4/daslang_bundle/daslib/ast_boost.das)
+compiler took 0.090449, ast_boost (C:/src/daslang-0.6.4/daslang_bundle/daslib/ast_boost.das) -- 178 functions
+	parse    0.004505
+	infer    0.050329 (17 passes)
+	optimize 0.015413
+	macro (in infer) 0
+	macro mods 0.006305
+simulate (including init script) took 0.001404, templates (C:/src/daslang-0.6.4/daslang_bundle/daslib/templates.das)
+compiler took 0.010649, templates (C:/src/daslang-0.6.4/daslang_bundle/daslib/templates.das) -- 30 functions
+	parse    0.0005
+	infer    0.005838 (13 passes)
+	optimize 0.001427
+	macro (in infer) 0.000111
+	macro mods 0.00171
+simulate (including init script) took 0.003182, contracts (C:/src/daslang-0.6.4/daslang_bundle/daslib/contracts.das)
+compiler took 0.036827, contracts (C:/src/daslang-0.6.4/daslang_bundle/daslib/contracts.das) -- 124 functions
+	parse    0.00126
+	infer    0.022419 (17 passes)
+	optimize 0.004287
+	macro (in infer) 8.2e-05
+	macro mods 0.003819
+compiler took 0.001593, array_boost (C:/src/daslang-0.6.4/daslang_bundle/daslib/array_boost.das) -- 0 functions
+	parse    0.00101
+	infer    5.7e-05 (1 passes)
+	optimize 6e-05
+	macro (in infer) 5.2e-05
+	macro mods 0
+compiler took 0.002244, algorithm (C:/src/daslang-0.6.4/daslang_bundle/daslib/algorithm.das) -- 0 functions
+	parse    0.001643
+	infer    5.3e-05 (1 passes)
+	optimize 6.4e-05
+	macro (in infer) 9.4e-05
+	macro mods 0
+simulate (including init script) took 0.005799, quote (C:/src/daslang-0.6.4/daslang_bundle/daslib/quote.das)
+compiler took 0.036525, quote (C:/src/daslang-0.6.4/daslang_bundle/daslib/quote.das) -- 60 functions
+	parse    0.001972
+	infer    0.016315 (15 passes)
+	optimize 0.006224
+	macro (in infer) 7.2e-05
+	macro mods 0.006881
+simulate (including init script) took 0.007593, templates_boost (C:/src/daslang-0.6.4/daslang_bundle/daslib/templates_boost.das)
+compiler took 0.164373, templates_boost (C:/src/daslang-0.6.4/daslang_bundle/daslib/templates_boost.das) -- 105 functions
+	parse    0.006235
+	infer    0.104332 (18 passes)
+	optimize 0.022187
+	macro (in infer) 0.00036
+	macro mods 0.009384
+simulate (including init script) took 0.026724, computation_macro (C:/src/dascript_macro_fsharp/computation_expressions/lib/computation_macro.das)
+compiler took 0.279886, computation_macro (C:/src/dascript_macro_fsharp/computation_expressions/lib/computation_macro.das) -- 238 functions
+	parse    0.006246
+	infer    0.164404 (19 passes)
+	optimize 0.036147
+	macro (in infer) 0.006051
+	macro mods 0.030251
+compiler took 0.003717, computation_builders (C:/src/dascript_macro_fsharp/computation_expressions/lib/computation_builders.das) -- 12 functions
+	parse    0.001148
+	infer    0.000774 (6 passes)
+	optimize 0.000564
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.001975, computation_effects (C:/src/dascript_macro_fsharp/computation_expressions/lib/computation_effects.das) -- 7 functions
+	parse    0.000659
+	infer    0.000278 (5 passes)
+	optimize 0.000296
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.00194, writer_result_builder (C:/src/dascript_macro_fsharp/computation_expressions/lib/writer_result_builder.das) -- 8 functions
+	parse    0.000508
+	infer    0.000392 (5 passes)
+	optimize 0.000301
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.001378, state_result_builder (C:/src/dascript_macro_fsharp/computation_expressions/lib/state_result_builder.das) -- 0 functions
+	parse    0.000729
+	infer    4e-05 (2 passes)
+	optimize 0.000152
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.002956, list_builder (C:/src/dascript_macro_fsharp/computation_expressions/lib/list_builder.das) -- 2 functions
+	parse    0.001925
+	infer    0.000177 (7 passes)
+	optimize 0.000277
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.00099, sequence_builder (C:/src/dascript_macro_fsharp/computation_expressions/lib/sequence_builder.das) -- 2 functions
+	parse    0.000159
+	infer    0.000124 (7 passes)
+	optimize 0.000233
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.00181, move_builders (C:/src/dascript_macro_fsharp/computation_expressions/lib/move_builders.das) -- 8 functions
+	parse    0.000833
+	infer    0.000188 (3 passes)
+	optimize 0.000189
+	macro (in infer) 0
+	macro mods 0
+compiler took 0.000591, computation (C:/src/dascript_macro_fsharp/computation_expressions/lib/computation.das) -- 0 functions
+	parse    7.3e-05
+	infer    1e-05 (1 passes)
+	optimize 0.000121
+	macro (in infer) 0
+	macro mods 0
+total compile took 0.760242, C:\src\dascript_macro_fsharp\computation_expressions\benchmarks\metrics\state-ce.das -- 7 functions
+	require  0.006878
+	cache read 0 (0 modules, decode 0, finalize 0 of which macro simulate 0)
+	parse    0.043249
+	infer    0.430023
+	optimize 0.092207
+	macro (in infer) 0.067818
+	macro mods 0.05835
+simulate (including init script) took 0.000493, C:\src\dascript_macro_fsharp\computation_expressions\benchmarks\metrics\state-ce.das
+dry run: C:\src\dascript_macro_fsharp\computation_expressions\benchmarks\metrics\state-ce.das
+startup: main total 0.811537
+	arguments 0.00015
+	builtin modules 0.017095
+	module scan 0.009465
+	initialize 0.001395
+	compile  0.760421
+	simulate 0.000516
+	run      0
+	teardown 0.006229
+	shutdown 0.016244

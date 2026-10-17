@@ -1,0 +1,26 @@
+compiler took 0.007706, builtin (C:/src/daslang-0.6.4/daslang_bundle/daslib/builtin.das) -- 0 functions
+	parse    0.006426
+	infer    0.000447 (2 passes)
+	optimize 4.9e-05
+	macro (in infer) 0
+	macro mods 0
+total compile took 0.010714, C:\src\dascript_macro_fsharp\computation_expressions\benchmarks\metrics\result-manual.das -- 2 functions
+	require  0.000862
+	cache read 0 (0 modules, decode 0, finalize 0 of which macro simulate 0)
+	parse    0.00653
+	infer    0.001031
+	optimize 0.000355
+	macro (in infer) 0
+	macro mods 0
+simulate (including init script) took 0.000832, C:\src\dascript_macro_fsharp\computation_expressions\benchmarks\metrics\result-manual.das
+dry run: C:\src\dascript_macro_fsharp\computation_expressions\benchmarks\metrics\result-manual.das
+startup: main total 0.045187
+	arguments 0.00018
+	builtin modules 0.017947
+	module scan 0.008581
+	initialize 0.001506
+	compile  0.010804
+	simulate 0.000853
+	run      0
+	teardown 5.4e-05
+	shutdown 0.005242

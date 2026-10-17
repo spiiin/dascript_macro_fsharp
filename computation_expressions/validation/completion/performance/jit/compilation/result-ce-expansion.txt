@@ -1,0 +1,136 @@
+require rtti_core
+require strings
+require ast_core
+require math
+require builtin
+require rtti
+require computation_resources
+require builder_protocol
+require sequence_runtime
+require zip_runtime
+require ast
+require strings_boost
+require ast_boost
+require templates
+require contracts
+require array_boost
+require algorithm
+require quote
+require templates_boost
+require computation_macro
+require computation_builders
+require computation_effects
+require writer_result_builder
+require state_result_builder
+require list_builder
+require sequence_builder
+require move_builders
+require computation
+
+/*FULLY INFERRED*/
+// [invoke][capture_string]
+// 
+def public work(seed:int const) : int64 const {
+	var _inl0_res:variant<ok:int const;error:string>;
+	{
+		var _inl23_res:variant<ok:int const;error:string>;
+		{
+			var _inl34_res:variant<ok:int const;error:string>;
+			{
+				var _inl53_res:variant<ok:int;error:string>;
+				if ( (seed % 7) == 0 ) {
+					_inl53_res = [[variant<ok:int;error:string> error = "invalid"]];
+				} else {
+					_inl53_res = [[variant<ok:int;error:string> ok = (seed + 1)]];
+				}
+				let _inl44_argu_inl34_lu_inl23_lu_inl0_luu_ce_group_source_0x9_0x8:variant<ok:int;error:string> const = _inl53_res;
+				var _inl54_res:variant<ok:int const;error:string>;
+				if ( _inl44_argu_inl34_lu_inl23_lu_inl0_luu_ce_group_source_0x9_0x8 is error ) {
+					_inl54_res = [[variant<ok:int const;error:string> error = _inl44_argu_inl34_lu_inl23_lu_inl0_luu_ce_group_source_0x9_0x8 as error]];
+				} else {
+					var _inl62_res:variant<ok:int const;error:string>;
+					{
+						let _inl62_argu_inl44_lu_inl34_lu_inl23_lu_inl0_luu_ce_value_0x9_0x8:int const = _inl44_argu_inl34_lu_inl23_lu_inl0_luu_ce_group_source_0x9_0x8 as ok;
+						let _inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_l_a:int const = _inl62_argu_inl44_lu_inl34_lu_inl23_lu_inl0_luu_ce_value_0x9_0x8;
+						var _inl70_res:variant<ok:int const;error:string>;
+						{
+							var _inl83_res:variant<ok:int;error:string>;
+							{
+								let _inl83_arg_n:int const = (_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_l_a * 2);
+								if ( (_inl83_arg_n % 7) == 0 ) {
+									_inl83_res = [[variant<ok:int;error:string> error = "invalid"]];
+								} else {
+									_inl83_res = [[variant<ok:int;error:string> ok = (_inl83_arg_n + 1)]];
+								}
+							}
+							let _inl77_argu_inl70_lu_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_luu_ce_group_source_0xa_0x8:variant<ok:int;error:string> const = _inl83_res;
+							var _inl84_res:variant<ok:int const;error:string>;
+							if ( _inl77_argu_inl70_lu_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_luu_ce_group_source_0xa_0x8 is error ) {
+								_inl84_res = [[variant<ok:int const;error:string> error = _inl77_argu_inl70_lu_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_luu_ce_group_source_0xa_0x8 as error]];
+							} else {
+								var _inl89_res:variant<ok:int const;error:string>;
+								{
+									let _inl89_argu_inl77_lu_inl70_lu_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_luu_ce_value_0xa_0x8:int const = _inl77_argu_inl70_lu_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_luu_ce_group_source_0xa_0x8 as ok;
+									let _inl89_lu_inl77_lu_inl70_lu_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_l_b:int const = _inl89_argu_inl77_lu_inl70_lu_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_luu_ce_value_0xa_0x8;
+									var _inl94_res:variant<ok:int const;error:string>;
+									{
+										var _inl101_res:variant<ok:int;error:string>;
+										{
+											let _inl101_arg_n:int const = (_inl89_lu_inl77_lu_inl70_lu_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_l_b + 3);
+											if ( (_inl101_arg_n % 7) == 0 ) {
+												_inl101_res = [[variant<ok:int;error:string> error = "invalid"]];
+											} else {
+												_inl101_res = [[variant<ok:int;error:string> ok = (_inl101_arg_n + 1)]];
+											}
+										}
+										let _inl98_argu_inl94_lu_inl89_lu_inl77_lu_inl70_lu_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_luu_ce_group_source_0xb_0x8:variant<ok:int;error:string> const = _inl101_res;
+										var _inl102_res:variant<ok:int const;error:string>;
+										{
+											var _inl104_res:variant<ok:int const;error:string>;
+											if ( _inl98_argu_inl94_lu_inl89_lu_inl77_lu_inl70_lu_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_luu_ce_group_source_0xb_0x8 is error ) {
+												_inl104_res = [[variant<ok:int const;error:string> error = _inl98_argu_inl94_lu_inl89_lu_inl77_lu_inl70_lu_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_luu_ce_group_source_0xb_0x8 as error]];
+											} else {
+												_inl104_res = [[variant<ok:int const;error:string> ok = invoke($(_inl102_lu_inl98_lu_inl94_lu_inl89_lu_inl77_lu_inl70_lu_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_luu_ce_value_0xb_0x8:int const):int const {
+													let _inl102_lu_inl98_lu_inl94_lu_inl89_lu_inl77_lu_inl70_lu_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_l_c:int const = _inl102_lu_inl98_lu_inl94_lu_inl89_lu_inl77_lu_inl70_lu_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_luu_ce_value_0xb_0x8;
+													return _inl102_lu_inl98_lu_inl94_lu_inl89_lu_inl77_lu_inl70_lu_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_l_c * 2;
+												},_inl98_argu_inl94_lu_inl89_lu_inl77_lu_inl70_lu_inl62_lu_inl44_lu_inl34_lu_inl23_lu_inl0_luu_ce_group_source_0xb_0x8 as ok)]];
+											}
+											_inl102_res = _inl104_res;
+										}
+										_inl94_res = _inl102_res;
+									}
+									_inl89_res = _inl94_res;
+								}
+								_inl84_res = _inl89_res;
+							}
+							_inl70_res = _inl84_res;
+						}
+						_inl62_res = _inl70_res;
+					}
+					_inl54_res = _inl62_res;
+				}
+				_inl34_res = _inl54_res;
+			}
+			_inl23_res = _inl34_res;
+		}
+		var _inl0_luu_ce_run_outcome_0x8_0xf:variant<ok:int const;error:string> = _inl23_res;
+		_inl0_res = _inl0_luu_ce_run_outcome_0x8_0xf;
+	}
+	let result:variant<ok:int const;error:string> const = _inl0_res;
+	return result is error ? -1 : int64(result as ok);
+}
+
+/*FULLY INFERRED*/
+// [modify_external][invoke][capture_string][call_capture_string]
+// 
+[export]
+[$::export]
+def public main : void {
+	var checksum:int64 = 0;
+	for ( seed in range(0,64) ) {
+		checksum += work(seed);
+	}
+	print(string_builder_temp("CHECKSUM,", checksum, "\n"),__context__,__lineinfo__);
+}
+
+

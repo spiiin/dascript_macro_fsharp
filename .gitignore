@@ -1,0 +1,14 @@
+.jitted_scripts/
+.work/
+benchmark-results/
+benchmark-results-jit/
+state-benchmark-results/
+state-benchmark-jit/
+list-benchmark-results/
+list-benchmark-jit/
+
+mode-results*/
+performance-metrics/
+performance-jit/
+
+compilation-metrics/
