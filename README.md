@@ -54,6 +54,8 @@
 
 Полный текущий набор Task: [TASK_COMPLETION.md](computation_expressions/TASK_COMPLETION.md).
 Реальный TCP и peer EOF: [TASK_TCP.md](computation_expressions/TASK_TCP.md).
+WebSocket через dasHV: [TASK_HV.md](computation_expressions/TASK_HV.md) —
+пайповый bind, echo, отмена, таймаут и закрытие соединения; интерпретатор и JIT.
 Сборка и исполнение 27 Task-тестов в AOT-хосте: [AOT_RUNTIME.md](computation_expressions/AOT_RUNTIME.md).
 
 ## Подробности и история возможностей

@@ -13,7 +13,7 @@ foreach($name in $modules) {
 foreach($name in $modules) {
     foreach($match in [regex]::Matches([IO.File]::ReadAllText((Join-Path $PSScriptRoot ("lib/"+$name))),'(?m)^require\s+([\w./]+)')) {
         $dependency=$match.Groups[1].Value
-        if($dependency.StartsWith('daslib/') -or $dependency -eq 'strings'){continue}
+        if($dependency.StartsWith('daslib/') -or $dependency -eq 'strings' -or $dependency -eq 'dashv/dashv_boost'){continue}
         $dependency=[IO.Path]::GetFileNameWithoutExtension($dependency)+'.das'
         if($dependency -notin $modules){throw "Missing public dependency: $dependency (from $name)"}
     }
@@ -32,7 +32,7 @@ Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_CANCELLATION.md') -Destina
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_DELAY.md') -Destination $Destination
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_ARRAY.md') -Destination $Destination
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_AND_BIND.md') -Destination $Destination
-foreach($name in @('TASK_COMPLETION.md','TASK_TCP.md','AOT_RUNTIME.md')) {
+foreach($name in @('TASK_COMPLETION.md','TASK_TCP.md','TASK_HV.md','AOT_RUNTIME.md')) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination $Destination
 }
 New-Item -ItemType Directory -Path (Join-Path $Destination 'aot_host') -Force | Out-Null

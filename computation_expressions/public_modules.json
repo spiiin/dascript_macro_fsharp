@@ -26,5 +26,6 @@
   "task_delay.das",
   "task_combinators.das",
   "task_scheduler.das",
-  "task_tcp.das"
+  "task_tcp.das",
+  "task_hv.das"
 ]

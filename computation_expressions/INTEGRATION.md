@@ -60,5 +60,8 @@ deferred List. Тест не использует support или тестовы�
 
 Полный Task-контракт: [TASK_COMPLETION.md](TASK_COMPLETION.md).
 Сеть подключается отдельным `require ./lib/task_tcp.das`, см. TASK_TCP.md.
+Для WebSocket: `require ./lib/task_hv.das`, см. [TASK_HV.md](TASK_HV.md).
+Этот необязательный модуль требует dasHV (`dashv/dashv_boost`) из SDK.
+Остальные публичные модули можно использовать без dasHV.
 AOT host template находится в aot_host/; runner run_aot.ps1 и тестовый manifest
 доступны в исходном репозитории, см. AOT_RUNTIME.md.

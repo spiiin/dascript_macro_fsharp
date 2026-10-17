@@ -104,6 +104,10 @@ try {
         Check 'tests/test_task_owned.das' $true 'Task owned checks OK'
         & (Join-Path $PSScriptRoot 'test_task_tcp.ps1') -Daslang $Daslang
         & (Join-Path $PSScriptRoot 'test_task_tcp.ps1') -Daslang $Daslang -Example
+        & (Join-Path $PSScriptRoot 'test_task_hv.ps1') -Daslang $Daslang
+        & (Join-Path $PSScriptRoot 'test_task_hv.ps1') -Daslang $Daslang -Example
+        & (Join-Path $PSScriptRoot 'test_task_hv.ps1') -Daslang $Daslang -AndBind
+        & (Join-Path $PSScriptRoot 'test_task_hv.ps1') -Daslang $Daslang -AndBind -Example
         Check 'tests/test_task_and_bind_unsupported.das' $false 'and_bind is unsupported for builder'
         Check 'tests/test_task_pointer.das' $false 'task: payload must own its data'
         & (Join-Path $PSScriptRoot 'test_diagnostics.ps1') -Daslang $Daslang

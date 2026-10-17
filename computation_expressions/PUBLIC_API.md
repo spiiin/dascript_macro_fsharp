@@ -1,6 +1,9 @@
 # Публичный API computation expressions
 
 Требуется Daslang 0.6.4 со стандартной daslib. SDK не включён в экспорт.
+Необязательный `./lib/task_hv.das` требует установленный `dashv/dashv_boost`.
+API: `hv_websocket`, `ws_connect`, `ws_send_text`, `ws_receive_text`,
+`HvWebSocketConfig`, `hv_websocket_stats`; контракт и пример: [TASK_HV.md](TASK_HV.md).
 
 В поставке `lib/` содержит только библиотечные модули. Из корня приложения:
 

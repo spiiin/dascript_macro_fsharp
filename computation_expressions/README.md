@@ -4,7 +4,7 @@
 
 | Каталог | Содержимое |
 |---|---|
-| lib/ | 28 публичных модулей без тестовых builders |
+| lib/ | 29 публичных модулей без тестовых builders |
 | examples/ | Запускаемые примеры |
 | tests/ | Положительные и отрицательные проверки; tests/repro/ — известные сбои |
 | support/ | Демонстрационные builders и вспомогательные модули примеров/тестов |
@@ -50,3 +50,5 @@ WhenAll для динамического массива задач, поряд�
 
 Завершение текущего набора Task: [TASK_COMPLETION.md](TASK_COMPLETION.md).
 Реальный TCP: [TASK_TCP.md](TASK_TCP.md). Сборка и исполнение AOT: [AOT_RUNTIME.md](AOT_RUNTIME.md).
+WebSocket через dasHV: [TASK_HV.md](TASK_HV.md), пайповый bind и владение соединением.
+Два WebSocket через and_bind с отменой и таймаутом: [пример](examples/task_hv_and_bind_demo.das).

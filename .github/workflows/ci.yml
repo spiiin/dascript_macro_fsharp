@@ -67,6 +67,12 @@ jobs:
         run: |
           & ./computation_expressions/test_task_tcp.ps1 -Jit
 
+      - name: Task / dasHV WebSocket and peer closure (JIT)
+        if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
+        run: |
+          & ./computation_expressions/test_task_hv.ps1 -Jit
+          & ./computation_expressions/test_task_hv.ps1 -AndBind -Jit
+
       - name: Task / build and execute strict AOT host
         if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
         run: |

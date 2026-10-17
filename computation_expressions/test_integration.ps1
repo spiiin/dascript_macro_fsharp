@@ -6,7 +6,7 @@ $destination=Join-Path ([IO.Path]::GetFullPath($OutputDirectory)) ('integration-
 $expected=@(Get-Content (Join-Path $PSScriptRoot 'public_modules.json') -Raw|ConvertFrom-Json)
 $actual=@(Get-ChildItem (Join-Path $destination 'lib') -Filter '*.das'|Select-Object -ExpandProperty Name)
 if(@(Compare-Object $expected $actual).Count){throw 'Export has unexpected modules'}
-foreach($file in @('README.md','PUBLIC_API.md','TASKS.md','TASK_COMPOSITION.md','TASK_SCHEDULER.md','TASK_CANCELLATION.md','TASK_DELAY.md','TASK_ARRAY.md','TASK_AND_BIND.md','TASK_COMPLETION.md','TASK_TCP.md','AOT_RUNTIME.md','aot_host/main.cpp','aot_host/CMakeLists.txt','aot_host/recover_064.h','main.das','identity_builder.das','manifest.json')){
+foreach($file in @('README.md','PUBLIC_API.md','TASKS.md','TASK_COMPOSITION.md','TASK_SCHEDULER.md','TASK_CANCELLATION.md','TASK_DELAY.md','TASK_ARRAY.md','TASK_AND_BIND.md','TASK_COMPLETION.md','TASK_TCP.md','TASK_HV.md','AOT_RUNTIME.md','aot_host/main.cpp','aot_host/CMakeLists.txt','aot_host/recover_064.h','main.das','identity_builder.das','manifest.json')){
     if(-not(Test-Path -LiteralPath (Join-Path $destination $file))){throw "Incomplete export: $file"}
 }
 & $Daslang (Join-Path $destination 'main.das') -no-module-cache
@@ -101,3 +101,20 @@ $path=Join-Path $destination 'smoke.das'
 & $Daslang $path -no-module-cache
 if($LASTEXITCODE -ne 0){throw 'Public module smoke failed'}
 Write-Host "Standalone export verified: $destination"
+
+# Optional adapter is checked from the exported package, not the checkout.
+$hvSmoke=@'
+options gen2
+require ./lib/task_hv.das
+[export]
+def main() {
+    var inscope socket <- hv_websocket()
+    var inscope job <- ws_connect(socket,"invalid-url")
+    verify(task_poll(job)==TaskStatus.Succeeded && task_value(job) is error)
+    print("Exported dasHV adapter OK\n")
+}
+'@
+$hvPath=Join-Path $destination 'hv_smoke.das'
+[IO.File]::WriteAllText($hvPath,$hvSmoke)
+& $Daslang $hvPath -no-module-cache
+if($LASTEXITCODE -ne 0){throw 'Exported dasHV adapter failed'}
