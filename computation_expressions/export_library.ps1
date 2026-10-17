@@ -32,7 +32,7 @@ Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_CANCELLATION.md') -Destina
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_DELAY.md') -Destination $Destination
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_ARRAY.md') -Destination $Destination
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_AND_BIND.md') -Destination $Destination
-foreach($name in @('TASK_COMPLETION.md','TASK_TCP.md','TASK_HV.md','AOT_RUNTIME.md')) {
+foreach($name in @('TASK_COMPLETION.md','TASK_TCP.md','TASK_HV.md','TASK_EVENTS.md','TASK_KEYBOARD.md','TASK_GLFW_KEYBOARD.md','AOT_RUNTIME.md')) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination $Destination
 }
 New-Item -ItemType Directory -Path (Join-Path $Destination 'aot_host') -Force | Out-Null

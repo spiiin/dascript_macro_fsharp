@@ -73,6 +73,21 @@ jobs:
           & ./computation_expressions/test_task_hv.ps1 -Jit
           & ./computation_expressions/test_task_hv.ps1 -AndBind -Jit
 
+      - name: Task / event subscriptions (JIT)
+        if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          & $env:DASLANG_EXE ./computation_expressions/tests/test_task_events.das -no-module-cache -jit -jit-no-cache
+          if ($LASTEXITCODE -ne 0) { throw 'Task event JIT checks failed' }
+          & $env:DASLANG_EXE ./computation_expressions/examples/task_events_demo.das -no-module-cache -jit -jit-no-cache
+          if ($LASTEXITCODE -ne 0) { throw 'Task event JIT example failed' }
+          & ./computation_expressions/test_task_keyboard.ps1 -Jit
+
+      - name: Task / GLFW keyboard callbacks and cleanup (JIT)
+        if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
+        run: |
+          & ./computation_expressions/test_task_glfw_keyboard.ps1 -Jit
+
       - name: Task / build and execute strict AOT host
         if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
         run: |

@@ -65,3 +65,6 @@ deferred List. Тест не использует support или тестовы�
 Остальные публичные модули можно использовать без dasHV.
 AOT host template находится в aot_host/; runner run_aot.ps1 и тестовый manifest
 доступны в исходном репозитории, см. AOT_RUNTIME.md.
+
+Ожидание событий без нативных зависимостей: `require ./lib/task_events.das`.
+API и владение: [TASK_EVENTS.md](TASK_EVENTS.md). Модуль входит в независимый экспорт.

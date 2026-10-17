@@ -4,7 +4,7 @@
 
 | Каталог | Содержимое |
 |---|---|
-| lib/ | 29 публичных модулей без тестовых builders |
+| lib/ | 30 публичных модулей без тестовых builders |
 | examples/ | Запускаемые примеры |
 | tests/ | Положительные и отрицательные проверки; tests/repro/ — известные сбои |
 | support/ | Демонстрационные builders и вспомогательные модули примеров/тестов |
@@ -52,3 +52,9 @@ WhenAll для динамического массива задач, поряд�
 Реальный TCP: [TASK_TCP.md](TASK_TCP.md). Сборка и исполнение AOT: [AOT_RUNTIME.md](AOT_RUNTIME.md).
 WebSocket через dasHV: [TASK_HV.md](TASK_HV.md), пайповый bind и владение соединением.
 Два WebSocket через and_bind с отменой и таймаутом: [пример](examples/task_hv_and_bind_demo.das).
+
+Ожидание UI/игровых событий: [TASK_EVENTS.md](TASK_EVENTS.md), [пример](examples/task_events_demo.das).
+
+Реальный ввод с клавиатуры, отмена и таймаут без остановки фоновых задач: [TASK_KEYBOARD.md](TASK_KEYBOARD.md).
+
+Клавиатура окна dasGlfw без Python: [TASK_GLFW_KEYBOARD.md](TASK_GLFW_KEYBOARD.md).

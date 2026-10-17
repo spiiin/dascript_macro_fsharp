@@ -6,7 +6,7 @@ $destination=Join-Path ([IO.Path]::GetFullPath($OutputDirectory)) ('integration-
 $expected=@(Get-Content (Join-Path $PSScriptRoot 'public_modules.json') -Raw|ConvertFrom-Json)
 $actual=@(Get-ChildItem (Join-Path $destination 'lib') -Filter '*.das'|Select-Object -ExpandProperty Name)
 if(@(Compare-Object $expected $actual).Count){throw 'Export has unexpected modules'}
-foreach($file in @('README.md','PUBLIC_API.md','TASKS.md','TASK_COMPOSITION.md','TASK_SCHEDULER.md','TASK_CANCELLATION.md','TASK_DELAY.md','TASK_ARRAY.md','TASK_AND_BIND.md','TASK_COMPLETION.md','TASK_TCP.md','TASK_HV.md','AOT_RUNTIME.md','aot_host/main.cpp','aot_host/CMakeLists.txt','aot_host/recover_064.h','main.das','identity_builder.das','manifest.json')){
+foreach($file in @('README.md','PUBLIC_API.md','TASKS.md','TASK_COMPOSITION.md','TASK_SCHEDULER.md','TASK_CANCELLATION.md','TASK_DELAY.md','TASK_ARRAY.md','TASK_AND_BIND.md','TASK_COMPLETION.md','TASK_TCP.md','TASK_HV.md','TASK_EVENTS.md','TASK_KEYBOARD.md','TASK_GLFW_KEYBOARD.md','AOT_RUNTIME.md','aot_host/main.cpp','aot_host/CMakeLists.txt','aot_host/recover_064.h','main.das','identity_builder.das','manifest.json')){
     if(-not(Test-Path -LiteralPath (Join-Path $destination $file))){throw "Incomplete export: $file"}
 }
 & $Daslang (Join-Path $destination 'main.das') -no-module-cache
@@ -20,6 +20,7 @@ require ./lib/deferred_computation.das
 require ./lib/task_builder.das
 require ./lib/task_combinators.das
 require ./lib/task_scheduler.das
+require ./lib/task_events.das
 require daslib/async_boost
 [async]
 def standard_value() : int {await_next_frame();yield 12}
@@ -93,6 +94,12 @@ def main() {
     verify(task_tick(arrays,0)==1 && task_tick(arrays,1)==0)
     var inscope values <- task_value(arrays,batch)
     verify(values[0]==3 && values[1]==4)
+    var inscope eventBus <- task_event_source(type<int>)
+    var inscope eventWait <- task_wait_event(eventBus)
+    verify(task_poll(eventWait)==TaskStatus.Waiting)
+    verify(task_event_emit(eventBus,42)==1)
+    verify(task_poll(eventWait)==TaskStatus.Succeeded && task_value(eventWait) as ok==42)
+    verify(task_event_subscriber_count(eventBus)==0)
     print("Public module integration OK\n")
 }
 '@

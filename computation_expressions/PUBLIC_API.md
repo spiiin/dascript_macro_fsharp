@@ -137,3 +137,9 @@ move-only payload, deferred и shared-await. Task используют task_valu
 копии/clone и task_take для передачи владения. Combinators: task_when_all и
 task_result_when_all (пара и массив), task_race и task_result_race.
 Реальная сеть — task_tcp_request_line из task_tcp.das, см. TASK_TCP.md.
+
+## Ожидание событий
+
+`./lib/task_events.das`: task_event_source(type<T>), task_wait_event, task_event_emit,
+task_event_close, task_event_subscriber_count, task_event_stats. Broadcast по активным
+подпискам, копируемый T, Task<Result<T>>. Контракт: [TASK_EVENTS.md](TASK_EVENTS.md).

@@ -52,6 +52,9 @@
 
 Пайповый [and_bind для Task](computation_expressions/TASK_AND_BIND.md) через общий протокол builders.
 
+Ожидание UI и игровых событий: [TASK_EVENTS.md](computation_expressions/TASK_EVENTS.md).
+Клавиатура окна dasGlfw без Python: [TASK_GLFW_KEYBOARD.md](computation_expressions/TASK_GLFW_KEYBOARD.md).
+
 Полный текущий набор Task: [TASK_COMPLETION.md](computation_expressions/TASK_COMPLETION.md).
 Реальный TCP и peer EOF: [TASK_TCP.md](computation_expressions/TASK_TCP.md).
 WebSocket через dasHV: [TASK_HV.md](computation_expressions/TASK_HV.md) —

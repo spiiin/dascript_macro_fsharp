@@ -27,5 +27,6 @@
   "task_combinators.das",
   "task_scheduler.das",
   "task_tcp.das",
-  "task_hv.das"
+  "task_hv.das",
+  "task_events.das"
 ]

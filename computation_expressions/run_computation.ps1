@@ -19,6 +19,7 @@ function Check([string]$File, [bool]$Pass, [string]$Expected) {
 }
 Push-Location $PSScriptRoot
 try {
+    Check 'examples/task_events_demo.das' $true 'Task event demo OK'
     Check 'examples/task_array_demo.das' $true 'Task array demo OK'
     Check 'examples/task_and_bind_demo.das' $true 'Task and_bind demo OK'
     Check 'examples/task_extended_demo.das' $true 'Task extended demo OK'
@@ -75,6 +76,11 @@ try {
     if ($Test) {
         Check 'tests/test_task_array.das' $true 'Task array checks OK'
         Check 'tests/test_task_array_lifetime.das' $true 'Task array lifetime checks OK'
+        & (Join-Path $PSScriptRoot 'test_task_keyboard.ps1') -Daslang $Daslang
+        & (Join-Path $PSScriptRoot 'test_task_glfw_keyboard.ps1') -Daslang $Daslang
+        Check 'tests/test_task_events.das' $true 'Task event checks OK'
+        Check 'tests/test_task_events_pointer.das' $false 'payload must own its data'
+        Check 'tests/test_task_events_move_payload.das' $false 'broadcast payload must be copyable'
         Check 'tests/test_task_delay.das' $true 'Task delay checks OK'
         Check 'tests/test_task_delay_lifetime.das' $true 'Task delay lifetime checks OK'
         Check 'tests/test_task_cancellation.das' $true 'Task cancellation checks OK'
