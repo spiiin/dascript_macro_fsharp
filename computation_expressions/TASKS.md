@@ -1,13 +1,16 @@
 # TaskBuilder и TaskResultBuilder
 
+Совместное ожидание и гонка: [TASK_COMPOSITION.md](TASK_COMPOSITION.md),
+модуль task_combinators.das. Доступны task_when_all, task_result_when_all и task_race.
+
 Ближайший стандартный аналог — [daslib/async_boost](https://daslang.io/doc/stdlib/generated/async_boost.html):
 аннотация [async], await и await_next_frame также раскрываются в генераторы.
 Наш модуль использует ту же базовую возможность языка. Отличия — CE-протокол,
 один кешируемый результат, явные статусы и отмена, общий ресурсный контракт,
 TaskResult с коротким замыканием при Error и callback-адаптер внешних операций.
 Для простого сценария с await достаточно стандартного async_boost. Стандартная
-библиотека также имеет async_run/race/timeout; аналоги этих combinators в нашем
-Task API пока не реализованы. Потоки и jobs предоставляет отдельный jobque.
+библиотека также имеет async_run/race/timeout; набор Task-combinators описан в
+[TASK_COMPOSITION.md](TASK_COMPOSITION.md). Потоки и jobs предоставляет отдельный jobque.
 
 ```das
 options gen2
@@ -84,7 +87,7 @@ use_resource и try_finally. TryWith позволяет восстановить
 ранний return, use_resource, try_finally и try_with. Break/continue внутри Task CE,
 and_bind, return_from, неявный Zero для Task<Unit>, move-only payload и deferred
 для самих Task пока не поддержаны. Завершение цикла без return не равно успешному Unit.
-Публичный Task scheduler, WhenAll/race, shared await нескольких владельцев,
+Публичный Task scheduler, WhenAll для массива, shared await нескольких владельцев,
 дедлайны и автоматическое распространение отмены как отдельного статуса — следующие шаги.
 
 ## Внешние операции
@@ -155,7 +158,7 @@ Void без ожиданий завершается сразу с CeUnit.
 тело cold async-итератора начинается при poll. Адаптер закрывает источник до
 передачи результата продолжению, а также при исключении и отмене, включая отмену
 до первого poll. Close callback выполняется после закрытия источника, затем его
-lambda освобождается. При бросающем close задача получает Failed, повторного close нет.
+lambda освобождается. При бросающем close явный poll/cancel получает Failed, повторного close нет. При raw delete/inscope callback освобождается без выброса из финализатора; подробности в TASK_COMPOSITION.md.
 Обычный delete/inscope владельца также закрывает источник.
 
 ### Ограничение SDK 0.6.4
@@ -190,7 +193,7 @@ Builder определяет `ce_await_source`, `ce_await_pending`, `ce_await_va
 Await-source — владеющий iterator событий с полем ready; Pending не запускает
 продолжение. Terminal-событие закрывает весь корневой iterator до следующего resume.
 
-Новые Task-сценарии включены в полный набор интерпретатора. Шесть положительных
+Новые Task-сценарии включены в полный набор интерпретатора. Девять положительных
 Task-файлов включены в отдельные JIT/AOT проверки run_modes.ps1:
-всего там десять файлов. Это конечный набор сценариев, не доказательство для любых
+всего там тринадцать файлов. Это конечный набор сценариев, не доказательство для любых
 сочетаний типов и исключений. Генерация AOT не подтверждает исполнение AOT-хоста.

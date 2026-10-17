@@ -13,6 +13,8 @@ require ./lib/computation.das
 `./lib/validation_builder.das`, `./lib/state_writer_result_builder.das`,
 `./lib/deferred_computation.das`, `./lib/coroutine_builder.das`, `./lib/coroutine_scheduler.das`.
 Типизированные задачи: `./lib/task_builder.das`, см. [TASKS.md](TASKS.md).
+Совместное ожидание: `./lib/task_combinators.das`, операции task_when_all,
+task_result_when_all и task_race; см. [TASK_COMPOSITION.md](TASK_COMPOSITION.md).
 Вложенные файлы приложения используют соответствующий относительный путь
 с расширением `.das`, например `require ../lib/computation.das`.
 

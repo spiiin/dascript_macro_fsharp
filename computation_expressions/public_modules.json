@@ -6,5 +6,5 @@
   "list_builder.das", "sequence_builder.das", "sequence_runtime.das", "zip_runtime.das",
   "move_builders.das", "deferred_computation.das", "deferred_runtime.das",
   "coroutine_builder.das", "coroutine_scheduler.das",
-  "resumable_lowering.das", "task_builder.das"
+  "resumable_lowering.das", "task_builder.das", "task_combinators.das"
 ]
