@@ -73,6 +73,9 @@ def main() {
     let id=task_spawn(scheduler,task_after_polls(0,42))
     verify(task_tick(scheduler,0)==0 && task_value(scheduler,id)==42)
     verify(task_prune(scheduler)==1)
+    let expired=task_spawn(scheduler,task_after_polls(10,7),TaskTimeout(after_ms=5))
+    verify(task_tick(scheduler,5)==0 && task_timed_out(scheduler,expired))
+    verify(task_status(scheduler,expired)==TaskStatus.Cancelled)
     print("Public module integration OK\n")
 }
 '@

@@ -4,6 +4,7 @@ require ./task_builder.das public
 require daslib/rtti
 
 struct TaskSchedulerConfig {max_polls_per_tick:int=64}
+struct TaskTimeout {after_ms:int64}
 struct TaskId {owner:uint64;slot:int;generation:uint64}
 struct TaskSchedulerTag {}
 // Private implementation records. Active queue links are 1-based; zero is null.
@@ -14,6 +15,11 @@ struct TaskSlot {
     previous:int
     next:int
     next_free:int
+    timed_out:bool
+    timer_queued:bool
+    deadline_ms:uint64
+    timer_previous:int
+    timer_next:int
 }
 struct TaskSchedulerState {
     config:TaskSchedulerConfig=TaskSchedulerConfig()
@@ -28,6 +34,8 @@ struct TaskSchedulerState {
     active_count:int
     now_ms:int64
     has_time:bool
+    timer_head:int
+    timer_tail:int
 }
 var private task_scheduler_last_owner:uint64=0
 
@@ -89,10 +97,43 @@ def private task_scheduler_check_id(scheduler:auto; id:TaskId) {
     task_scheduler_live(scheduler)
     if(!task_valid(scheduler,id)) {panic("task scheduler: invalid or stale task id")}
 }
+// A separate ordered timer queue skips ordinary tasks and terminal history.
+// Before the first clock sample deadlines are durations; shifting all of them
+// by the first now_ms preserves order. Unsigned sums avoid signed overflow.
+def private task_scheduler_remove_timer(var frame:auto; index:int) {
+    unsafe {
+        var timer & = frame.records[index-1].slot
+        if(!timer.timer_queued) {return}
+        if(timer.timer_previous!=0) {frame.records[timer.timer_previous-1].slot.timer_next=timer.timer_next}
+        else {frame.state.timer_head=timer.timer_next}
+        if(timer.timer_next!=0) {frame.records[timer.timer_next-1].slot.timer_previous=timer.timer_previous}
+        else {frame.state.timer_tail=timer.timer_previous}
+        timer.timer_queued=false
+        timer.timer_previous=0;timer.timer_next=0
+    }
+}
+def private task_scheduler_add_timer(var frame:auto; index:int; after_ms:int64) {
+    unsafe {
+        var timer & = frame.records[index-1].slot
+        timer.deadline_ms=uint64(after_ms)+(frame.state.has_time ? uint64(frame.state.now_ms) : uint64(0))
+        var previous=frame.state.timer_tail
+        while(previous!=0 && frame.records[previous-1].slot.deadline_ms>timer.deadline_ms) {
+            previous=frame.records[previous-1].slot.timer_previous
+        }
+        let next=previous!=0 ? frame.records[previous-1].slot.timer_next : frame.state.timer_head
+        timer.timer_previous=previous;timer.timer_next=next;timer.timer_queued=true
+        if(previous!=0) {frame.records[previous-1].slot.timer_next=index}
+        else {frame.state.timer_head=index}
+        if(next!=0) {frame.records[next-1].slot.timer_previous=index}
+        else {frame.state.timer_tail=index}
+    }
+}
+
 def private task_scheduler_unlink(var frame:auto; slot:int) {
     unsafe {
         var record & = frame.records[slot-1].slot
         if(!record.active) {return}
+        task_scheduler_remove_timer(frame,slot)
         if(record.previous!=0) {frame.records[record.previous-1].slot.next=record.next}
         else {frame.state.head=record.next}
         if(record.next!=0) {frame.records[record.next-1].slot.previous=record.previous}
@@ -103,13 +144,14 @@ def private task_scheduler_unlink(var frame:auto; slot:int) {
         frame.state.active_count--
     }
 }
-def task_spawn(var scheduler:auto; var source:auto) : TaskId {
+def private task_scheduler_spawn(var scheduler:auto; var source:auto; timed:bool; after_ms:int64) : TaskId {
     unsafe {
         if(source.polling) {panic("task scheduler: cannot move a task being polled")}
         var inscope owned <- source
         var index=0
         try {
             task_scheduler_idle(scheduler)
+            if(timed && after_ms<int64(0)) {panic("task scheduler: timeout must be non-negative")}
             var frame & = scheduler.frames[0]
             if(frame.state.closed) {panic("task scheduler: scheduler is closed")}
             if(frame.state.free_head!=0) {
@@ -129,6 +171,7 @@ def task_spawn(var scheduler:auto; var source:auto) : TaskId {
                 frame.state.tail=index
                 frame.state.active_count++
                 if(frame.state.cursor==0) {frame.state.cursor=index}
+                if(timed) {task_scheduler_add_timer(frame,index,after_ms)}
             }
             frame.state.count++
         } recover {
@@ -139,6 +182,17 @@ def task_spawn(var scheduler:auto; var source:auto) : TaskId {
         }
         return TaskId(owner=scheduler.frames[0].state.owner,slot=index,generation=scheduler.frames[0].records[index-1].slot.generation)
     }
+}
+
+def task_spawn(var scheduler:auto; var source:auto) : TaskId {
+    return task_scheduler_spawn(scheduler,source,false,int64(0))
+}
+def task_spawn(var scheduler:auto; var source:auto; timeout:TaskTimeout) : TaskId {
+    return task_scheduler_spawn(scheduler,source,true,timeout.after_ms)
+}
+def task_timed_out(scheduler:auto; id:TaskId) : bool {
+    task_scheduler_check_id(scheduler,id)
+    return scheduler.frames[0].records[id.slot-1].slot.timed_out
 }
 def task_status(scheduler:auto; id:TaskId) : TaskStatus {
     task_scheduler_check_id(scheduler,id)
@@ -180,10 +234,24 @@ def task_tick(var scheduler:auto; now_ms:int64) : int {
         var frame & = scheduler.frames[0]
         if(frame.state.closed) {return 0}
         if(now_ms<int64(0) || (frame.state.has_time && now_ms<frame.state.now_ms)) {panic("task scheduler: time must be non-negative and monotonic")}
-        frame.state.now_ms=now_ms;frame.state.has_time=true
         frame.state.busy=true
-        var budget=frame.state.config.max_polls_per_tick<frame.state.active_count ? frame.state.config.max_polls_per_tick : frame.state.active_count
         try {
+            if(!frame.state.has_time) {
+                var timer=frame.state.timer_head
+                while(timer!=0) {
+                    frame.records[timer-1].slot.deadline_ms+=uint64(now_ms)
+                    timer=frame.records[timer-1].slot.timer_next
+                }
+            }
+            frame.state.now_ms=now_ms;frame.state.has_time=true
+            // All due timers close before any polling, independent of poll budget.
+            while(frame.state.timer_head!=0 && frame.records[frame.state.timer_head-1].slot.deadline_ms<=uint64(now_ms)) {
+                let index=frame.state.timer_head
+                frame.records[index-1].slot.timed_out=true
+                task_cancel(frame.records[index-1].task)
+                task_scheduler_unlink(frame,index)
+            }
+            var budget=frame.state.config.max_polls_per_tick<frame.state.active_count ? frame.state.config.max_polls_per_tick : frame.state.active_count
             while(budget>0 && frame.state.active_count>0) {
                 let index=frame.state.cursor
                 frame.state.cursor=frame.records[index-1].slot.next!=0 ? frame.records[index-1].slot.next : frame.state.head

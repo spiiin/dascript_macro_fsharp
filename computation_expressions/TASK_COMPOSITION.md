@@ -100,8 +100,9 @@ ce_dispose пользовательских ресурсов по-прежнем
 Известное ограничение inscope внутри стандартного [async] остаётся — см. [TASKS.md](TASKS.md).
 
 Пайповый bind сохранён. And_bind для Task пока не включён: совместное ожидание
-задаётся явными combinators. Нет новых потоков, динамического WhenAll для массива,
-дедлайнов и публичного планировщика. Синхронный код ребёнка может блокировать poll.
+задаётся явными combinators. Новые потоки и динамический WhenAll для массива
+не добавляются. Планировщик и таймауты по now_ms: [TASK_SCHEDULER.md](TASK_SCHEDULER.md).
+Синхронный код ребёнка может блокировать poll.
 
 Пример: [task_combinators_demo.das](examples/task_combinators_demo.das).
 Тесты: test_task_combinators, test_task_combinators_lifetime,

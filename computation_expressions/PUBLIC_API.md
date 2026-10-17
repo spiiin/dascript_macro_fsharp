@@ -13,6 +13,7 @@ require ./lib/computation.das
 `./lib/validation_builder.das`, `./lib/state_writer_result_builder.das`,
 `./lib/deferred_computation.das`, `./lib/coroutine_builder.das`, `./lib/coroutine_scheduler.das`.
 Типизированные задачи: `./lib/task_builder.das`, см. [TASKS.md](TASKS.md).
+Планировщик и таймауты: `./lib/task_scheduler.das`, см. [TASK_SCHEDULER.md](TASK_SCHEDULER.md).
 Совместное ожидание: `./lib/task_combinators.das`, операции task_when_all,
 task_result_when_all и task_race; см. [TASK_COMPOSITION.md](TASK_COMPOSITION.md).
 Вложенные файлы приложения используют соответствующий относительный путь
@@ -116,3 +117,5 @@ state, не внешние эффекты или объекты по указа�
 ## Task scheduler
 
 Модуль task_scheduler.das: task_scheduler(type<T>, TaskSchedulerConfig()), task_spawn, task_tick(scheduler, now_ms), task_configure, task_scheduler_config, task_scheduler_time, task_valid, task_status/value/error(scheduler,id), task_count, task_active_count, task_slot_count, task_cancel(scheduler,id), task_forget, task_prune, task_scheduler_close, task_scheduler_scope. Полный контракт и пример: [TASK_SCHEDULER.md](TASK_SCHEDULER.md).
+
+Таймаут при регистрации: task_spawn(scheduler, source, TaskTimeout(after_ms=30)). task_timed_out(scheduler,id) отличает его от ручной отмены; deadline проверяется до poll независимо от его бюджета. См. [TASK_SCHEDULER.md](TASK_SCHEDULER.md#таймауты).

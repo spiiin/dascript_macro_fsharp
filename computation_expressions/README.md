@@ -37,3 +37,5 @@ daslang.exe examples/state_operations_demo.das -no-module-cache
 Типизированные задачи TaskBuilder / TaskResultBuilder, ожидание внешних операций и отмена: [TASKS.md](TASKS.md).
 
 Типизированный планировщик с лимитом опросов, круговым обходом, ID, отменой и историей: [TASK_SCHEDULER.md](TASK_SCHEDULER.md).
+
+Таймауты по now_ms, отмена вложенных ожиданий и освобождение ресурсов: [task_timeout_demo.das](examples/task_timeout_demo.das), [контракт](TASK_SCHEDULER.md#таймауты).
