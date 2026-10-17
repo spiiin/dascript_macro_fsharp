@@ -2,7 +2,7 @@ options gen2
 module writer_result_builder public
 require ./computation_effects.das public
 
-struct WriterResultBuilder {}
+struct WriterResultBuilder {_ce_marker:uint8}
 
 def writer_result(value : variant<ok : auto(T); error : string>; log : string = "") {
     return (result = value, log = log)

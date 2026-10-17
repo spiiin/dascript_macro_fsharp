@@ -58,18 +58,16 @@ TaskBuilder использует `task_when_all(left,right)`, TaskResultBuilder 
   native panic сохраняется; иначе первая ошибка cleanup переводит родителя
   в Failed, в том числе вместо доменного Error или Cancelled.
 
-Для TaskResult смешивание `Task<Unit>` и `Task<Result<T>>` в одной группе
-не поддержано; Unit-операцию можно ожидать отдельным bind. Owning array Task
-от `task_when_all(array)` также ожидается отдельным заимствующим bind:
-`var values & = task_when_all(jobs) |> bind`. Shared-await одного владельца,
-move-only payload пары и Bind2/Bind2Return оптимизации Task не добавлены.
-Произвольные пользовательские финализаторы должны оставаться небросающими.
+TaskResult объединяет Result и Unit-источники; Unit автоматически считается
+успешным. Owning array Task также можно включать в группы. Move-only payload
+заимствуется через `var pair & = left |> and_bind(right) |> bind`, а передача
+наружу записывается `return <- pair.first`. Shared-await и deferred реализованы:
+[TASK_COMPLETION.md](TASK_COMPLETION.md). Bind2/Bind2Return оптимизации Task
+не добавлены; используется обычная семантика совместного ожидания.
 
-Для локальных источников внутри тела CE используйте `var left <- make_task()`
-и затем передавайте их в bind/and_bind. Не добавляйте `inscope` этим локальным
-Task в SDK 0.6.4: перенос такого native generator-local может привести к ошибке
-`calling first on already open iterator`. Владелец группы освобождает переданные
-источники. Внешний итоговый Task по-прежнему объявляется `var inscope task <- ...`.
+Прежнее ограничение inscope для локальных Task внутри CE устранено: их время
+жизни теперь управляется защищённой областью, а не native inscope через yield.
+Пользовательские финализаторы должны быть небросающими.
 
 Пример: [task_and_bind_demo.das](examples/task_and_bind_demo.das).
 Проверки: [test_task_and_bind.das](tests/test_task_and_bind.das),

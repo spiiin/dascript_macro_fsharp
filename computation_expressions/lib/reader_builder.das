@@ -2,8 +2,8 @@ options gen2
 module reader_builder public
 require ./builder_protocol.das public
 
-struct ReaderContext {}
-struct ReaderAsk {}
+struct ReaderContext {_ce_marker:uint8}
+struct ReaderAsk {_ce_marker:uint8}
 def ReaderBuilder(environment : auto(E)) { return (kind=ReaderContext(), environment=environment) }
 def reader_ask() { return ReaderAsk() }
 def reader_value(value : auto(T)) { return (value=value) }

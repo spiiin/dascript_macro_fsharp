@@ -3,8 +3,8 @@ module zip_runtime public
 require ./sequence_runtime.das public
 require daslib/rtti
 
-struct CeZipReadOnly {}
-struct CeZipMutable {}
+struct CeZipReadOnly {_ce_marker:uint8}
+struct CeZipMutable {_ce_marker:uint8}
 
 // Reference iterators write an address, value iterators write the value itself.
 def private ce_zip_pack(var source:iterator<auto(T)>; mode:auto) {

@@ -3,8 +3,8 @@ module list_builder public
 require ./computation_builders.das public
 require daslib/rtti
 
-struct ListContext {}
-struct MoveListContext {}
+struct ListContext {_ce_marker:uint8}
+struct MoveListContext {_ce_marker:uint8}
 def ListBuilder(unused : type<auto(T)>) {
     static_if (typeinfo can_copy(type<T>)) {
         return (kind=ListContext(), element=default<T -const>)

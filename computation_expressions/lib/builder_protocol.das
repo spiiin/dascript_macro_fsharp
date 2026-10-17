@@ -4,11 +4,13 @@ require ./computation_resources.das public
 require daslib/rtti
 
 // Nominal, compile-time protocol descriptors. ce_protocol is only type-inferred.
-struct CeValueProtocol {}
-struct CeCollectProtocol {}
-struct CeSequenceProtocol {}
-struct CeResumableProtocol {}
-struct CeUnit {}
+struct CeValueProtocol {_ce_marker:uint8}
+struct CeCollectProtocol {_ce_marker:uint8}
+struct CeSequenceProtocol {_ce_marker:uint8}
+struct CeResumableProtocol {_ce_marker:uint8}
+struct CeUnit {_ce_marker:uint8}
+struct CeResumableNoZero {_ce_marker:uint8}
+def ce_await_zero(builder:auto) {return CeResumableNoZero()}
 
 def ce_sequence_protocol(unused : type<auto(T)>) {
     return (strategy=CeSequenceProtocol(), element=default<T -const -&>)
@@ -39,7 +41,7 @@ def ce_owned_source_rethrow(var source : auto) {
 
 // Type-only fallback marker. The macro emits the original Bind/Return when
 // no more specific overload exists; this function never runs in generated CE.
-struct CeBindReturnFallback {}
+struct CeBindReturnFallback {_ce_marker:uint8}
 def ce_bind_return(builder:auto; source:auto; mapper:auto) { return CeBindReturnFallback() }
 
 def ce_bind2_return(builder:auto; left:auto; right:auto; mapper:auto) { return CeBindReturnFallback() }
@@ -48,19 +50,19 @@ def ce_bind2_return(builder:auto; left:auto; right:auto; mapper:auto) { return C
 def ce_bind2(builder:auto; left:auto; right:auto; next:auto) { return CeBindReturnFallback() }
 
 // Compile-time defaults, removed by the macro before runtime.
-struct CeMissingProtocol {}
-struct CeMergeSourcesFallback {}
+struct CeMissingProtocol {_ce_marker:uint8}
+struct CeMergeSourcesFallback {_ce_marker:uint8}
 def ce_merge_sources(builder:auto; left,right:auto) { return CeMergeSourcesFallback() }
 // Type-only diagnostic envelope, always removed by ce_checked_merge.
 def ce_merge_origin(source:auto; builder:auto; location:string) {}
 // A materialized resumable merge keeps its left type for diagnostic recovery.
 def ce_merge_origin(source:auto; builder:auto; location:string; left:auto) {}
 def ce_protocol(builder:auto) { return CeMissingProtocol() }
-struct CeRunFallback {}
+struct CeRunFallback {_ce_marker:uint8}
 def ce_run(builder:auto; outcome:auto) { return CeRunFallback() }
 
 // Optional eager loops. Marker overloads are only inspected at compile time.
-struct CeLoopFallback {}
+struct CeLoopFallback {_ce_marker:uint8}
 def ce_for(builder:auto; source:auto; body:auto) { return CeLoopFallback() }
 def ce_while(builder:auto; condition:auto; body:auto) { return CeLoopFallback() }
 
@@ -85,15 +87,15 @@ def ce_for_element(source:auto(T)[] ==const) : T const& { unsafe { return source
 def ce_for_zip(builder:auto; arity:int; traverse:auto) { return CeLoopFallback() }
 
 // Optional source conversion. The marker is erased without evaluating this call.
-struct CeSourceFallback {}
+struct CeSourceFallback {_ce_marker:uint8}
 def ce_source(builder:auto; source:auto) {return CeSourceFallback()}
 
 // Eager outcomes with explicit ownership and consuming bind.
-struct CeOwnedProtocol {}
+struct CeOwnedProtocol {_ce_marker:uint8}
 
 // Opt-in linear bind/return collection fusion. Descriptor calls are type-only.
-struct CeCollectSink {}
-struct CeCollectSinkFallback {}
+struct CeCollectSink {_ce_marker:uint8}
+struct CeCollectSinkFallback {_ce_marker:uint8}
 def ce_collect_sink(builder:auto) {return CeCollectSinkFallback()}
 
 def ce_collect_sink_protocol(unused:type<auto(T)>) {

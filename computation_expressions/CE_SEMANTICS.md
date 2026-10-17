@@ -17,8 +17,8 @@ TaskBuilder и TaskResultBuilder предоставляют cold single-shot з�
 | Builder | Результат обычного CE | `and_bind` | `for` / `while` / zip-for | Ресурсы | `deferred` | Move-only payload результата |
 |---|---|---|---|---|---|---|
 | ResultBuilder | `ok:T / error:string` | Да: Result | Да / да / да | Да | Да | Нет; использовать MoveResult |
-| TaskBuilder(type<T>) | Task<T>, cold single-shot | Да: Task | Да / да / native zip | Да | Нет | Нет |
-| TaskResultBuilder(type<T>) | Task<Result<T>>, cold single-shot | Да: Task<Result> | Да / да / native zip | Да | Нет | Нет |
+| TaskBuilder(type<T>) | Task<T>, cold single-shot | Да: Task | Да / да / native zip, break/continue | Да | Да | Да: owning bind/return |
+| TaskResultBuilder(type<T>) | Task<Result<T>>, cold single-shot | Да: Result и Unit | Да / да / native zip, break/continue | Да | Да | Да: owning bind/return |
 | OptionBuilder | `some:T / none:bool` | Да: Option | Да / да / да | Да | Да | Нет; использовать MoveOption |
 | ValidationBuilder | `valid:T / invalid:…` | Да: накопление ошибок | Да / да / да | Да | Да | Нет |
 | StateBuilder(initial) | `(value:T, state:S)` | Нет | Да / да / да | Да | Да | Нет; состояние также копируемое |
@@ -72,8 +72,9 @@ Task начинает тело при первом task_poll. Pending приос
 готовый источник продолжает его в том же poll. Успешный результат кешируется.
 Result.error завершает TaskResult со статусом Succeeded; native panic даёт Failed,
 явная отмена — Cancelled. Области ресурсов закрываются и в этих путях.
-У Task пока нет break/continue внутри CE, return_from, неявного Unit,
-deferred и move-only payload. Нативные синхронные участки могут блокировать poll.
+Task поддерживает break/continue, return_from, Unit/Zero, deferred, shared-await
+и move-only payload; контракт: [TASK_COMPLETION.md](TASK_COMPLETION.md).
+Нативные синхронные участки могут блокировать poll.
 `task_from_async` связывает стандартные [async]-источники с Task: ждёт полного
 завершения, возвращает последний res либо CeUnit для void. Промежуточный res
 не завершает Task; код и исключения после него сохраняются. Только wait-события

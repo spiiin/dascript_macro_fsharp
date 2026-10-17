@@ -27,8 +27,8 @@
 - CE: примеры, положительные и отрицательные тесты, диагностику,
   независимый экспорт библиотеки и раскрытие оптимизаций через
   `computation_expressions/run_computation.ps1 -Test`.
-- JIT: двадцать шесть явно перечисленных тестов `run_modes.ps1 -Mode Jit`.
-- AOT: генерацию C++ для тех же двадцати шести тестов, без сборки и исполнения AOT-хоста.
+- JIT: 31 явно перечисленный тест `run_modes.ps1 -Mode Jit`.
+- AOT: генерацию C++ для тех же 31 теста, без сборки и исполнения AOT-хоста.
 
 Ожидаемые ошибки компиляции проверяются по коду завершения и сообщению;
 неожиданная ошибка делает проверку красной. Остальные наборы продолжают
@@ -51,6 +51,10 @@
 Совместное ожидание массива задач с сохранением порядка результатов: [task_when_all(array)](computation_expressions/TASK_ARRAY.md).
 
 Пайповый [and_bind для Task](computation_expressions/TASK_AND_BIND.md) через общий протокол builders.
+
+Полный текущий набор Task: [TASK_COMPLETION.md](computation_expressions/TASK_COMPLETION.md).
+Реальный TCP и peer EOF: [TASK_TCP.md](computation_expressions/TASK_TCP.md).
+Сборка и исполнение 27 Task-тестов в AOT-хосте: [AOT_RUNTIME.md](computation_expressions/AOT_RUNTIME.md).
 
 ## Подробности и история возможностей
 

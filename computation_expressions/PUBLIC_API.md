@@ -126,3 +126,11 @@ state, не внешние эффекты или объекты по указа�
 task_delay_ms(duration_ms) возвращает Task<CeUnit>, ожидающую now_ms текущего task_tick. Срок начинается при первом poll задержки; TaskResultBuilder также принимает Task<CeUnit> через bind. Модуль task_delay.das включён в task_scheduler.das. Контракт часов, отмена и пример: [TASK_DELAY.md](TASK_DELAY.md).
 
 task_when_all(tasks) потребляет массив Task с одинаковым копируемым T и возвращает владеющую задачу коллекции. Bind: var results & = task_when_all(make_jobs()) |> bind. task_value возвращает clone массива; прямая регистрация — task_scheduler(type<array<T>>). Поддержаны token, timeout и task_scope. Подробности: [TASK_ARRAY.md](TASK_ARRAY.md).
+
+## Полный Task API
+
+[TASK_COMPLETION.md](TASK_COMPLETION.md): return_from, Unit, break/continue,
+move-only payload, deferred и shared-await. Task используют task_value для
+копии/clone и task_take для передачи владения. Combinators: task_when_all и
+task_result_when_all (пара и массив), task_race и task_result_race.
+Реальная сеть — task_tcp_request_line из task_tcp.das, см. TASK_TCP.md.

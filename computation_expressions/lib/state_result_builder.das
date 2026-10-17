@@ -2,7 +2,7 @@ options gen2
 module state_result_builder public
 require ./computation_effects.das public
 
-struct StateResultContext {}
+struct StateResultContext {_ce_marker:uint8}
 def ce_state_gets(builder:tuple<kind:StateResultContext;initial:auto(S);state:S>; project:auto) {
     return ce_return(builder,invoke(project,builder.state))
 }

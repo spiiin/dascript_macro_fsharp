@@ -4,9 +4,9 @@ require ./builder_protocol.das public
 require ./sequence_runtime.das public
 require daslib/rtti
 
-struct CoroutineBuilder {}
+struct CoroutineBuilder {_ce_marker:uint8}
 struct CoroutineWait {frames:int}
-struct CoroutineFrame {}
+struct CoroutineFrame {_ce_marker:uint8}
 
 def next_frame() {return CoroutineWait(frames=1)}
 def wait_frames(frames:int) {

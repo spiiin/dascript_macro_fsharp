@@ -4,8 +4,8 @@ require ./builder_protocol.das public
 require daslib/rtti
 require ./zip_runtime.das public
 
-struct ResultBuilder {}
-struct OptionBuilder {}
+struct ResultBuilder {_ce_marker:uint8}
+struct OptionBuilder {_ce_marker:uint8}
 
 // Used in typedecl by the macro; it is not executed to obtain a bound value.
 def ce_unwrap(builder : ResultBuilder; value : variant<ok : auto(T); error : string>) : T {
@@ -15,17 +15,17 @@ def ce_unwrap(builder : OptionBuilder; value : variant<some : auto(T); none : bo
     return value as some
 }
 
-def result_ok(value : auto(T)) : variant<ok : T; error : string> {
-    return variant<ok : T; error : string>(ok=value)
+def result_ok(value : auto(T)) : variant<ok : T -const -&; error : string> {
+    return variant<ok : T -const -&; error : string>(ok=value)
 }
-def result_error(message : string; unused : type<auto(T)>) : variant<ok : T; error : string> {
-    return variant<ok : T; error : string>(error=message)
+def result_error(message : string; unused : type<auto(T)>) : variant<ok : T -const -&; error : string> {
+    return variant<ok : T -const -&; error : string>(error=message)
 }
-def some(value : auto(T)) : variant<some : T; none : bool> {
-    return variant<some : T; none : bool>(some=value)
+def some(value : auto(T)) : variant<some : T -const -&; none : bool> {
+    return variant<some : T -const -&; none : bool>(some=value)
 }
-def none(unused : type<auto(T)>) : variant<some : T; none : bool> {
-    return variant<some : T; none : bool>(none=true)
+def none(unused : type<auto(T)>) : variant<some : T -const -&; none : bool> {
+    return variant<some : T -const -&; none : bool>(none=true)
 }
 
 def ce_return(builder : ResultBuilder; value : auto(T)) {

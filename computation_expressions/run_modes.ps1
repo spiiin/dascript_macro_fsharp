@@ -13,16 +13,7 @@ New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
 $rows=[Collections.Generic.List[object]]::new()
 $modes=if($Mode -eq 'All'){@('Interpreter','Jit','AotGenerate')}else{@($Mode)}
 # This is an explicit cross-mode subset, not the full interpreter regression.
-$tests=@('tests/test_computation.das','tests/test_composition_laws.das','tests/test_state_operations.das','tests/test_list_benchmarks.das',
-    'tests/test_task.das','tests/test_task_result.das','tests/test_task_control.das','tests/test_task_lifetime.das',
-    'tests/test_task_from_async.das','tests/test_task_from_async_lifetime.das',
-    'tests/test_task_combinators.das','tests/test_task_combinators_lifetime.das','tests/test_task_cleanup_errors.das',
-    'tests/test_task_scheduler.das','tests/test_task_scheduler_safety.das','tests/test_task_scheduler_lifetime.das',
-    'tests/test_task_timeouts.das','tests/test_task_timeout_lifetime.das',
-    'tests/test_task_cancellation.das','tests/test_task_cancellation_lifetime.das',
-    'tests/test_task_delay.das','tests/test_task_delay_lifetime.das',
-    'tests/test_task_array.das','tests/test_task_array_lifetime.das',
-    'tests/test_task_and_bind.das','tests/test_task_and_bind_lifetime.das')
+$tests=@(Get-Content (Join-Path $PSScriptRoot 'mode_tests.json') -Raw | ConvertFrom-Json)
 Push-Location $PSScriptRoot
 try {
     foreach($currentMode in $modes) {

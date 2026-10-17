@@ -21,6 +21,7 @@ Push-Location $PSScriptRoot
 try {
     Check 'examples/task_array_demo.das' $true 'Task array demo OK'
     Check 'examples/task_and_bind_demo.das' $true 'Task and_bind demo OK'
+    Check 'examples/task_extended_demo.das' $true 'Task extended demo OK'
     Check 'examples/task_delay_demo.das' $true 'Task delay demo OK'
     Check 'examples/task_cancellation_demo.das' $true 'Task cancellation demo OK'
     Check 'examples/task_timeout_demo.das' $true 'Task timeout demo OK'
@@ -89,13 +90,20 @@ try {
         Check 'tests/test_task_cleanup_errors.das' $true 'Task cleanup error checks OK'
         Check 'tests/test_task_from_async.das' $true 'Task async adapter checks OK'
         Check 'tests/test_task_from_async_lifetime.das' $true 'Task async adapter lifetime checks OK'
-        Check 'tests/test_task_from_async_move.das' $false 'task_from_async: payload must be copyable'
+        Check 'tests/test_task_from_async_move.das' $true 'Task async move checks OK'
         Check 'tests/test_task.das' $true 'Task checks OK'
         Check 'tests/test_task_result.das' $true 'TaskResult checks OK'
         Check 'tests/test_task_control.das' $true 'Task control checks OK'
         Check 'tests/test_task_lifetime.das' $true 'Task lifetime checks OK'
         Check 'tests/test_task_and_bind.das' $true 'Task and_bind checks OK'
         Check 'tests/test_task_and_bind_lifetime.das' $true 'Task and_bind lifetime checks OK'
+        Check 'tests/test_task_extended.das' $true 'Task extended checks OK'
+        Check 'tests/test_task_loops.das' $true 'Task loop checks OK'
+        Check 'tests/test_task_shared.das' $true 'Task shared checks OK'
+        Check 'tests/test_task_deferred.das' $true 'Task deferred checks OK'
+        Check 'tests/test_task_owned.das' $true 'Task owned checks OK'
+        & (Join-Path $PSScriptRoot 'test_task_tcp.ps1') -Daslang $Daslang
+        & (Join-Path $PSScriptRoot 'test_task_tcp.ps1') -Daslang $Daslang -Example
         Check 'tests/test_task_and_bind_unsupported.das' $false 'and_bind is unsupported for builder'
         Check 'tests/test_task_pointer.das' $false 'task: payload must own its data'
         & (Join-Path $PSScriptRoot 'test_diagnostics.ps1') -Daslang $Daslang

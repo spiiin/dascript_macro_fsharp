@@ -3,11 +3,15 @@ module move_builders public
 require ./computation_builders.das public
 require daslib/rtti
 // Consuming outcomes: bind owns the variant, continuation only borrows payload.
-struct MoveResultBuilder {}
-struct MoveOptionBuilder {}
+struct MoveResultBuilder {_ce_marker:uint8}
+struct MoveOptionBuilder {_ce_marker:uint8}
 
-def move_ok(var value:auto(T)) : variant<ok:T;error:string> {
-    return <- variant<ok:T;error:string>(ok <- value)
+def move_ok(var value:auto(T)) : variant<ok:T -const -&;error:string> {
+    // 0.6.4 AOT emits a shallow copy for a variant field initializer with <-.
+    // A separate assignment emits das_move and clears the original owner.
+    var result:variant<ok:T -const -&;error:string>
+    result as ok <- value
+    return <- result
 }
 def move_error(message:string; unused:type<auto(T)>) : variant<ok:T -const -&;error:string> {
     return <- variant<ok:T -const -&;error:string>(error=message)

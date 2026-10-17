@@ -8,7 +8,7 @@ require daslib/rtti
 struct TaskSchedulerConfig {max_polls_per_tick:int=64}
 struct TaskTimeout {after_ms:int64}
 struct TaskId {owner:uint64;slot:int;generation:uint64}
-struct TaskSchedulerTag {}
+struct TaskSchedulerTag {_ce_marker:uint8}
 // Private implementation records. Active queue links are 1-based; zero is null.
 struct TaskSlot {
     generation:uint64
@@ -66,26 +66,11 @@ def private task_scheduler_create(unused:type<auto(T)>; config:TaskSchedulerConf
 }
 def task_scheduler(unused:type<auto(T)>; config:TaskSchedulerConfig) {
     static_assert(typeinfo ce_resumable_payload(default<T>))
-    concept_assert(typeinfo can_copy(type<T>),"task scheduler: payload must be copyable")
     task_scheduler_validate(config)
     let owner=task_scheduler_new_owner()
     return <- task_scheduler_create(type<T>,config,owner)
 }
 def task_scheduler(unused:type<auto(T)>) {return <- task_scheduler(type<T>,TaskSchedulerConfig())}
-
-// Collection results have an owning array Task, not a copyable Task<Array<T>>.
-def task_scheduler(unused:type<array<auto(Item)>>; config:TaskSchedulerConfig) {
-    concept_assert(typeinfo can_copy(type<Item>),"task scheduler: array elements must be copyable")
-    static_assert(typeinfo ce_resumable_payload(default<Item>))
-    task_scheduler_validate(config)
-    let owner=task_scheduler_new_owner()
-    var placeholder:iterator<tuple<tag:TaskEventTag;ready:bool;value:Item>>
-    var children:array<typedecl(task_create(placeholder))>
-    var records:array<tuple<task:typedecl(task_when_all(children));slot:TaskSlot>>
-    var inscope frames:array<tuple<state:TaskSchedulerState;records:typedecl(records)>>
-    frames |> emplace((state=TaskSchedulerState(config=config,owner=owner),records <- records))
-    return <- (kind=TaskSchedulerTag(),frames <- frames)
-}
 
 def finalize(var scheduler:tuple<kind:TaskSchedulerTag;frames:array<auto(F)>>) {
     ce_sequence_finalize($ {
@@ -163,7 +148,7 @@ def private task_scheduler_unlink(var frame:auto; slot:int) {
 def private task_scheduler_spawn(var scheduler:auto; var source:auto; timed:bool; after_ms:int64) : TaskId {
     unsafe {
         if(ce_task_is_polling(source)) {panic("task scheduler: cannot move a task being polled")}
-        var inscope owned <- source
+        var inscope owned <- ce_task_source(source)
         var index=0
         try {
             task_scheduler_idle(scheduler)
@@ -219,6 +204,15 @@ def task_value(scheduler:auto; id:TaskId) {
     static_if(typeinfo can_copy(type<typedecl(task_value(scheduler.frames[0].records[id.slot-1].task))>)) {
         return task_value(scheduler.frames[0].records[id.slot-1].task)
     } else {return <- task_value(scheduler.frames[0].records[id.slot-1].task)}
+}
+
+// Transfer an owned result without cloning, and retire its completed record.
+def task_take(var scheduler:auto;id:TaskId) {
+    task_scheduler_idle(scheduler);task_scheduler_check_id(scheduler,id)
+    if(task_status(scheduler,id)!=TaskStatus.Succeeded) {panic("task_take: task has not succeeded")}
+    var value <- scheduler.frames[0].records[id.slot-1].task.value
+    task_scheduler_release(scheduler.frames[0],id.slot)
+    return <- value
 }
 def task_error(scheduler:auto; id:TaskId) : string {
     task_scheduler_check_id(scheduler,id)

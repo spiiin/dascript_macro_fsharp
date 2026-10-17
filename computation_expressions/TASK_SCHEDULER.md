@@ -197,3 +197,9 @@ Scope потребляет scheduler и удаляет его и при успе
 Ожидание заданного времени в CE: task_delay_ms(duration_ms) |> bind. Текущий now_ms доступен вложенным Task на время tick; задержки подчиняются бюджету опросов. [TASK_DELAY.md](TASK_DELAY.md).
 
 Коллекционный результат task_when_all(array) можно зарегистрировать в task_scheduler(type<array<T>>). task_value возвращает независимый clone массива. Пример и ограничения элементов: [TASK_ARRAY.md](TASK_ARRAY.md).
+
+Результаты scheduler могут быть move-only, включая вложенные массивы и Result.
+`task_take(scheduler,id)` переносит успешный результат и удаляет запись, делая ID
+недействительным; `task_value` возвращает независимый clone. Shared handle при
+spawn создаёт отдельного ожидателя: отмена/timeout его записи не отменяет общий
+производитель при наличии других lease. Подробности: [TASK_COMPLETION.md](TASK_COMPLETION.md).

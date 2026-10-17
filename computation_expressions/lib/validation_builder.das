@@ -2,7 +2,7 @@ options gen2
 module validation_builder public
 require ./builder_protocol.das public
 
-struct ValidationBuilder {}
+struct ValidationBuilder {_ce_marker:uint8}
 struct ValidationErrors {
     messages : string
     count : int

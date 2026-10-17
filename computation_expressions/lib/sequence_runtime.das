@@ -22,7 +22,8 @@ def ce_sequence_protect(var source : iterator<auto(T)>) : iterator<T> {
                 panic(message)
             }
             if (!more) { break }
-            yield value
+            static_if(typeinfo can_copy(type<T>)) {yield value}
+            else {yield <- value}
         }
         return false
     } finally { ce_sequence_finalize($ { sequence_close(source) }) }
@@ -94,7 +95,7 @@ def sequence_close(var source : iterator<auto(T)>) {
 }
 
 // A copyable descriptor with one mutable payload, owned by the lexical CE scope.
-struct CeSequenceCellTag {}
+struct CeSequenceCellTag {_ce_marker:uint8}
 def ce_sequence_new_cell(value : auto(T)) {
     return new tuple<tag:CeSequenceCellTag;value:T -const -&>(tag=CeSequenceCellTag(), value=value)
 }

@@ -13,7 +13,7 @@ foreach($name in $modules) {
 foreach($name in $modules) {
     foreach($match in [regex]::Matches([IO.File]::ReadAllText((Join-Path $PSScriptRoot ("lib/"+$name))),'(?m)^require\s+([\w./]+)')) {
         $dependency=$match.Groups[1].Value
-        if($dependency.StartsWith('daslib/')){continue}
+        if($dependency.StartsWith('daslib/') -or $dependency -eq 'strings'){continue}
         $dependency=[IO.Path]::GetFileNameWithoutExtension($dependency)+'.das'
         if($dependency -notin $modules){throw "Missing public dependency: $dependency (from $name)"}
     }
@@ -32,6 +32,13 @@ Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_CANCELLATION.md') -Destina
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_DELAY.md') -Destination $Destination
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_ARRAY.md') -Destination $Destination
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TASK_AND_BIND.md') -Destination $Destination
+foreach($name in @('TASK_COMPLETION.md','TASK_TCP.md','AOT_RUNTIME.md')) {
+    Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination $Destination
+}
+New-Item -ItemType Directory -Path (Join-Path $Destination 'aot_host') -Force | Out-Null
+foreach($name in @('main.cpp','CMakeLists.txt','recover_064.h')) {
+    Copy-Item -LiteralPath (Join-Path $PSScriptRoot "aot_host/$name") -Destination (Join-Path $Destination "aot_host/$name")
+}
 $modules | ForEach-Object {[pscustomobject]@{File="lib/$_";Sha256=(Get-FileHash -LiteralPath (Join-Path $Destination "lib/$_")).Hash}} |
     ConvertTo-Json | Set-Content -LiteralPath (Join-Path $Destination 'manifest.json')
 Write-Host "Exported $($modules.Count) library modules and a standalone integration example to $Destination"

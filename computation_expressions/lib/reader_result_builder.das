@@ -3,7 +3,7 @@ module reader_result_builder public
 require ./computation_builders.das public
 require ./reader_builder.das public
 
-struct ReaderResultContext {}
+struct ReaderResultContext {_ce_marker:uint8}
 
 // Eager reader: copyable environment and ordinary Result outcomes.
 def ReaderResultBuilder(environment:auto(ReaderEnvironment)) {

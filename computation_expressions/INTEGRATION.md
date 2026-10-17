@@ -57,3 +57,8 @@ assert(custom.value==42)
 test_integration.ps1 проверяет новый экспорт вне исходного дерева: минимальный
 builder и smoke с State, ReaderResult, Validation, MoveResult и повторными
 deferred List. Тест не использует support или тестовые builders.
+
+Полный Task-контракт: [TASK_COMPLETION.md](TASK_COMPLETION.md).
+Сеть подключается отдельным `require ./lib/task_tcp.das`, см. TASK_TCP.md.
+AOT host template находится в aot_host/; runner run_aot.ps1 и тестовый manifest
+доступны в исходном репозитории, см. AOT_RUNTIME.md.

@@ -3,12 +3,24 @@ module deferred_runtime public
 require ./sequence_runtime.das public
 require daslib/rtti
 
-struct DeferredComputation {}
-struct CeDeferredValueBuilder {}
-struct CeDeferredTypeBuilder {}
+struct DeferredComputation {_ce_marker:uint8}
+struct CeDeferredValueBuilder {_ce_marker:uint8}
+struct CeDeferredTypeBuilder {_ce_marker:uint8}
+struct CeDeferredTaskBuilder {_ce_marker:uint8}
 def private ce_deferred_copy_builder(var target:auto; source:auto; policy:CeDeferredValueBuilder) {target := source}
 // The macro checks that this built-in phantom descriptor contains only null.
 def private ce_deferred_copy_builder(var target:auto; source:auto; policy:CeDeferredTypeBuilder) {target.element = null}
+def private ce_deferred_copy_builder(var target:auto; source:auto; policy:CeDeferredTaskBuilder) {target.element = null}
+
+def private ce_deferred_finish(var result:auto;var frame:auto?;policy:auto) {
+    unsafe {delete frame}
+    return <- result
+}
+def private ce_deferred_finish(var result:auto;var frame:auto?;policy:CeDeferredTaskBuilder) {
+    var cleanup <- @ capture(move(frame)) {unsafe {delete frame}}
+    result.source <- ce_deferred_wrap_sequence(result.source,cleanup)
+    return <- result
+}
 
 
 def private ce_deferred_delete(var value:auto) {
@@ -66,8 +78,7 @@ def ce_deferred_create(builder:auto(B); data:auto(E); body:function<(frame:tuple
                 unsafe { delete frame }
                 panic(message)
             }
-            unsafe { delete frame }
-            return <- result
+            return <- ce_deferred_finish(result,frame,policy)
         }
     } } finally { ce_deferred_delete(savedData); ce_deferred_delete(savedBuilder) }
     return <- ce_deferred_hold(thunk)

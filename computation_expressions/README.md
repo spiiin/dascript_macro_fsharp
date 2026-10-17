@@ -4,7 +4,7 @@
 
 | Каталог | Содержимое |
 |---|---|
-| lib/ | 27 публичных модулей без тестовых builders |
+| lib/ | 28 публичных модулей без тестовых builders |
 | examples/ | Запускаемые примеры |
 | tests/ | Положительные и отрицательные проверки; tests/repro/ — известные сбои |
 | support/ | Демонстрационные builders и вспомогательные модули примеров/тестов |
@@ -47,3 +47,6 @@ daslang.exe examples/state_operations_demo.das -no-module-cache
 Ожидание времени task_delay_ms через now_ms планировщика: [TASK_DELAY.md](TASK_DELAY.md), [пример](examples/task_delay_demo.das).
 
 WhenAll для динамического массива задач, порядок результатов и владеющий массив: [TASK_ARRAY.md](TASK_ARRAY.md), [пример](examples/task_array_demo.das).
+
+Завершение текущего набора Task: [TASK_COMPLETION.md](TASK_COMPLETION.md).
+Реальный TCP: [TASK_TCP.md](TASK_TCP.md). Сборка и исполнение AOT: [AOT_RUNTIME.md](AOT_RUNTIME.md).

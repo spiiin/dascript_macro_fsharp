@@ -60,6 +60,18 @@ def finalize(var token:CancellationToken) {
 
 // Borrowed only across a synchronous poll call, never across a yield.
 var private cancellation_scopes:array<CancellationToken const?>
+
+// Cancelling one shared waiter must not cancel the shared producer. A producer
+// can still install its own explicit token inside this isolated synchronous poll.
+def ce_cancellation_isolate(action:block<():void>) {
+    var saved <- cancellation_scopes
+    try {invoke(action)} recover {
+        let message="{this_context().last_exception}"
+        cancellation_scopes <- saved
+        panic(message)
+    }
+    cancellation_scopes <- saved
+}
 def ce_task_cancellation_requested() : bool {
     unsafe {
         for(token in cancellation_scopes) {if(cancellation_requested(*token)) {return true}}

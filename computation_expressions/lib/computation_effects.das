@@ -3,9 +3,9 @@ module computation_effects public
 require ./computation_builders.das public
 
 // Eager, scoped state: the macro copies the initial state into a mutable local.
-struct StateContext {}
-struct StateGet {}
-struct StatePut {}
+struct StateContext {_ce_marker:uint8}
+struct StateGet {_ce_marker:uint8}
+struct StatePut {_ce_marker:uint8}
 
 def StateBuilder(initial : auto(S)) : tuple<kind : StateContext; state : S -const> {
     return (kind = StateContext(), state = initial)
@@ -80,7 +80,7 @@ def ce_loop_append(var builder : tuple<kind : StateContext; state : auto(S)>;
 }
 
 // A Writer carries a copyable value plus a string log. No global log/sink.
-struct WriterBuilder {}
+struct WriterBuilder {_ce_marker:uint8}
 def writer_value(value : auto(T); log : string = "") : tuple<value : T -const; log : string> {
     return (value = value, log = log)
 }

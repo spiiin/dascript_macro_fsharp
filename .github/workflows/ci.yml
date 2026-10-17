@@ -16,7 +16,7 @@ jobs:
   windows:
     name: Windows / Daslang 0.6.4
     runs-on: windows-2022
-    timeout-minutes: 30
+    timeout-minutes: 60
     defaults:
       run:
         shell: pwsh
@@ -61,6 +61,17 @@ jobs:
         run: |
           $PSNativeCommandUseErrorActionPreference = $false
           & ./computation_expressions/run_modes.ps1 -Mode AotGenerate -OutputDirectory "$env:GITHUB_WORKSPACE/ci-results/aot-generation"
+
+      - name: Task / real TCP and peer closure (JIT)
+        if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
+        run: |
+          & ./computation_expressions/test_task_tcp.ps1 -Jit
+
+      - name: Task / build and execute strict AOT host
+        if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          & ./computation_expressions/run_aot.ps1 -OutputDirectory "$env:GITHUB_WORKSPACE/ci-results/aot-runtime" -BuildDirectory "$env:RUNNER_TEMP/ce-task-aot-build"
 
       - name: Upload test logs and mode reports
         if: ${{ always() }}

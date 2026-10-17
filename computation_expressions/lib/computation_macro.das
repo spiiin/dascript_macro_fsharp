@@ -1,4 +1,5 @@
 options gen2
+options stack=262144
 module computation_macro public
 require ./builder_protocol.das public
 require ./sequence_runtime.das public
@@ -1101,14 +1102,22 @@ class ComputationMacro : AstCallMacro {
             var error : string
             var raw=clone_expression(blk)
             if(resumable_mode) {
-                raw=ce_resumable_scope(raw,name,error,$(source:ExpressionPtr) {
+                raw=ce_resumable_scope(raw,name,error,$(source:ExpressionPtr;isAwait:bool) {
+                    if(!isAwait) {return ce_normalize_source(name,source)}
                     if(source is ExprCall && (source as ExprCall).name=="and_bind") {
                         let merged=ce_resumable_merge_source(source,name,error)
                         if(!empty(error)) {return null}
                         return qmacro(ce_await_source($i(name),$e(merged)))
                     }
-                    return qmacro(ce_await_source($i(name),$e(source)))
+                    let normalized=ce_normalize_source(name,source)
+                    return qmacro(ce_await_source($i(name),$e(normalized)))
                 })
+                let zero=qmacro_expr() {
+                    static_if(typeinfo ce_has_resumable_zero(ce_await_zero($i(name)))) {
+                        yield <- ce_await_zero($i(name))
+                    }
+                }
+                (raw as ExprBlock).list |> push <| zero
             }
             if(!empty(error)) {macro_error(prog,expr.at,error);return null}
             var body = ce_sequence_scope(raw, 0, protocol.argTypes[1], ce_sequence_has_resources(raw), error, name)
@@ -1228,7 +1237,7 @@ def ce_sequence_scope(node : ExpressionPtr; start : int; element : TypeDeclPtr; 
         if (share && stmt is ExprLet && length((stmt as ExprLet).variables)==1) {
             let variable = (stmt as ExprLet).variables[0]
             let marker = (binding != null && binding is ExprCall
-                && ((binding as ExprCall).name=="bind" || (binding as ExprCall).name=="use_resource"))
+                && ((binding as ExprCall).name=="bind" || (binding as ExprCall).name=="use_resource" || (binding as ExprCall).name=="use_task_local"))
             if (!variable._type.flags.constant && !marker) {
                 if (variable._type.flags.ref || variable.flags.inScope || (stmt as ExprLet).letFlags.inScope
                         || variable.flags.init_via_move || variable.flags.init_via_clone) {
@@ -1266,7 +1275,7 @@ def ce_sequence_scope(node : ExpressionPtr; start : int; element : TypeDeclPtr; 
         }
         if (binding != null && binding is ExprCall) {
             let call = binding as ExprCall
-            if (call.name == "use_resource") {
+            if (call.name == "use_resource" || call.name=="use_task_local") {
                 if (!(stmt is ExprLet) || length(call.arguments)!=1) {
                     error = "sequence: expected 'let resource = expression |> use_resource'"
                     return blk
@@ -1278,7 +1287,7 @@ def ce_sequence_scope(node : ExpressionPtr; start : int; element : TypeDeclPtr; 
                     error="use_resource: borrow ownership with 'var resource & = source |> use_resource'"
                     return blk
                 }
-                if (variable._type.flags.ref && !variable._type.flags.constant) {
+                if (variable._type.flags.ref) {
                     let cell=make_unique_private_name("__seq_resource_cell_{identity}",stmt.at)
                     var raw_tail=qmacro_block() {} as ExprBlock
                     for(i in range(index+1,length(blk.list))) {raw_tail.list |> push <| clone_expression(blk.list[i])}
@@ -1290,6 +1299,7 @@ def ce_sequence_scope(node : ExpressionPtr; start : int; element : TypeDeclPtr; 
                     (body as ExprBlock).list |> emplace(decl,0)
                     var setup <- qmacro_block_to_array() {var $i(cell)=ce_resource_cell_move($e(call.arguments[0]));}
                     var cleanup=qmacro($ {ce_resource_cell_close($i(cell),$(var $i(owned):typedecl($i(cell).value)) {ce_dispose($i(owned))})})
+                    if(call.name=="use_task_local") {cleanup=qmacro($ {ce_resource_cell_close($i(cell),$(var $i(owned):typedecl($i(cell).value)) {ce_task_local_delete($i(owned))})})}
                     output |> push <| ce_sequence_guard(body,setup,cleanup,element,stmt.at,identity)
                     return qmacro_block() {$b(output);}
                 }
@@ -1468,7 +1478,7 @@ def ce_sequence_guard(body : ExpressionPtr; var setup : array<ExpressionPtr>;
 class SequenceResourceFinder : AstVisitor {
     found : bool = false
     def override preVisitExprCall(expr : ExprCall?) {
-        if (expr.name=="use_resource" || expr.name=="try_finally" || expr.name=="try_with") { found=true }
+        if (expr.name=="use_resource" || expr.name=="use_task_local" || expr.name=="try_finally" || expr.name=="try_with") { found=true }
     }
 }
 def ce_sequence_has_resources(body : ExpressionPtr) : bool {
