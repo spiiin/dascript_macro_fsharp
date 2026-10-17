@@ -46,10 +46,10 @@ Task CE use_resource либо task_from_async(source, closeCallback), перед
 - `run_computation.ps1 -Test`: полный набор интерпретатора, включая ожидаемые
   ошибки компиляции и проверки раскрытия.
 - `run_modes.ps1 -Mode Jit`: явно перечисленное подмножество исполнения JIT.
-  Тринадцать файлов: четыре базовых CE-набора и test_task, test_task_result,
+  Шестнадцать файлов: четыре базовых CE-набора и test_task, test_task_result,
   test_task_control, test_task_lifetime, test_task_from_async,
   test_task_from_async_lifetime, test_task_combinators,
-  test_task_combinators_lifetime, test_task_cleanup_errors. Последние проверяют также отмену,
+  test_task_combinators_lifetime, test_task_cleanup_errors, test_task_scheduler, test_task_scheduler_safety, test_task_scheduler_lifetime. Последние проверяют также отмену,
   обработку ошибок, ожидание внешнего события и освобождение ресурсов.
   Не означает успех всех тестов интерпретатора под JIT. Кеш JIT отключён.
 - `run_modes.ps1 -Mode AotGenerate`: генерация C++ через `daslang -aot`.

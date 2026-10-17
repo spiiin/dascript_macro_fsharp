@@ -112,3 +112,7 @@ state, не внешние эффекты или объекты по указа�
 Новые правила определяются перегрузками ce_* рядом с builder, без регистрации.
 Для and_bind нужна ce_merge_sources, для циклов — соответствующие операции
 протокола. Внутренние курсоры, slots и устройство снимков не являются API.
+
+## Task scheduler
+
+Модуль task_scheduler.das: task_scheduler(type<T>, TaskSchedulerConfig()), task_spawn, task_tick(scheduler, now_ms), task_configure, task_scheduler_config, task_scheduler_time, task_valid, task_status/value/error(scheduler,id), task_count, task_active_count, task_slot_count, task_cancel(scheduler,id), task_forget, task_prune, task_scheduler_close, task_scheduler_scope. Полный контракт и пример: [TASK_SCHEDULER.md](TASK_SCHEDULER.md).

@@ -106,3 +106,5 @@ ce_dispose пользовательских ресурсов по-прежнем
 Пример: [task_combinators_demo.das](examples/task_combinators_demo.das).
 Тесты: test_task_combinators, test_task_combinators_lifetime,
 test_task_cleanup_errors; последний защищает от утечек при бросающих close-callbacks.
+
+Типизированный планировщик с лимитом опросов, круговым обходом, ID, отменой и историей: [TASK_SCHEDULER.md](TASK_SCHEDULER.md).

@@ -266,3 +266,5 @@ Daslang 0.6.4, не подтверждение всех путей под JIT/AO
 Подробные контракты: [AND_BIND.md](AND_BIND.md), [LOOP_PROTOCOL.md](LOOP_PROTOCOL.md),
 [ZIP_FOR.md](ZIP_FOR.md), [RESOURCES.md](RESOURCES.md), [TRY_WITH.md](TRY_WITH.md),
 [MOVE_CE.md](MOVE_CE.md), [MOVE_COLLECTIONS.md](MOVE_COLLECTIONS.md), [DEFERRED.md](DEFERRED.md).
+
+Типизированный планировщик с лимитом опросов, круговым обходом, ID, отменой и историей: [TASK_SCHEDULER.md](TASK_SCHEDULER.md).
