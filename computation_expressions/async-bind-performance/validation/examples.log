@@ -1,0 +1,7 @@
+EXAMPLE PASS async_sequence_and_bind_demo.das
+EXAMPLE PASS async_sequence_demo.das
+EXAMPLE PASS async_sequence_for_demo.das
+EXAMPLE PASS async_sequence_move_demo.das
+EXAMPLE PASS async_sequence_yield_from_demo.das
+EXAMPLE PASS async_sequence_zip_demo.das
+EXAMPLE PASS deferred_async_sequence_demo.das

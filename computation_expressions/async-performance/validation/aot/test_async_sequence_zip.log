@@ -1,0 +1,2 @@
+Async sequence zip checks OK
+AOT RUNTIME PASS: C:\Users\sanya\Documents\Codex\2026-10-11\f-type-provider\work\async-perf-after\computation_expressions\tests\test_async_sequence_zip.das (main->aot=yes, strict linking)

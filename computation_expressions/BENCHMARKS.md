@@ -1,6 +1,8 @@
 # CE против ручного кода
 
 Выделения памяти, время компиляции и размер раскрытия: [PERFORMANCE_METRICS.md](PERFORMANCE_METRICS.md).
+AsyncSequence: next, Async For, zip, and_bind и move-only элементы, счётчики памяти
+и сравнение до/после: [ASYNC_SEQUENCE_PERFORMANCE.md](ASYNC_SEQUENCE_PERFORMANCE.md).
 
 ```powershell
 ./run_benchmarks.ps1

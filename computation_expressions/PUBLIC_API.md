@@ -142,6 +142,14 @@ none, отмена/таймаут next закрывают stream. Владель
 `child_stream() |> yield_from` передаёт элементы дочернего AsyncSequence во внешний;
 дочерний stream переносится во владение делегирования, в том числе с move-only payload.
 Контракт: [ASYNC_SEQUENCE.md](ASYNC_SEQUENCE.md).
+Внутри AsyncSequenceBuilder `for(value in child_stream())` автоматически ожидает
+элементы и владеет источником до завершения/закрытия цикла. Переменная заимствует
+элемент, включая move-only payload, на время итерации и вложенных bind.
+`for(a,b,... in left(),right(),...)` обходит несколько AsyncSequence совместно
+по кратчайшему источнику; partial-элементы и все источники освобождаются при остановке.
+`left_task() |> and_bind(right_task()) |> bind` совместно ожидает Task через
+ce_merge_sources/task_when_all. Для move-only пары нужен `var pair & = ... |> bind`.
+Task Failed/Cancelled останавливает stream; Result.Error/Option.None в payload — данные.
 Для `deferred(AsyncSequenceBuilder(type<T>),data)` каждый run_deferred создаёт
 независимый stream и рабочий снимок, живущий до закрытия производителя;
 поддержаны move-only элементы и вариант без явных данных.

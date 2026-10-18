@@ -1185,6 +1185,20 @@ class CeSequenceSource : AstTypeInfoMacro {
             return null
         }
         let source=expr.subexpr
+        // Fuse protected await adaptation after source normalization/inference.
+        if(source is ExprCall && length((source as ExprCall).arguments)==2) {
+            let call=source as ExprCall
+            var origin=call.func
+            while(origin!=null && origin.fromGeneric!=null) {origin=origin.fromGeneric}
+            let descriptor=call.arguments[0]._type
+            if(origin!=null && origin.name=="ce_await_source" && origin._module.name=="task_builder"
+                && descriptor!=null && descriptor.baseType==Type.tTuple && !empty(descriptor.argTypes)
+                && descriptor.argTypes[0].baseType==Type.tStructure
+                && descriptor.argTypes[0].structType.name=="AsyncSequenceContext"
+                && descriptor.argTypes[0].structType._module.name=="async_sequence_builder") {
+                return qmacro(ce_await_input($e(call.arguments[0]),$e(call.arguments[1])))
+            }
+        }
         if (source._type.baseType==Type.tIterator) {
             return qmacro(invoke($ {
                 static_if (typeinfo is_ref_value(type<$t(source._type.firstType)>)) {

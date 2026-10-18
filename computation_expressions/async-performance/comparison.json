@@ -1,0 +1,77 @@
+{
+  "AllocationSamplePairsVerified": 360,
+  "SavedAllocationsPerNext": 2,
+  "SavedBytesPerNext": 128,
+  "Elements": 1024,
+  "Batches": 8,
+  "Samples": 9,
+  "CompilerSha256": "1A2422177F0744EC892D237CFB7C07829F40A9466FA7222C273C3A17D15AF698",
+  "AllocationRuns": [
+    "before-jit-large",
+    "after-jit-large"
+  ],
+  "IllustrativeTimingRuns": [
+    "after-jit-repeat",
+    "before-jit-bracket"
+  ],
+  "TimingCaveat": "Interprocess load variation is large. Timings are observations, not an established universal speedup. All runs and raw samples are retained.",
+  "TimingRuns": [
+    "before-jit-large",
+    "after-jit-large",
+    "before-jit-repeat",
+    "after-jit-repeat",
+    "before-jit-bracket"
+  ],
+  "Results": [
+    {
+      "Case": "next",
+      "BeforeAllocationsPerItem": 10.0186,
+      "AfterAllocationsPerItem": 8.0166,
+      "BeforeBytesPerItem": 737.3,
+      "AfterBytesPerItem": 609.18,
+      "IllustrativeBeforeNs": 1536.47,
+      "IllustrativeAfterNs": 1374.52,
+      "IllustrativeTimeChangePercent": -10.54
+    },
+    {
+      "Case": "for",
+      "BeforeAllocationsPerItem": 22.0381,
+      "AfterAllocationsPerItem": 18.0342,
+      "BeforeBytesPerItem": 1510.78,
+      "AfterBytesPerItem": 1254.53,
+      "IllustrativeBeforeNs": 3135.6,
+      "IllustrativeAfterNs": 2978.49,
+      "IllustrativeTimeChangePercent": -5.01
+    },
+    {
+      "Case": "zip",
+      "BeforeAllocationsPerItem": 36.0811,
+      "AfterAllocationsPerItem": 28.0732,
+      "BeforeBytesPerItem": 2533.96,
+      "AfterBytesPerItem": 2021.46,
+      "IllustrativeBeforeNs": 5868.08,
+      "IllustrativeAfterNs": 5346.53,
+      "IllustrativeTimeChangePercent": -8.89
+    },
+    {
+      "Case": "and_bind",
+      "BeforeAllocationsPerItem": 14.0186,
+      "AfterAllocationsPerItem": 12.0166,
+      "BeforeBytesPerItem": 1121.3,
+      "AfterBytesPerItem": 993.18,
+      "IllustrativeBeforeNs": 2231.87,
+      "IllustrativeAfterNs": 2379.14,
+      "IllustrativeTimeChangePercent": 6.6
+    },
+    {
+      "Case": "move",
+      "BeforeAllocationsPerItem": 11.0186,
+      "AfterAllocationsPerItem": 9.0166,
+      "BeforeBytesPerItem": 849.35,
+      "AfterBytesPerItem": 721.22,
+      "IllustrativeBeforeNs": 1625.72,
+      "IllustrativeAfterNs": 1530.71,
+      "IllustrativeTimeChangePercent": -5.84
+    }
+  ]
+}

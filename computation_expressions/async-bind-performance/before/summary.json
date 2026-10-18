@@ -1,0 +1,690 @@
+{
+  "RecordedAt": "2026-10-18T12:45:53.7142072+02:00",
+  "Mode": "jit",
+  "Elements": 1024,
+  "Batches": 8,
+  "Samples": 9,
+  "WorkSizes": [
+    0,
+    32
+  ],
+  "PendingPolls": [
+    0,
+    1
+  ],
+  "Compiler": "C:\\src\\daslang-0.6.5-RC2\\sdk\\daslang_bundle\\bin\\daslang.exe",
+  "CompilerSha256": "1A2422177F0744EC892D237CFB7C07829F40A9466FA7222C273C3A17D15AF698",
+  "Processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+  "OperatingSystem": "Microsoft Windows NT 10.0.26200.0",
+  "SourceRoot": "C:\\Users\\sanya\\Documents\\Codex\\2026-10-11\\f-type-provider\\work\\async-bind-before\\computation_expressions",
+  "CompilationAndProcessMs": 14700.2234,
+  "AllocationScope": "cumulative daScript heap allocations/bytes; excludes string heap, LLVM and native/OS allocations",
+  "SourceHashes": [
+    {
+      "File": "benchmarks/benchmark_async_sequence.das",
+      "Sha256": "49DB9404D96F650A7977D25CC0FB6122010EF57077E218ABAFCA6DB80552A58E"
+    },
+    {
+      "File": "benchmarks/async_sequence_workloads.das",
+      "Sha256": "AA846D9142D4B8E59F1170B1F07C25BC6A609DA597EFA50B88C47C7E5BF7CAEC"
+    },
+    {
+      "File": "lib/async_sequence_builder.das",
+      "Sha256": "9B7F43776DA0CA21C8BE3CF5B7247724C47C7DD3A80B979D4868E34FB9B4B732"
+    },
+    {
+      "File": "lib/builder_protocol.das",
+      "Sha256": "D622A89E1516036D156952E35C24C4B2DA726D555FE6CD768C8C40996E26493C"
+    },
+    {
+      "File": "lib/cancellation_token.das",
+      "Sha256": "6ABBCA4F3424CD447FA18203BA4D89D62DD29D57E58EAB023C348A4F2E7594A0"
+    },
+    {
+      "File": "lib/computation_builders.das",
+      "Sha256": "B5A71CA7860A5F3134F18DE8B5B5D91DEB99A934C1613378F6FBFA75CBD507B4"
+    },
+    {
+      "File": "lib/computation_effects.das",
+      "Sha256": "6AB95A03EC7A29EA4D1BF8F543D5AA46B426EF5CB76770490360834357464324"
+    },
+    {
+      "File": "lib/computation_macro.das",
+      "Sha256": "740B7F3AEC7C63A3073E464A412D19A97BEFA9BBE72D67D79E8E0E89FC3A0A91"
+    },
+    {
+      "File": "lib/computation_resources.das",
+      "Sha256": "AA23CE730FD7E8931F00E511670A5E00BCC66B1DAB431B353937DA66EDA3EE9D"
+    },
+    {
+      "File": "lib/computation.das",
+      "Sha256": "CD399CE79F2C80B33B88CA3B8487458D2808FF4AC8FCC195BEDE1D73FFC32908"
+    },
+    {
+      "File": "lib/coroutine_builder.das",
+      "Sha256": "7B836808BE6613ADDD2178D4D8EE67E187261C9F0B6435F538D766F1403A7D2F"
+    },
+    {
+      "File": "lib/coroutine_scheduler.das",
+      "Sha256": "9BA18AFD1D9800D8ECB9FE251E83CC1F67D43BBB1EC631B356850C0703FF3D62"
+    },
+    {
+      "File": "lib/deferred_computation.das",
+      "Sha256": "75B8D544C8BD5E78ED69A8869BE73C29B2E112CF2776A4DDD8ACA65BF81E5BB1"
+    },
+    {
+      "File": "lib/deferred_runtime.das",
+      "Sha256": "4038833BE4A1B87A7733CB32C58D50398587D407081C71754542F2F84E734834"
+    },
+    {
+      "File": "lib/list_builder.das",
+      "Sha256": "2CDA0F7E7C9DC9093F94298236ED48A487727B51EA4092169D662FA04D50DCCB"
+    },
+    {
+      "File": "lib/move_builders.das",
+      "Sha256": "4AD3109BCBD027EB29F1C6983E791C3ECFCBE30EA8A5A39040875B5C075100B7"
+    },
+    {
+      "File": "lib/parser_builder.das",
+      "Sha256": "361DAA6CEB1585C5403CF49B7B4D22BD9D7685FFB8427411D926D2D2A373575E"
+    },
+    {
+      "File": "lib/query_builder.das",
+      "Sha256": "A3CFC8DC20E64F82D3E10A2A78F2DDCAFD3C8DAB45428ECE7FE3C2BE537F6B3C"
+    },
+    {
+      "File": "lib/reader_builder.das",
+      "Sha256": "65ED33C17D3E7B74842D3A60B4408F5905EA620CEF75F79DE5B16C4F19E42E2F"
+    },
+    {
+      "File": "lib/reader_result_builder.das",
+      "Sha256": "1FB585992C6F78CC2719C8DE39FD7E332ECC1F12881C2357A7CADCD6C348BAE0"
+    },
+    {
+      "File": "lib/resumable_lowering.das",
+      "Sha256": "3071D28A75A026A6A43FD7CFDBB56B89C329AE9FA75985F8B2D9C9A567D414D5"
+    },
+    {
+      "File": "lib/search_builder.das",
+      "Sha256": "DD12A6D0AB99E4B82DC2E6BC53F6C476D71FEEA68A8DE42FF946069E38D32712"
+    },
+    {
+      "File": "lib/sequence_builder.das",
+      "Sha256": "915642585265ADB3CEC414F8A2FEFA405569C41EDB7CD367AB38704FC839E4DC"
+    },
+    {
+      "File": "lib/sequence_runtime.das",
+      "Sha256": "5B0215A49397EBF6BACDC232F826C3EB6CFBF7E5DB20438B8F7618FFB633AA49"
+    },
+    {
+      "File": "lib/state_result_builder.das",
+      "Sha256": "3E729F9573C6B92D0E615BE43E7BF27E80CC834386EB5DB87E1C1B798AD065AC"
+    },
+    {
+      "File": "lib/state_writer_result_builder.das",
+      "Sha256": "09FE1A51554B812EB816E57C1CD2189407C6C2E97F3165253D65CE9713810F0A"
+    },
+    {
+      "File": "lib/task_builder.das",
+      "Sha256": "CE43DA293683B0BDCC85D5A0059B5ED14F8556F4CC0318BA96A6DB0CFD38E10C"
+    },
+    {
+      "File": "lib/task_combinators.das",
+      "Sha256": "210DB11B2E50D25933833B5C02780DD93818AC2D142542B147AD2F61EC63CFCA"
+    },
+    {
+      "File": "lib/task_delay.das",
+      "Sha256": "307B7FC9218906A3373140F24278D9F19915DABB397766917C108DFFC7D14830"
+    },
+    {
+      "File": "lib/task_events.das",
+      "Sha256": "C1D9609CE64A36B365744CE35F8F00724D6F9437765395F2CD6E10CE1EECA005"
+    },
+    {
+      "File": "lib/task_hv.das",
+      "Sha256": "044436DE80EA7B50F2D9021C59E4C4829D914C2A730540D3E385329D00A3DB2A"
+    },
+    {
+      "File": "lib/task_scheduler.das",
+      "Sha256": "B918B5E73921B7A548BF5115A400DA960D52FA18B6736A4FE1D6B5DA480245D5"
+    },
+    {
+      "File": "lib/task_tcp.das",
+      "Sha256": "2C9640C1D446CEE9964C15047F6245512BB91082B021E299166DDAF786EDF388"
+    },
+    {
+      "File": "lib/validation_builder.das",
+      "Sha256": "0FBE353F7E40D69CD955E9570DAA706741207906C6EEF2200054C6BC7A3EAA44"
+    },
+    {
+      "File": "lib/writer_result_builder.das",
+      "Sha256": "23A7B469694A184E03120D8A91FD7D31549957CF9E7F236A5182764C8DD0E852"
+    },
+    {
+      "File": "lib/zip_runtime.das",
+      "Sha256": "D5C339E1C75F81FB4A965809BB1AE71C71F4C668DD6C8BAACE5527A236694914"
+    }
+  ],
+  "Results": [
+    {
+      "Case": "next",
+      "Implementation": "ce",
+      "Work": 0,
+      "Pending": 0,
+      "NsPerItem": 1348.85,
+      "MinNsPerItem": 1324.28,
+      "MaxNsPerItem": 1494.73,
+      "AllocationsPerItem": 8.0166,
+      "BytesPerItem": 609.18,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.613
+    },
+    {
+      "Case": "next",
+      "Implementation": "manual",
+      "Work": 0,
+      "Pending": 0,
+      "NsPerItem": 514.32,
+      "MinNsPerItem": 506.73,
+      "MaxNsPerItem": 583.94,
+      "AllocationsPerItem": 4.0068,
+      "BytesPerItem": 296.48,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.613
+    },
+    {
+      "Case": "for",
+      "Implementation": "ce",
+      "Work": 0,
+      "Pending": 0,
+      "NsPerItem": 2736.62,
+      "MinNsPerItem": 2678.82,
+      "MaxNsPerItem": 3086.36,
+      "AllocationsPerItem": 18.0342,
+      "BytesPerItem": 1254.53,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.905
+    },
+    {
+      "Case": "for",
+      "Implementation": "manual",
+      "Work": 0,
+      "Pending": 0,
+      "NsPerItem": 945.35,
+      "MinNsPerItem": 931.97,
+      "MaxNsPerItem": 1035.25,
+      "AllocationsPerItem": 6.0137,
+      "BytesPerItem": 448.96,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.905
+    },
+    {
+      "Case": "zip",
+      "Implementation": "ce",
+      "Work": 0,
+      "Pending": 0,
+      "NsPerItem": 4938.06,
+      "MinNsPerItem": 4805.94,
+      "MaxNsPerItem": 5092.82,
+      "AllocationsPerItem": 28.0732,
+      "BytesPerItem": 2021.46,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 3.305
+    },
+    {
+      "Case": "zip",
+      "Implementation": "manual",
+      "Work": 0,
+      "Pending": 0,
+      "NsPerItem": 1480.43,
+      "MinNsPerItem": 1450.44,
+      "MaxNsPerItem": 1541.0,
+      "AllocationsPerItem": 10.0205,
+      "BytesPerItem": 745.5,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 3.305
+    },
+    {
+      "Case": "and_bind",
+      "Implementation": "ce",
+      "Work": 0,
+      "Pending": 0,
+      "NsPerItem": 2044.63,
+      "MinNsPerItem": 1968.68,
+      "MaxNsPerItem": 2165.99,
+      "AllocationsPerItem": 12.0166,
+      "BytesPerItem": 993.18,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 1.977
+    },
+    {
+      "Case": "and_bind",
+      "Implementation": "manual",
+      "Work": 0,
+      "Pending": 0,
+      "NsPerItem": 1037.17,
+      "MinNsPerItem": 1026.35,
+      "MaxNsPerItem": 1056.63,
+      "AllocationsPerItem": 8.0068,
+      "BytesPerItem": 672.49,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 1.977
+    },
+    {
+      "Case": "move",
+      "Implementation": "ce",
+      "Work": 0,
+      "Pending": 0,
+      "NsPerItem": 1393.68,
+      "MinNsPerItem": 1369.26,
+      "MaxNsPerItem": 1476.55,
+      "AllocationsPerItem": 9.0166,
+      "BytesPerItem": 721.22,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.387
+    },
+    {
+      "Case": "move",
+      "Implementation": "manual",
+      "Work": 0,
+      "Pending": 0,
+      "NsPerItem": 584.18,
+      "MinNsPerItem": 575.5,
+      "MaxNsPerItem": 631.2,
+      "AllocationsPerItem": 5.0068,
+      "BytesPerItem": 408.56,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.387
+    },
+    {
+      "Case": "next",
+      "Implementation": "ce",
+      "Work": 0,
+      "Pending": 1,
+      "NsPerItem": 1572.17,
+      "MinNsPerItem": 1561.18,
+      "MaxNsPerItem": 1653.58,
+      "AllocationsPerItem": 8.0166,
+      "BytesPerItem": 609.18,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.3
+    },
+    {
+      "Case": "next",
+      "Implementation": "manual",
+      "Work": 0,
+      "Pending": 1,
+      "NsPerItem": 687.12,
+      "MinNsPerItem": 678.86,
+      "MaxNsPerItem": 818.64,
+      "AllocationsPerItem": 4.0068,
+      "BytesPerItem": 296.48,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.3
+    },
+    {
+      "Case": "for",
+      "Implementation": "ce",
+      "Work": 0,
+      "Pending": 1,
+      "NsPerItem": 3161.12,
+      "MinNsPerItem": 3116.35,
+      "MaxNsPerItem": 3419.76,
+      "AllocationsPerItem": 18.0342,
+      "BytesPerItem": 1254.53,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.538
+    },
+    {
+      "Case": "for",
+      "Implementation": "manual",
+      "Work": 0,
+      "Pending": 1,
+      "NsPerItem": 1240.91,
+      "MinNsPerItem": 1217.93,
+      "MaxNsPerItem": 1269.47,
+      "AllocationsPerItem": 6.0137,
+      "BytesPerItem": 448.96,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.538
+    },
+    {
+      "Case": "zip",
+      "Implementation": "ce",
+      "Work": 0,
+      "Pending": 1,
+      "NsPerItem": 6731.79,
+      "MinNsPerItem": 6567.96,
+      "MaxNsPerItem": 6928.6,
+      "AllocationsPerItem": 28.0732,
+      "BytesPerItem": 2021.46,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.995
+    },
+    {
+      "Case": "zip",
+      "Implementation": "manual",
+      "Work": 0,
+      "Pending": 1,
+      "NsPerItem": 2254.1,
+      "MinNsPerItem": 2237.88,
+      "MaxNsPerItem": 2428.05,
+      "AllocationsPerItem": 10.0205,
+      "BytesPerItem": 745.5,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.995
+    },
+    {
+      "Case": "and_bind",
+      "Implementation": "ce",
+      "Work": 0,
+      "Pending": 1,
+      "NsPerItem": 2758.89,
+      "MinNsPerItem": 2715.37,
+      "MaxNsPerItem": 2955.88,
+      "AllocationsPerItem": 12.0166,
+      "BytesPerItem": 993.18,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 1.71
+    },
+    {
+      "Case": "and_bind",
+      "Implementation": "manual",
+      "Work": 0,
+      "Pending": 1,
+      "NsPerItem": 1616.6,
+      "MinNsPerItem": 1592.96,
+      "MaxNsPerItem": 1667.49,
+      "AllocationsPerItem": 8.0068,
+      "BytesPerItem": 672.49,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 1.71
+    },
+    {
+      "Case": "move",
+      "Implementation": "ce",
+      "Work": 0,
+      "Pending": 1,
+      "NsPerItem": 1640.77,
+      "MinNsPerItem": 1622.38,
+      "MaxNsPerItem": 1817.86,
+      "AllocationsPerItem": 9.0166,
+      "BytesPerItem": 721.22,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.168
+    },
+    {
+      "Case": "move",
+      "Implementation": "manual",
+      "Work": 0,
+      "Pending": 1,
+      "NsPerItem": 756.65,
+      "MinNsPerItem": 752.47,
+      "MaxNsPerItem": 776.65,
+      "AllocationsPerItem": 5.0068,
+      "BytesPerItem": 408.56,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.168
+    },
+    {
+      "Case": "next",
+      "Implementation": "ce",
+      "Work": 32,
+      "Pending": 0,
+      "NsPerItem": 1371.3,
+      "MinNsPerItem": 1354.87,
+      "MaxNsPerItem": 1522.14,
+      "AllocationsPerItem": 8.0166,
+      "BytesPerItem": 609.18,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.498
+    },
+    {
+      "Case": "next",
+      "Implementation": "manual",
+      "Work": 32,
+      "Pending": 0,
+      "NsPerItem": 549.77,
+      "MinNsPerItem": 544.54,
+      "MaxNsPerItem": 724.32,
+      "AllocationsPerItem": 4.0068,
+      "BytesPerItem": 296.48,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.498
+    },
+    {
+      "Case": "for",
+      "Implementation": "ce",
+      "Work": 32,
+      "Pending": 0,
+      "NsPerItem": 2759.78,
+      "MinNsPerItem": 2710.18,
+      "MaxNsPerItem": 2960.95,
+      "AllocationsPerItem": 18.0342,
+      "BytesPerItem": 1254.53,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.785
+    },
+    {
+      "Case": "for",
+      "Implementation": "manual",
+      "Work": 32,
+      "Pending": 0,
+      "NsPerItem": 984.86,
+      "MinNsPerItem": 974.65,
+      "MaxNsPerItem": 1026.1,
+      "AllocationsPerItem": 6.0137,
+      "BytesPerItem": 448.96,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.785
+    },
+    {
+      "Case": "zip",
+      "Implementation": "ce",
+      "Work": 32,
+      "Pending": 0,
+      "NsPerItem": 4962.41,
+      "MinNsPerItem": 4813.66,
+      "MaxNsPerItem": 5137.48,
+      "AllocationsPerItem": 28.0732,
+      "BytesPerItem": 2021.46,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 3.287
+    },
+    {
+      "Case": "zip",
+      "Implementation": "manual",
+      "Work": 32,
+      "Pending": 0,
+      "NsPerItem": 1502.28,
+      "MinNsPerItem": 1494.21,
+      "MaxNsPerItem": 1580.64,
+      "AllocationsPerItem": 10.0205,
+      "BytesPerItem": 745.5,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 3.287
+    },
+    {
+      "Case": "and_bind",
+      "Implementation": "ce",
+      "Work": 32,
+      "Pending": 0,
+      "NsPerItem": 1995.04,
+      "MinNsPerItem": 1986.73,
+      "MaxNsPerItem": 2048.62,
+      "AllocationsPerItem": 12.0166,
+      "BytesPerItem": 993.18,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 1.834
+    },
+    {
+      "Case": "and_bind",
+      "Implementation": "manual",
+      "Work": 32,
+      "Pending": 0,
+      "NsPerItem": 1086.91,
+      "MinNsPerItem": 1071.95,
+      "MaxNsPerItem": 1365.14,
+      "AllocationsPerItem": 8.0068,
+      "BytesPerItem": 672.49,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 1.834
+    },
+    {
+      "Case": "move",
+      "Implementation": "ce",
+      "Work": 32,
+      "Pending": 0,
+      "NsPerItem": 1405.1,
+      "MinNsPerItem": 1390.62,
+      "MaxNsPerItem": 1657.32,
+      "AllocationsPerItem": 9.0166,
+      "BytesPerItem": 721.22,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.266
+    },
+    {
+      "Case": "move",
+      "Implementation": "manual",
+      "Work": 32,
+      "Pending": 0,
+      "NsPerItem": 616.47,
+      "MinNsPerItem": 609.92,
+      "MaxNsPerItem": 759.84,
+      "AllocationsPerItem": 5.0068,
+      "BytesPerItem": 408.56,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.266
+    },
+    {
+      "Case": "next",
+      "Implementation": "ce",
+      "Work": 32,
+      "Pending": 1,
+      "NsPerItem": 1639.69,
+      "MinNsPerItem": 1600.51,
+      "MaxNsPerItem": 1727.7,
+      "AllocationsPerItem": 8.0166,
+      "BytesPerItem": 609.18,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.243
+    },
+    {
+      "Case": "next",
+      "Implementation": "manual",
+      "Work": 32,
+      "Pending": 1,
+      "NsPerItem": 724.16,
+      "MinNsPerItem": 710.85,
+      "MaxNsPerItem": 751.43,
+      "AllocationsPerItem": 4.0068,
+      "BytesPerItem": 296.48,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.243
+    },
+    {
+      "Case": "for",
+      "Implementation": "ce",
+      "Work": 32,
+      "Pending": 1,
+      "NsPerItem": 3240.49,
+      "MinNsPerItem": 3158.76,
+      "MaxNsPerItem": 3389.67,
+      "AllocationsPerItem": 18.0342,
+      "BytesPerItem": 1254.53,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.517
+    },
+    {
+      "Case": "for",
+      "Implementation": "manual",
+      "Work": 32,
+      "Pending": 1,
+      "NsPerItem": 1266.28,
+      "MinNsPerItem": 1251.01,
+      "MaxNsPerItem": 1380.6,
+      "AllocationsPerItem": 6.0137,
+      "BytesPerItem": 448.96,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.517
+    },
+    {
+      "Case": "zip",
+      "Implementation": "ce",
+      "Work": 32,
+      "Pending": 1,
+      "NsPerItem": 6723.51,
+      "MinNsPerItem": 6634.94,
+      "MaxNsPerItem": 6881.3,
+      "AllocationsPerItem": 28.0732,
+      "BytesPerItem": 2021.46,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.955
+    },
+    {
+      "Case": "zip",
+      "Implementation": "manual",
+      "Work": 32,
+      "Pending": 1,
+      "NsPerItem": 2287.07,
+      "MinNsPerItem": 2268.81,
+      "MaxNsPerItem": 2447.36,
+      "AllocationsPerItem": 10.0205,
+      "BytesPerItem": 745.5,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.955
+    },
+    {
+      "Case": "and_bind",
+      "Implementation": "ce",
+      "Work": 32,
+      "Pending": 1,
+      "NsPerItem": 2778.76,
+      "MinNsPerItem": 2704.05,
+      "MaxNsPerItem": 2914.58,
+      "AllocationsPerItem": 12.0166,
+      "BytesPerItem": 993.18,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 1.653
+    },
+    {
+      "Case": "and_bind",
+      "Implementation": "manual",
+      "Work": 32,
+      "Pending": 1,
+      "NsPerItem": 1646.01,
+      "MinNsPerItem": 1635.17,
+      "MaxNsPerItem": 1789.9,
+      "AllocationsPerItem": 8.0068,
+      "BytesPerItem": 672.49,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 1.653
+    },
+    {
+      "Case": "move",
+      "Implementation": "ce",
+      "Work": 32,
+      "Pending": 1,
+      "NsPerItem": 1667.18,
+      "MinNsPerItem": 1654.17,
+      "MaxNsPerItem": 1871.92,
+      "AllocationsPerItem": 9.0166,
+      "BytesPerItem": 721.22,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.094
+    },
+    {
+      "Case": "move",
+      "Implementation": "manual",
+      "Work": 32,
+      "Pending": 1,
+      "NsPerItem": 797.27,
+      "MinNsPerItem": 792.0,
+      "MaxNsPerItem": 808.03,
+      "AllocationsPerItem": 5.0068,
+      "BytesPerItem": 408.56,
+      "RetainedBytes": 0,
+      "CeManualPairedRatio": 2.094
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 options gen2
+options max_infer_passes=128
 require ../lib/computation_macro.das
 require ../lib/async_sequence_builder.das
 require ../lib/task_scheduler.das

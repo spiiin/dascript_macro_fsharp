@@ -12,6 +12,14 @@ struct CeUnit {_ce_marker:uint8}
 struct CeResumableNoZero {_ce_marker:uint8}
 def ce_await_zero(builder:auto) {return CeResumableNoZero()}
 
+// Optional asynchronous For source. The fallback is inspected only by type.
+struct CeResumableForFallback {_ce_marker:uint8}
+def ce_await_for_source(builder:auto; source:auto; control:auto) {return CeResumableForFallback()}
+def ce_await_for_merge(builder:auto; left,right:auto) {return CeResumableForFallback()}
+def ce_await_for_incompatible(builder:auto) {
+    concept_assert(false,"async For: all sources must support ce_await_for_merge; cannot mix AsyncSequence and native sources")
+}
+
 def ce_sequence_protocol(unused : type<auto(T)>) {
     return (strategy=CeSequenceProtocol(), element=default<T -const -&>)
 }

@@ -10,6 +10,7 @@ require strings
 class CeTaskLocalRename : AstVisitor {
     original:string
     replacement:string
+    replacementValue:ExpressionPtr
     hidden:bool
     scopes:array<bool>
     def save() {scopes |> push(hidden)}
@@ -30,6 +31,9 @@ class CeTaskLocalRename : AstVisitor {
     def override visitExprFor(var expr:ExprFor?) : ExpressionPtr {self.restore();return expr}
     def override visitExprVar(var expr:ExprVar?) : ExpressionPtr {
         if(!hidden && expr.name==original) {
+            if(replacementValue!=null) {
+                var replaced=clone_expression(replacementValue);replaced.at=expr.at;return replaced
+            }
             var renamed=qmacro($i(replacement));renamed.at=expr.at;return renamed
         }
         return expr
@@ -37,6 +41,14 @@ class CeTaskLocalRename : AstVisitor {
 }
 def private ce_task_rename_tail(body:ExpressionPtr;original,replacement:string) : ExpressionPtr {
     var visitor=new CeTaskLocalRename(original=original,replacement=replacement)
+    var result:ExpressionPtr
+    make_visitor(*visitor) $(adapter) {result=visit(body,adapter)}
+    unsafe {delete visitor}
+    return result
+}
+
+def private ce_task_replace_tail(body:ExpressionPtr;original:string;value:ExpressionPtr) : ExpressionPtr {
+    var visitor=new CeTaskLocalRename(original=original,replacementValue=clone_expression(value))
     var result:ExpressionPtr
     make_visitor(*visitor) $(adapter) {result=visit(body,adapter)}
     unsafe {delete visitor}
@@ -60,6 +72,15 @@ class CeHasResumableZero : AstTypeInfoMacro {
         if(expr.subexpr==null || expr.subexpr._type==null) {return null}
         let t=expr.subexpr._type
         return <- new ExprConstBool(at=expr.at,value=!(t.baseType==Type.tStructure && t.structType.name=="CeResumableNoZero" && t.structType._module.name=="builder_protocol"))
+    }
+}
+
+[typeinfo_macro(name="ce_has_resumable_for")]
+class CeHasResumableFor : AstTypeInfoMacro {
+    def override getAstChange(expr:ExprTypeInfo?; var errors:das_string) : ExpressionPtr {
+        if(expr.subexpr==null || expr.subexpr._type==null || expr.subexpr._type.isAutoOrAlias) {return null}
+        let t=expr.subexpr._type
+        return <- new ExprConstBool(at=expr.at,value=!(t.baseType==Type.tStructure && t.structType.name=="CeResumableForFallback" && t.structType._module.name=="builder_protocol"))
     }
 }
 
@@ -186,6 +207,8 @@ def ce_resumable_scope(node:ExpressionPtr; builder:string; var error:string&;
             let nested=make_unique_private_name("__task_for_control",stmt.at)
             let body=ce_resumable_scope(loop.body,builder,error,await_source,nested)
             loop.body=qmacro_block() {ce_task_loop_signal($i(nested),0);$e(body)}
+            var originals:array<ExpressionPtr>
+            for(source in loop.sources) {originals |> push <| invoke(await_source,clone_expression(source),false)}
             for(source in loop.sources) {
                 let original=invoke(await_source,clone_expression(source),false)
                 source=qmacro(invoke($ {
@@ -194,7 +217,81 @@ def ce_resumable_scope(node:ExpressionPtr; builder:string; var error:string&;
                     } else {return <- ce_task_loop_source_owned($e(original),$i(nested))}
                 }))
             }
-            output |> push <| ce_task_wrap_loop(loop,nested)
+            if(!empty(originals)) {
+                let event=make_unique_private_name("__await_for_event",stmt.at)
+                let arity=length(originals)
+                var input=clone_expression(originals[0])
+                var probe=clone_expression(originals[0])
+                var anyAsync=qmacro(false)
+                var setup:array<ExpressionPtr>
+                for(i in range(arity)) {
+                    let original=originals[i]
+                    anyAsync=qmacro($e(anyAsync) || (typeinfo ce_has_resumable_for(ce_await_for_source($i(builder),$e(original),$i(nested)))))
+                    if(arity>1) {
+                        let source=make_unique_private_name("__await_for_source_{i}",stmt.at)
+                        var declaration=qmacro_expr() {var $i(source) & = use_task_local($e(original))}
+                        declaration.at=stmt.at
+                        declaration.at.column+=uint(2+arity+i)
+                        (declaration as ExprLet).variables[0].init.at=declaration.at
+                        setup |> push <| declaration
+                        if(i==0) {input=qmacro($i(source))}
+                        else {
+                            input=qmacro(ce_await_for_merge($i(builder),$e(input),$i(source)))
+                            probe=qmacro(ce_await_for_merge($i(builder),$e(probe),$e(original)))
+                        }
+                    }
+                }
+                let row=arity==1 ? string(loop.iterators[0]) : make_unique_private_name("__await_for_row",stmt.at)
+                var iteration=clone_expression(body)
+                if(arity>1) {
+                    for(i in range(arity)) {
+                        var value=qmacro($i(row))
+                        var level=arity-1
+                        while(level>0) {
+                            if(i==level) {value=qmacro($e(value).second);break}
+                            value=qmacro($e(value).first)
+                            level--
+                        }
+                        iteration=ce_task_replace_tail(iteration,string(loop.iterators[i]),value)
+                    }
+                }
+                var asynchronous=qmacro_expr() {
+                    for($i(event) in ce_await_for_source($i(builder),$e(input),$i(nested))) {
+                        if(!$i(event).ready) {yield <- ce_await_pending($i(builder))}
+                        else {
+                            ce_task_loop_signal($i(nested),0)
+                            $e(iteration)
+                        }
+                    }
+                }
+                asynchronous.at=stmt.at
+                (asynchronous as ExprFor).body.at=stmt.at
+                var ready=(((asynchronous as ExprFor).body as ExprBlock).list[0] as ExprIfThenElse).if_false as ExprBlock
+                var owned=qmacro_expr() {var $i(row) & = use_task_local(ce_await_for_value($i(builder),$i(event)))}
+                owned.at=stmt.at
+                owned.at.column+=2
+                (owned as ExprLet).variables[0].init.at=owned.at
+                ready.list |> emplace(owned,1)
+                var selected=qmacro_expr() {
+                    static_if(typeinfo ce_has_resumable_for(ce_await_for_source($i(builder),$e(probe),$i(nested)))) {
+                    } else {}
+                }
+                // Interpolation rewrites a loop's source coordinates to the
+                // macro line. Preserve them: native generator fields use them
+                // as identities, including for nested asynchronous loops.
+                for(declaration in setup) {((selected as ExprIfThenElse).if_true as ExprBlock).list |> push <| clone_expression(declaration)}
+                ((selected as ExprIfThenElse).if_true as ExprBlock).list |> push <| asynchronous
+                var native=qmacro_expr() {
+                    static_if($e(anyAsync)) {
+                        ce_await_for_incompatible($i(builder))
+                    } else {}
+                }
+                ((native as ExprIfThenElse).if_true as ExprBlock).list[0].at=stmt.at
+                ((native as ExprIfThenElse).if_false as ExprBlock).list |> push <| clone_expression(loop)
+                ((selected as ExprIfThenElse).if_false as ExprBlock).list |> push <| native
+                selected.at=stmt.at
+                output |> push <| ce_task_wrap_loop(selected,nested)
+            } else {output |> push <| ce_task_wrap_loop(loop,nested)}
         } elif(stmt is ExprWhile) {
             var loop=stmt as ExprWhile
             let nested=make_unique_private_name("__task_while_control",stmt.at)

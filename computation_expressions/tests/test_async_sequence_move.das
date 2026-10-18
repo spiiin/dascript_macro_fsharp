@@ -153,6 +153,36 @@ def checks() {
         var inscope end <- task_take(done)
         verify(end is none)
     }
+    // A Task result borrowed by the fused await adapter remains owned while
+    // the continuation suspends. Close it at each stage, or move it to output.
+    for(mode in range(5)) {
+        var inscope stream <- computation(AsyncSequenceBuilder(type<Packet>)) {
+            var value & = task_after_polls_move(1,packet(42)) |> bind
+            task_after_polls(1,0) |> bind
+            verify(value.data[0]==42 && value.data[1]==43)
+            if(mode==3) {panic("borrowed task body failed")}
+            yield <- value
+            verify(empty(value.data))
+        }
+        var inscope request <- async_sequence_next(stream)
+        verify(task_poll(request)==TaskStatus.Waiting && allocated==released+1)
+        if(mode==0) {verify(task_cancel(request))}
+        else {
+            verify(task_poll(request)==TaskStatus.Waiting && allocated==released+1)
+            if(mode==1) {async_sequence_close(stream);verify(task_poll(request)==TaskStatus.Cancelled)}
+            elif(mode==2) {verify(task_cancel(request))}
+            elif(mode==3) {verify(task_poll(request)==TaskStatus.Failed)}
+            else {
+                verify(task_poll(request)==TaskStatus.Succeeded)
+                {
+                    var inscope item <- task_take(request)
+                    async_sequence_close(stream)
+                    verify((item as some).data[0]==42 && allocated==released+1)
+                }
+            }
+        }
+        check_released()
+    }
     check_released()
 }
 [export]

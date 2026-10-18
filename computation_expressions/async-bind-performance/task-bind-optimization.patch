@@ -1,0 +1,121 @@
+--- a/computation_expressions/lib/async_sequence_builder.das
++++ b/computation_expressions/lib/async_sequence_builder.das
+@@ -1,6 +1,7 @@
+ options gen2
+ module async_sequence_builder public
+ require ./task_combinators.das public
++require daslib/rtti
+ 
+ struct AsyncSequenceContext {_ce_marker:uint8}
+ struct AsyncSequenceTag {_ce_marker:uint8}
+@@ -54,6 +55,46 @@
+ def ce_await_borrow_value(builder:tuple<kind:AsyncSequenceContext;element:auto>; var event:tuple<tag:TaskEventTag;ready:bool;value:auto(U)>) : U& {unsafe {return event.value}}
+ def ce_await_failed(builder:tuple<kind:AsyncSequenceContext;element:auto>; event:auto) {return false}
+ def ce_await_failure(builder:tuple<kind:AsyncSequenceContext;element:auto(T)?>; event:auto) {return <- ce_await_pending(builder)}
++
++// One iterator owns both the Task and its event slot. The yielded reference
++// stays valid across the entire continuation, including subsequent suspension.
++def ce_await_input(builder:tuple<kind:AsyncSequenceContext;element:auto>;
++    var task:tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTag;ready:bool;value:auto(T)>>;status:TaskStatus;value:T;error:string;polling:bool>) : iterator<tuple<tag:TaskEventTag;ready:bool;value:T>&> {
++    return <- generator<tuple<tag:TaskEventTag;ready:bool;value:T>&> capture(<-task) {
++        var event:tuple<tag:TaskEventTag;ready:bool;value:T>
++        while(true) {
++            var status=TaskStatus.Created
++            var message=""
++            var failed=false
++            try {status=task_poll(task)} recover {message="{this_context().last_exception}";failed=true}
++            if(status==TaskStatus.Failed) {message=task_error(task);failed=true}
++            if(failed) {
++                // Close immediately, before an enclosing try_with can resume.
++                ce_sequence_finalize($ {task_cancel(task);delete task})
++                panic(message)
++            }
++            if(status==TaskStatus.Cancelled || ce_task_cancellation_requested()) {
++                ce_task_cancelled()
++                yield event
++                return false
++            }
++            if(status==TaskStatus.Succeeded) {
++                event.ready=true
++                static_if(typeinfo can_copy(type<T>)) {event.value=task_value(task)}
++                else {event.value <- task.value}
++                yield event
++                break
++            }
++            yield event
++        }
++        return false
++    } finally {ce_sequence_finalize($ {
++        static_if(typeinfo can_delete(event)) {delete event}
++        let cancelled=task_cancel(task)
++        if(cancelled && task_status(task)==TaskStatus.Failed) {ce_task_cleanup_error(task_error(task))}
++        delete task
++    })}
++}
+ 
+ // Delegation transfers the child stream into the forwarding iterator. Never
+ // forward its terminal None: the enclosing producer may have more elements.
+--- a/computation_expressions/lib/computation_macro.das
++++ b/computation_expressions/lib/computation_macro.das
+@@ -1184,7 +1184,21 @@
+             errors := "sequence: source type must be inferred"
+             return null
+         }
+-        let source=expr.subexpr
++        let source=expr.subexpr
++        // Fuse protected await adaptation after source normalization/inference.
++        if(source is ExprCall && length((source as ExprCall).arguments)==2) {
++            let call=source as ExprCall
++            var origin=call.func
++            while(origin!=null && origin.fromGeneric!=null) {origin=origin.fromGeneric}
++            let descriptor=call.arguments[0]._type
++            if(origin!=null && origin.name=="ce_await_source" && origin._module.name=="task_builder"
++                && descriptor!=null && descriptor.baseType==Type.tTuple && !empty(descriptor.argTypes)
++                && descriptor.argTypes[0].baseType==Type.tStructure
++                && descriptor.argTypes[0].structType.name=="AsyncSequenceContext"
++                && descriptor.argTypes[0].structType._module.name=="async_sequence_builder") {
++                return qmacro(ce_await_input($e(call.arguments[0]),$e(call.arguments[1])))
++            }
++        }
+         if (source._type.baseType==Type.tIterator) {
+             return qmacro(invoke($ {
+                 static_if (typeinfo is_ref_value(type<$t(source._type.firstType)>)) {
+--- a/computation_expressions/tests/test_async_sequence_move.das
++++ b/computation_expressions/tests/test_async_sequence_move.das
+@@ -153,6 +153,36 @@
+         var inscope end <- task_take(done)
+         verify(end is none)
+     }
++    // A Task result borrowed by the fused await adapter remains owned while
++    // the continuation suspends. Close it at each stage, or move it to output.
++    for(mode in range(5)) {
++        var inscope stream <- computation(AsyncSequenceBuilder(type<Packet>)) {
++            var value & = task_after_polls_move(1,packet(42)) |> bind
++            task_after_polls(1,0) |> bind
++            verify(value.data[0]==42 && value.data[1]==43)
++            if(mode==3) {panic("borrowed task body failed")}
++            yield <- value
++            verify(empty(value.data))
++        }
++        var inscope request <- async_sequence_next(stream)
++        verify(task_poll(request)==TaskStatus.Waiting && allocated==released+1)
++        if(mode==0) {verify(task_cancel(request))}
++        else {
++            verify(task_poll(request)==TaskStatus.Waiting && allocated==released+1)
++            if(mode==1) {async_sequence_close(stream);verify(task_poll(request)==TaskStatus.Cancelled)}
++            elif(mode==2) {verify(task_cancel(request))}
++            elif(mode==3) {verify(task_poll(request)==TaskStatus.Failed)}
++            else {
++                verify(task_poll(request)==TaskStatus.Succeeded)
++                {
++                    var inscope item <- task_take(request)
++                    async_sequence_close(stream)
++                    verify((item as some).data[0]==42 && allocated==released+1)
++                }
++            }
++        }
++        check_released()
++    }
+     check_released()
+ }
+ [export]

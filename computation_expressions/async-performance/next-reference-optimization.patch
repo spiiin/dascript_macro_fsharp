@@ -1,0 +1,23 @@
+--- a/computation_expressions/lib/async_sequence_builder.das
++++ b/computation_expressions/lib/async_sequence_builder.das
+@@ -221,8 +221,9 @@
+         if(state.busy) {panic("async sequence: only one next may be active")}
+         state.busy=true
+         state.references++
+-        var lease <- ce_async_sequence_lease(state,false)
+-        var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>> capture(copy(state),<-lease) {
++        // The request generator itself owns the counted reference. Its finally
++        // also runs when unopened, so a second lease iterator is unnecessary.
++        var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>> capture(copy(state)) {
+             var delivered=false
+             var event:tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>
+             while(true) {
+@@ -266,7 +267,7 @@
+             if(!delivered || ce_task_cancellation_requested()) {ce_async_sequence_close(state,true)}
+             state.busy=false
+             static_if(typeinfo can_delete(event)) {delete event}
+-            delete lease
++            ce_async_sequence_release(state)
+         })}
+         return <- task_create(events)
+     }

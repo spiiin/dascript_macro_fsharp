@@ -279,6 +279,16 @@ ListBuilder выбирает `ce_collect_sink_protocol(type<T>)`, разреша
 
 Resumable builders используют ce_resumable_protocol(type<Event>) и hooks ожидания — см. [TASKS.md](TASKS.md). Этот путь не использует eager block-продолжения, которые не могут пережить возврат со стека.
 
+Для стандартного Task-адаптера в AsyncSequenceBuilder lowerer после определения
+типов выбирает `ce_await_input(builder, source)`. Он объединяет адаптацию ожидания
+и защиту входа в один iterator,
+который владеет Task и стабильным слотом события, выдавая изменяемое заимствование.
+Слот живёт до завершения всего продолжения bind, включая последующие ожидания.
+Специализация обязана закрывать Task при ошибке опроса, отмене и уничтожении
+iterator, сохранять сигнал Cancelled и сообщать ошибки cleanup. Пользовательские
+реализации `ce_await_source` продолжают использовать обычную защиту источника.
+Публичный синтаксис `source |> bind` остаётся прежним.
+
 Для `source |> yield_from` resumable-builder может предоставить
 `ce_await_yield_from(builder, source)`: owning iterator своих событий. Общий lowerer
 передаёт эти события во внешний producer и закрывает iterator через защищённый
@@ -286,3 +296,24 @@ sequence-механизм. AsyncSequenceBuilder реализует этот hook
 AsyncSequence того же типа элементов: пересылает pending и some, поглощает
 терминальный none, распространяет Cancelled/Failed и владеет дочерним stream.
 Скалярные TaskBuilder/TaskResultBuilder такой операции не предоставляют.
+
+Для одиночного resumable For есть optional hook
+`ce_await_for_source(builder, source, control)`. Маркер CeResumableForFallback
+сохраняет native-обход; iterator событий `{ready, ...}` включает асинхронный путь.
+Pending выдаёт `ce_await_pending(builder)`, ready запускает тело с заимствованием
+`ce_await_for_value(builder, event)`. Hook возвращает изменяемое заимствование;
+lowerer перемещает payload в owning-ячейку итерации, доступную вложенным scopes.
+Источник должен закрываться при уничтожении iterator и учитывать break через
+`ce_task_loop_not_broken(control)`. Общий lowerer реализует continue и раздельные
+control для вложенных циклов. AsyncSequenceBuilder реализует hook для AsyncSequence
+любого допустимого типа элемента; тип результата builder независим от входа.
+
+Для нескольких асинхронных источников lowerer сворачивает
+`ce_await_for_merge(builder, left, right)` слева направо в пары `{first, second}`,
+затем использует обычные ce_await_for_source/ce_await_for_value. Все элементы
+раунда перемещаются в одного владельца итерации; имена переменных с учётом
+затенения ссылаются на поля вложенных пар. Промежуточные владельцы источников
+гарантируют очистку при ошибке последующей фабрики. Fallback сохраняет native zip,
+если ни один вход не асинхронный; смешанные/несовместимые входы дают диагностику.
+AsyncSequenceBuilder реализует merge как холодный stream с совместным опросом
+next и остановкой по кратчайшему источнику, включая отмену всех соседей.

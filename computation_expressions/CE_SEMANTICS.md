@@ -20,8 +20,8 @@ TaskBuilder и TaskResultBuilder предоставляют cold single-shot з�
 | SearchBuilder(type<T>) | Ленивый depth-first iterator | Нет | Да / да / да | Да, до закрытия iterator | Да | Нет |
 | QueryBuilder(type<T>) | array<T>, запрос в памяти | Да: все пары | Да / да / да | Да | Да | Нет |
 | ResultBuilder | `ok:T / error:string` | Да: Result | Да / да / да | Да | Да | Нет; использовать MoveResult |
-| TaskBuilder(type<T>) | Task<T>, cold single-shot | Да: Task | Да / да / native zip, break/continue | Да | Да | Да: owning bind/return |
-| TaskResultBuilder(type<T>) | Task<Result<T>>, cold single-shot | Да: Result и Unit | Да / да / native zip, break/continue | Да | Да | Да: owning bind/return |
+| TaskBuilder(type<T>) | Task<T>, cold single-shot | Да: Task | Да: native/async / да / native и async zip, break/continue | Да | Да | Да: owning bind/return |
+| TaskResultBuilder(type<T>) | Task<Result<T>>, cold single-shot | Да: Result и Unit | Да: native/async / да / native и async zip, break/continue | Да | Да | Да: owning bind/return |
 | OptionBuilder | `some:T / none:bool` | Да: Option | Да / да / да | Да | Да | Нет; использовать MoveOption |
 | ValidationBuilder | `valid:T / invalid:…` | Да: накопление ошибок | Да / да / да | Да | Да | Нет |
 | StateBuilder(initial) | `(value:T, state:S)` | Нет | Да / да / да | Да | Да | Нет; состояние также копируемое |
@@ -33,7 +33,7 @@ TaskBuilder и TaskResultBuilder предоставляют cold single-shot з�
 | StateWriterResultBuilder(initial) | `(result:Result<T>, state:S, log:string)` | Нет | Да / да / да | Да | Да | Нет; состояние также копируемое |
 | ListBuilder(type<T>) | `array<T>` | Да: копируемые элементы, все пары | Да / да / да | Да | Да | Да: consuming bind и `return <-` / `yield <-` |
 | SequenceBuilder(type<T>) | Ленивый iterator | Нет | Да / да / да | Да, до закрытия iterator | Да: новый iterator на запуск | Да: owning slot и `yield <-` |
-| AsyncSequenceBuilder(type<T>) | Stream; next возвращает Task<Option<T>> | Нет | Да / да / native zip, break/continue | Да, до закрытия stream | Да: новый stream и снимок на запуск | Да: yield <-, owning bind и task_take |
+| AsyncSequenceBuilder(type<T>) | Stream; next возвращает Task<Option<T>> | Да: Task через task_when_all | Да: native/async / да / native и async zip, break/continue | Да, до закрытия stream | Да: новый stream и снимок на запуск | Да: yield <-, owning bind и task_take |
 | MoveResultBuilder | Перемещаемый Result | Да: перенос payload в пару | Да / да / да | Да | Да | Да |
 | MoveOptionBuilder | Перемещаемый Option | Да: перенос payload в пару | Да / да / да | Да | Да | Да |
 | CoroutineBuilder | `iterator<CoroutineFrame>` | Нет | Да / да / да | Да, до завершения/отмены | Да: новый сценарий на запуск | Не контейнер результата; выдаёт кадры, поддерживает owning-ресурсы |

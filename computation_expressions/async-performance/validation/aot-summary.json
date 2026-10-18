@@ -1,0 +1,65 @@
+{
+  "Compiler": "C:/src/daslang-0.6.5-RC2/sdk/daslang_bundle/bin/daslang.exe",
+  "CompilerSha256": "1A2422177F0744EC892D237CFB7C07829F40A9466FA7222C273C3A17D15AF698",
+  "AsyncSequenceSha256": "9B7F43776DA0CA21C8BE3CF5B7247724C47C7DD3A80B979D4868E34FB9B4B732",
+  "StrictLinking": true,
+  "MainAotChecked": true,
+  "InterpreterScope": "27 Task + 8 AsyncSequence suites + benchmark equivalence",
+  "JitScope": "8 AsyncSequence suites + benchmark equivalence",
+  "Results": [
+    {
+      "Test": "test_async_sequence_and_bind",
+      "Passed": true,
+      "ExitCode": 0,
+      "Log": "aot/test_async_sequence_and_bind.log"
+    },
+    {
+      "Test": "test_async_sequence_benchmarks",
+      "Passed": true,
+      "ExitCode": 0,
+      "Log": "aot/test_async_sequence_benchmarks.log"
+    },
+    {
+      "Test": "test_async_sequence_deferred",
+      "Passed": true,
+      "ExitCode": 0,
+      "Log": "aot/test_async_sequence_deferred.log"
+    },
+    {
+      "Test": "test_async_sequence_for",
+      "Passed": true,
+      "ExitCode": 0,
+      "Log": "aot/test_async_sequence_for.log"
+    },
+    {
+      "Test": "test_async_sequence_lifetime",
+      "Passed": true,
+      "ExitCode": 0,
+      "Log": "aot/test_async_sequence_lifetime.log"
+    },
+    {
+      "Test": "test_async_sequence_move",
+      "Passed": true,
+      "ExitCode": 0,
+      "Log": "aot/test_async_sequence_move.log"
+    },
+    {
+      "Test": "test_async_sequence_yield_from",
+      "Passed": true,
+      "ExitCode": 0,
+      "Log": "aot/test_async_sequence_yield_from.log"
+    },
+    {
+      "Test": "test_async_sequence_zip",
+      "Passed": true,
+      "ExitCode": 0,
+      "Log": "aot/test_async_sequence_zip.log"
+    },
+    {
+      "Test": "test_async_sequence",
+      "Passed": true,
+      "ExitCode": 0,
+      "Log": "aot/test_async_sequence.log"
+    }
+  ]
+}

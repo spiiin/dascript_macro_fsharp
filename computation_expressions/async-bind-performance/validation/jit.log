@@ -1,0 +1,9 @@
+JIT PASS test_async_sequence_and_bind.das
+JIT PASS test_async_sequence_benchmarks.das
+JIT PASS test_async_sequence_deferred.das
+JIT PASS test_async_sequence_for.das
+JIT PASS test_async_sequence_lifetime.das
+JIT PASS test_async_sequence_move.das
+JIT PASS test_async_sequence_yield_from.das
+JIT PASS test_async_sequence_zip.das
+JIT PASS test_async_sequence.das

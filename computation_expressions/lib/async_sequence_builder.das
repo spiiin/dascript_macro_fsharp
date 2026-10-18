@@ -1,9 +1,18 @@
 options gen2
 module async_sequence_builder public
-require ./task_builder.das public
+require ./task_combinators.das public
+require daslib/rtti
 
 struct AsyncSequenceContext {_ce_marker:uint8}
 struct AsyncSequenceTag {_ce_marker:uint8}
+
+// Task grouping has TaskBuilder semantics: Result/Option payloads remain data.
+// Reuse its owning combinator for cooperative polling, cancellation and cleanup.
+def ce_merge_sources(builder:tuple<kind:AsyncSequenceContext;element:auto>;
+    var left:tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTag;ready:bool;value:auto(L)>>;status:TaskStatus;value:L;error:string;polling:bool>;
+    var right:tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTag;ready:bool;value:auto(R)>>;status:TaskStatus;value:R;error:string;polling:bool>) {
+    return <- task_when_all(left,right)
+}
 
 def AsyncSequenceBuilder(unused:type<auto(T)>) {
     static_assert(typeinfo ce_resumable_payload(default<T>))
@@ -47,6 +56,46 @@ def ce_await_borrow_value(builder:tuple<kind:AsyncSequenceContext;element:auto>;
 def ce_await_failed(builder:tuple<kind:AsyncSequenceContext;element:auto>; event:auto) {return false}
 def ce_await_failure(builder:tuple<kind:AsyncSequenceContext;element:auto(T)?>; event:auto) {return <- ce_await_pending(builder)}
 
+// One iterator owns both the Task and its event slot. The yielded reference
+// stays valid across the entire continuation, including subsequent suspension.
+def ce_await_input(builder:tuple<kind:AsyncSequenceContext;element:auto>;
+    var task:tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTag;ready:bool;value:auto(T)>>;status:TaskStatus;value:T;error:string;polling:bool>) : iterator<tuple<tag:TaskEventTag;ready:bool;value:T>&> {
+    return <- generator<tuple<tag:TaskEventTag;ready:bool;value:T>&> capture(<-task) {
+        var event:tuple<tag:TaskEventTag;ready:bool;value:T>
+        while(true) {
+            var status=TaskStatus.Created
+            var message=""
+            var failed=false
+            try {status=task_poll(task)} recover {message="{this_context().last_exception}";failed=true}
+            if(status==TaskStatus.Failed) {message=task_error(task);failed=true}
+            if(failed) {
+                // Close immediately, before an enclosing try_with can resume.
+                ce_sequence_finalize($ {task_cancel(task);delete task})
+                panic(message)
+            }
+            if(status==TaskStatus.Cancelled || ce_task_cancellation_requested()) {
+                ce_task_cancelled()
+                yield event
+                return false
+            }
+            if(status==TaskStatus.Succeeded) {
+                event.ready=true
+                static_if(typeinfo can_copy(type<T>)) {event.value=task_value(task)}
+                else {event.value <- task.value}
+                yield event
+                break
+            }
+            yield event
+        }
+        return false
+    } finally {ce_sequence_finalize($ {
+        static_if(typeinfo can_delete(event)) {delete event}
+        let cancelled=task_cancel(task)
+        if(cancelled && task_status(task)==TaskStatus.Failed) {ce_task_cleanup_error(task_error(task))}
+        delete task
+    })}
+}
+
 // Delegation transfers the child stream into the forwarding iterator. Never
 // forward its terminal None: the enclosing producer may have more elements.
 def ce_await_yield_from(builder:tuple<kind:AsyncSequenceContext;element:auto(T)?>;
@@ -69,6 +118,84 @@ def ce_await_yield_from(builder:tuple<kind:AsyncSequenceContext;element:auto(T)?
         }
         return false
     } finally {ce_sequence_finalize($ {ce_dispose(stream)})}
+}
+
+// The lowerer moves the payload into an iteration owner, safe to capture across
+// nested awaits/resources. A signalled break never polls another next.
+def ce_await_for_source(builder:tuple<kind:AsyncSequenceContext;element:auto?>;
+    var stream:tuple<tag:AsyncSequenceTag;owner:iterator<auto>;element:iterator<auto(T)>>;
+    control:CeTaskLoopControl?) {
+    var events <- ce_await_yield_from(AsyncSequenceBuilder(type<T>),stream)
+    return <- generator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>> capture(<-events,copy(control)) {
+        var event:tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>
+        while(ce_task_loop_not_broken(control)) {
+            if(!ce_sequence_next_value(events,event)) {break}
+            yield <- event
+        }
+        return false
+    } finally {ce_sequence_finalize($ {
+        delete event
+        sequence_close(events)
+    })}
+}
+
+def ce_await_for_value(builder:tuple<kind:AsyncSequenceContext;element:auto?>;
+    var event:tuple<tag:TaskEventTag;ready:bool;value:variant<some:auto(T);none:bool>>) : T& {
+    unsafe {return event.value as some}
+}
+
+def private ce_async_sequence_zip_check(request:auto) : bool {
+    if(request.status==TaskStatus.Failed) {panic(request.error)}
+    if(request.status==TaskStatus.Cancelled || ce_task_cancellation_requested()) {
+        ce_task_cancelled()
+        return false
+    }
+    return true
+}
+
+// A binary zip composes to any arity. Each round keeps one next per child,
+// polls left-to-right, and stops immediately when either child reports None.
+def ce_await_for_merge(builder:tuple<kind:AsyncSequenceContext;element:auto?>;
+    var left:tuple<tag:AsyncSequenceTag;owner:iterator<auto>;element:iterator<auto(L)>>;
+    var right:tuple<tag:AsyncSequenceTag;owner:iterator<auto>;element:iterator<auto(R)>>) {
+    unsafe {
+        if(reinterpret<void?>(ce_async_sequence_state(left))==reinterpret<void?>(ce_async_sequence_state(right))) {
+            panic("async For: the same stream cannot be used twice")
+        }
+    }
+    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:tuple<first:L;second:R>;none:bool>>> capture(<-left,<-right) {
+        while(true) {
+            var inscope first <- async_sequence_next(left)
+            var inscope second <- async_sequence_next(right)
+            while(true) {
+                task_poll(first)
+                if(!ce_async_sequence_zip_check(first)) {
+                    yield <- task_pending(type<variant<some:tuple<first:L;second:R>;none:bool>>)
+                    return false
+                }
+                if(first.status==TaskStatus.Succeeded && first.value is none) {return false}
+                task_poll(second)
+                if(!ce_async_sequence_zip_check(second)) {
+                    yield <- task_pending(type<variant<some:tuple<first:L;second:R>;none:bool>>)
+                    return false
+                }
+                if(second.status==TaskStatus.Succeeded && second.value is none) {return false}
+                if(first.status==TaskStatus.Succeeded && second.status==TaskStatus.Succeeded) {
+                    var pair:tuple<first:L;second:R>
+                    pair.first <- first.value as some
+                    pair.second <- second.value as some
+                    yield <- ce_await_yield_move(AsyncSequenceBuilder(type<tuple<first:L;second:R>>),pair)
+                    break
+                }
+                yield <- task_pending(type<variant<some:tuple<first:L;second:R>;none:bool>>)
+            }
+        }
+        return false
+    } finally {ce_sequence_finalize($ {
+        ce_dispose(left)
+        ce_dispose(right)
+    })}
+    return <- ce_sequence_run(AsyncSequenceBuilder(type<tuple<first:L;second:R>>),events)
 }
 
 // A next-Task owns a separate lease, never a reference into the caller's stack.
@@ -125,7 +252,8 @@ def async_sequence_close(stream:tuple<tag:AsyncSequenceTag;owner:iterator<auto(S
     ce_async_sequence_close(state,true)
 }
 def ce_dispose(var stream:tuple<tag:AsyncSequenceTag;owner:iterator<auto(State)?>;element:auto>) {
-    async_sequence_close(stream)
+    // For/yield_from may consume a stream already registered with use_resource.
+    if(!empty(stream.owner)) {async_sequence_close(stream)}
     delete stream
 }
 def async_sequence_next(stream:tuple<tag:AsyncSequenceTag;owner:iterator<auto(State)?>;element:iterator<auto(T)>>) : tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>>;status:TaskStatus;value:variant<some:T;none:bool>;error:string;polling:bool> {
@@ -134,8 +262,9 @@ def async_sequence_next(stream:tuple<tag:AsyncSequenceTag;owner:iterator<auto(St
         if(state.busy) {panic("async sequence: only one next may be active")}
         state.busy=true
         state.references++
-        var lease <- ce_async_sequence_lease(state,false)
-        var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>> capture(copy(state),<-lease) {
+        // The request generator itself owns the counted reference. Its finally
+        // also runs when unopened, so a second lease iterator is unnecessary.
+        var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>> capture(copy(state)) {
             var delivered=false
             var event:tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>
             while(true) {
@@ -179,7 +308,7 @@ def async_sequence_next(stream:tuple<tag:AsyncSequenceTag;owner:iterator<auto(St
             if(!delivered || ce_task_cancellation_requested()) {ce_async_sequence_close(state,true)}
             state.busy=false
             static_if(typeinfo can_delete(event)) {delete event}
-            delete lease
+            ce_async_sequence_release(state)
         })}
         return <- task_create(events)
     }

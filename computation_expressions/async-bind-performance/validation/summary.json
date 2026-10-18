@@ -1,0 +1,31 @@
+{
+  "RecordedAt": "2026-10-18T13:01:23.846863+02:00",
+  "Compiler": "C:/src/daslang-0.6.5-RC2/sdk/daslang_bundle/bin/daslang.exe",
+  "Counts": {
+    "interpreter": 36,
+    "jit": 9,
+    "negative": 14,
+    "examples": 7,
+    "aot": 9
+  },
+  "InterpreterScope": "27 Task + 8 AsyncSequence + benchmark equivalence",
+  "JitScope": "8 AsyncSequence + benchmark equivalence",
+  "AotScope": "8 AsyncSequence + benchmark equivalence; built and executed with main->aot=yes and strict linking",
+  "AdditionalChecks": "5 base suites: computation, composition laws, recover portability, state operations, list benchmarks; git diff --check clean",
+  "SourceHashes": {
+    "computation_expressions\\lib\\async_sequence_builder.das": "c96e1688cda5d373eeb8b671556a8914ae299c84591e60db5fd4206db06a32fc",
+    "computation_expressions\\lib\\computation_macro.das": "a9b2ee038475acd9225b204b06c6b797d9aba06f38cd4fec3720735e0bfbcd80",
+    "computation_expressions\\tests\\test_async_sequence_move.das": "1baf8c758c4305edccd9d424b7f89a14067bbf29e107a104cfdb7929c24497f4"
+  },
+  "AotLogs": [
+    "test_async_sequence.log",
+    "test_async_sequence_and_bind.log",
+    "test_async_sequence_benchmarks.log",
+    "test_async_sequence_deferred.log",
+    "test_async_sequence_for.log",
+    "test_async_sequence_lifetime.log",
+    "test_async_sequence_move.log",
+    "test_async_sequence_yield_from.log",
+    "test_async_sequence_zip.log"
+  ]
+}

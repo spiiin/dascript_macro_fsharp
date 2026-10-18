@@ -1,0 +1,14 @@
+NEGATIVE PASS tests/failed_async_sequence_deferred_pointer.das
+NEGATIVE PASS tests/failed_async_sequence_and_bind_source.das
+NEGATIVE PASS tests/failed_async_sequence_and_bind_move.das
+NEGATIVE PASS tests/failed_async_sequence_zip_mixed.das
+NEGATIVE PASS tests/failed_async_sequence_move.das
+NEGATIVE PASS tests/failed_async_sequence_move_bind.das
+NEGATIVE PASS tests/failed_async_sequence_pointer.das
+NEGATIVE PASS tests/failed_async_sequence_return.das
+NEGATIVE PASS tests/failed_task_yield.das
+NEGATIVE PASS tests/test_task_events_pointer.das
+NEGATIVE PASS tests/test_task_events_move_payload.das
+NEGATIVE PASS tests/test_task_scheduler_type.das
+NEGATIVE PASS tests/test_task_and_bind_unsupported.das
+NEGATIVE PASS tests/test_task_pointer.das

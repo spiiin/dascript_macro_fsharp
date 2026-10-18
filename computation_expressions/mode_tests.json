@@ -1,4 +1,7 @@
 [
+  "tests/test_async_sequence_and_bind.das",
+  "tests/test_async_sequence_zip.das",
+  "tests/test_async_sequence_for.das",
   "tests/test_async_sequence_yield_from.das",
   "tests/test_async_sequence_deferred.das",
   "tests/test_async_sequence_move.das",

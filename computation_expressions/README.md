@@ -32,6 +32,7 @@ daslang.exe examples/state_operations_demo.das -no-module-cache
 
 Режимы и ограничение JIT: [RELIABILITY.md](RELIABILITY.md). Метрики и границы
 оптимизаций: [PERFORMANCE_METRICS.md](PERFORMANCE_METRICS.md), [BENCHMARKS.md](BENCHMARKS.md).
+AsyncSequence: [счётчики выделений, ручные варианты и сравнение до/после](ASYNC_SEQUENCE_PERFORMANCE.md).
 Исторические дампы и метаданные сохранены без переписывания путей внутри них.
 
 Типизированные задачи TaskBuilder / TaskResultBuilder, ожидание внешних операций и отмена: [TASKS.md](TASKS.md).
