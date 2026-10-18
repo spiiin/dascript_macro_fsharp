@@ -6,8 +6,8 @@
 
 Нужны Windows x64, Visual Studio 2022 с C++ toolchain, CMake и SDK Daslang v0.6.5-RC2
 с headers, import libraries и runtime DLL. Скрипт собирает host в `.work/aot-build`,
-сохраняет runtime-логи и JSON в `.work/aot-runtime` и запускает каждый из 39
-положительных тестов (27 Task, восемь AsyncSequence и четыре Parser/Search/Query/deferred) отдельным процессом. Список берётся из mode_tests.json;
+сохраняет runtime-логи и JSON в `.work/aot-runtime` и запускает каждый из 44
+положительных тестов (27 Task, восемь AsyncSequence и восемь Parser/Search/Query/deferred и полный пример Query) отдельным процессом. Список берётся из mode_tests.json;
 отрицательные компиляционные тесты и сетевой fixture туда не входят.
 Скрипт задаёт DAS_DIR явно, чтобы ранее настроенный build-каталог не сохранял
 другой SDK из кеша CMake при изменении -Daslang.

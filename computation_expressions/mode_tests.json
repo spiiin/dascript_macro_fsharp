@@ -42,5 +42,10 @@
   "tests/test_parser.das",
   "tests/test_search.das",
   "tests/test_query.das",
-  "tests/test_domain_deferred.das"
+  "tests/test_domain_deferred.das",
+  "tests/test_parser_combinators.das",
+  "tests/test_parser_combinator_lifetime.das",
+  "tests/test_search_combinators.das",
+  "tests/test_query_operators.das",
+  "examples/query_full_demo.das"
 ]

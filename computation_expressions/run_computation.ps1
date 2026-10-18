@@ -19,8 +19,12 @@ function Check([string]$File, [bool]$Pass, [string]$Expected) {
 }
 Push-Location $PSScriptRoot
 try {
+    Check 'examples/parser_combinators_demo.das' $true 'Parser combinators demo OK'
     Check 'examples/parser_demo.das' $true 'Parser demo OK'
+    Check 'examples/search_alternatives_demo.das' $true 'Search alternatives demo OK'
     Check 'examples/search_demo.das' $true 'Search demo OK'
+    Check 'examples/query_full_demo.das' $true 'Query full demo OK'
+    Check 'examples/query_operators_demo.das' $true 'Query operators demo OK'
     Check 'examples/query_demo.das' $true 'Query demo OK'
     Check 'examples/async_sequence_and_bind_demo.das' $true 'Async sequence and_bind demo OK'
     Check 'examples/async_sequence_zip_demo.das' $true 'Async sequence zip demo OK'
@@ -87,8 +91,13 @@ try {
         Check 'tests/failed_parser_and_bind.das' $false 'and_bind is unsupported for builder'
         Check 'tests/failed_query_move.das' $false 'QueryBuilder requires copyable rows'
         Check 'tests/failed_search_move.das' $false 'SearchBuilder requires copyable solutions'
+        Check 'tests/failed_parser_many_copy.das' $false 'can only be move-initialized'
+        Check 'tests/test_parser_combinators.das' $true 'Parser combinator checks OK'
+        Check 'tests/test_parser_combinator_lifetime.das' $true 'Parser combinator lifetime checks OK'
         Check 'tests/test_parser.das' $true 'Parser checks OK'
+        Check 'tests/test_search_combinators.das' $true 'Search combinators checks OK'
         Check 'tests/test_search.das' $true 'Search checks OK'
+        Check 'tests/test_query_operators.das' $true 'Query operators checks OK'
         Check 'tests/test_query.das' $true 'Query checks OK'
         Check 'tests/test_domain_deferred.das' $true 'Domain deferred checks OK'
         Check 'tests/failed_async_sequence_deferred_pointer.das' $false 'builder and snapshot must own their data'

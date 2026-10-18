@@ -13,8 +13,8 @@ def main() {
         return "{row.first.name}: {row.second.title}"
     }
     assert(length(report)==2 && report[0]=="Alice: red" && report[1]=="Cara: red")
-    var inscope filtered <- players |> query_where($(p:Player){return p.score>=50})
-    var inscope scores <- filtered |> query_select($(p:Player){return p.score})
+    var inscope filtered <- players |> query_where <| $(p:Player){return p.score>=50}
+    var inscope scores <- filtered |> query_select <| $(p:Player){return p.score}
     assert(length(scores)==2 && scores[0]==90 && scores[1]==75)
     print("Query demo OK\n")
 }

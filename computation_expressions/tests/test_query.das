@@ -27,9 +27,21 @@ def check() {
     var inscope emptyRows:array<int>
     var inscope emptyJoin <- query_join(emptyRows,fixed_array(1),$(x:int){return x},$(x:int){return x})
     assert(length(emptyJoin)==0)
-    var inscope filtered <- fixed_array(1,2,3) |> query_where($(x:int){return x>1})
-    var inscope selected <- filtered |> query_select($(x:int){return "n={x}"})
+    var inscope filtered <- fixed_array(1,2,3) |> query_where <| $(x:int){return x>1}
+    var inscope selected <- filtered |> query_select <| $(x:int){return "n={x}"}
     assert(length(selected)==2 && selected[0]=="n=2" && selected[1]=="n=3")
+    // The block-last syntax also composes with CE bind.
+    var inscope pipeRows <- computation(QueryBuilder()) {
+        let n=fixed_array(1,2,3) |> query_where <| $(x:int) {return x>1} |> bind
+        let scaled=fixed_array(n) |> query_select <| $(x:int) {return x*10} |> bind
+        return scaled
+    }
+    assert(length(pipeRows)==2 && pipeRows[0]==20 && pipeRows[1]==30)
+    // Keep coverage of the original call form as well.
+    var inscope oldFilter <- query_where(fixed_array(1,2,3),$(x:int){return x>1})
+    var inscope oldSelect <- query_select(oldFilter,$(x:int){return "n={x}"})
+    assert(length(oldSelect)==length(selected) && oldSelect[0]==selected[0] && oldSelect[1]==selected[1])
+
     var inscope grouped <- computation(QueryBuilder()) {
         let pair=fixed_array(1,2) |> and_bind(fixed_array(10,20)) |> bind
         return pair.first+pair.second
@@ -41,12 +53,12 @@ def check() {
     assert(length(loop)==2 && loop[0]==0 && loop[1]==2)
     var failedProject=false
     try {
-        var inscope badProjection <- query_select(fixed_array(1,2),$(n:int){if(n==2){panic("projection")};return n})
+        var inscope badProjection <- fixed_array(1,2) |> query_select <| $(n:int){if(n==2){panic("projection")};return n}
     } recover {failedProject=true}
     assert(failedProject)
     var failedPredicate=false
     try {
-        var inscope badFilter <- query_where(fixed_array(1,2),$(n:int){if(n==2){panic("predicate")};return true})
+        var inscope badFilter <- fixed_array(1,2) |> query_where <| $(n:int){if(n==2){panic("predicate")};return true}
     } recover {failedPredicate=true}
     assert(failedPredicate)
     var failedKey=false

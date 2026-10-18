@@ -12,8 +12,8 @@ require ./lib/query_builder.das
 
 `computation_macro.das` не менялся для этих builders. Они поддерживают обычные
 ветвления, циклы, `use_resource`, `try_finally`, `try_with` и `deferred`.
-Полезные значения и строки Query/Search должны быть копируемыми; это не owning
-варианты MoveResult/List. `and_bind` поддерживает Query (декартовы пары),
+Query/Search работают с копируемыми элементами. Parser также поддерживает owning
+массивы повторений; см. [PARSER_COMBINATORS.md](PARSER_COMBINATORS.md). `and_bind` поддерживает Query (декартовы пары),
 но не Parser (зависимые позиции) или Search. Отсутствующий hook даёт обычную
 диагностику общего протокола.
 
@@ -32,7 +32,7 @@ let parsed=computation(ParserBuilder(text="hp = 85")) {
 assert(parsed is parsed && (parsed as parsed).value==85)
 ```
 
-Успех — `parsed=(value=T, position=int)`. Ошибка —
+Успех — `parsed=(value=T, position=int, committed=bool)`. Ошибка —
 `failure=ParseDiagnostic(position, line, column, expected)`.
 Позиция — смещение в байтах UTF-8, начиная с нуля; строка и колонка начинаются
 с единицы. Новая строка определяется LF, колонка также считает байты, не Unicode
@@ -51,7 +51,7 @@ Builder содержит исходный `text` и текущую `position` (�
 | `parser_spaces()` | Ноль или больше space/tab/CR/LF; возвращает CeUnit |
 | `parser_eof()` | Проверка конца входа, CeUnit |
 | `parser_call(@@grammar)` | Вызов вложенной функции `grammar(cursor:ParserBuilder)` |
-| `parser_choice(left, right)` | Левый успех имеет приоритет; после неудачи правый стартует с исходной позиции |
+| `parser_choice(left, right)` | Левый успех имеет приоритет; после обычной неудачи правый стартует с исходной позиции |
 
 Для альтернатив целых грамматик:
 
@@ -69,7 +69,7 @@ def bracketed(cursor:ParserBuilder) {
 ```
 
 Вложенная грамматика возвращает такой же parsed/failure. Обе альтернативы
-должны возвращать один тип значения. При двух ошибках выбирается самая дальняя
+должны возвращать один тип значения. Committed/fatal ошибка прекращает выбор альтернатив. При двух обычных ошибках выбирается самая дальняя
 позиция; на одинаковой позиции expected объединяются слева направо через `or`.
 Возврат позиции не отменяет внешние эффекты неудачной альтернативы. Для
 предсказуемого backtracking распознаватели должны быть чистыми.
@@ -113,6 +113,12 @@ sequence_each(solutions) $(n:int) {print("{n}\n")}
 досрочном закрытии и ошибке производителя/потребителя. `sequence_each` защищает
 и путь исключения из callback потребителя.
 
+`search_take(source,n)` ограничивает перебор и закрывает источник до выдачи n-го
+решения; при `n <= 0` закрывает без чтения. `search_append(left,right)` перебирает
+левый поиск, затем правый, сохраняя повторы. Оба потребляют iterator и поддерживают
+пайпы: `let n=left() |> search_append(right()) |> search_take(3) |> bind`.
+Порядок, владение и раннее закрытие: [SEARCH_COMBINATORS.md](SEARCH_COMBINATORS.md).
+
 ## QueryBuilder
 
 ```das
@@ -130,8 +136,8 @@ Builder выполняется немедленно и собирает `array<T
 Коллекционные операции можно использовать и без CE:
 
 ```das
-var inscope filtered <- source |> query_where($(row:Row){return row.enabled})
-var inscope projected <- filtered |> query_select($(row:Row){return row.name})
+var inscope filtered <- source |> query_where <| $(row:Row){return row.enabled}
+var inscope projected <- filtered |> query_select <| $(row:Row){return row.name}
 var inscope joined <- query_join(left,right,
     $(row:Left){return row.key}, $(row:Right){return row.key})
 ```
@@ -146,18 +152,24 @@ O(left × right), без индекса или оптимизатора запр
 
 Query использует механизм накопления и защиты ресурсов List; это запросы в
 памяти, без SQL, LINQ provider, пользовательских ключевых слов или переноса
-фильтрации на сервер. Query не добавляет order_by/group_by/outer join.
+фильтрации на сервер. Стабильные order_by, group_by и distinct описаны в [QUERY_OPERATORS.md](QUERY_OPERATORS.md).
+Outer join пока не поддерживается.
 
 ## Проверки
 
-`run_computation.ps1 -Test` запускает три примера, положительные проверки,
+`run_computation.ps1 -Test` запускает примеры, положительные проверки,
 ошибки неподдержанного and_bind/move-only типов и повторные deferred-запуски.
 Новые положительные наборы также включены в `mode_tests.json` для interpreter,
 JIT и отдельной генерации AOT C++. Генерация не доказывает AOT-исполнение. Отдельно `run_aot.ps1` собирает
-и исполняет эти четыре набора в строгом AOT-хосте вместе с Task/AsyncSequence;
+и исполняет перечисленные положительные наборы в строгом AOT-хосте вместе с Task/AsyncSequence;
 проверяются `fail_on_no_aot` и `main->aot`. См. [AOT_RUNTIME.md](AOT_RUNTIME.md).
 
 Search/Query и deferred проверяют стабильность прогретого heap на повторных
 запусках, включая cleanup при исключениях и досрочном закрытии Search.
 Примеры: [Parser](examples/parser_demo.das), [Search](examples/search_demo.das),
 [Query](examples/query_demo.das).
+
+Проверка перед публикацией 2026-10-18: полный `run.ps1 -Test` прошёл;
+итоговый `run_modes.ps1 -Mode Jit` — 49/49, строгий `run_aot.ps1` — 44/44
+с `main->aot` и `fail_on_no_aot`. Дополнительно прошли active patterns под JIT,
+генерация AOT C++ и сетевые/клавиатурные проверки CI под JIT.

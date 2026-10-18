@@ -67,3 +67,11 @@ WebSocket через dasHV: [TASK_HV.md](TASK_HV.md), пайповый bind и �
 Клавиатура окна dasGlfw без Python: [TASK_GLFW_KEYBOARD.md](TASK_GLFW_KEYBOARD.md).
 
 Parser, Search и Query: [DOMAIN_BUILDERS.md](DOMAIN_BUILDERS.md), примеры `parser_demo.das`, `search_demo.das`, `query_demo.das`.
+
+Parser: optional/many/many1/sep_by и управление backtracking — [PARSER_COMBINATORS.md](PARSER_COMBINATORS.md).
+
+Search: ограничение числа решений и последовательное объединение альтернатив — [SEARCH_COMBINATORS.md](SEARCH_COMBINATORS.md).
+
+Query: стабильная сортировка, группировка и distinct — [QUERY_OPERATORS.md](QUERY_OPERATORS.md).
+
+Полный пример Query с `<|` и проверкой памяти: [query_full_demo.das](examples/query_full_demo.das).

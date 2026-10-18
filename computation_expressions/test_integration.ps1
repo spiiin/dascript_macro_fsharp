@@ -6,7 +6,7 @@ $destination=Join-Path ([IO.Path]::GetFullPath($OutputDirectory)) ('integration-
 $expected=@(Get-Content (Join-Path $PSScriptRoot 'public_modules.json') -Raw|ConvertFrom-Json)
 $actual=@(Get-ChildItem (Join-Path $destination 'lib') -Filter '*.das'|Select-Object -ExpandProperty Name)
 if(@(Compare-Object $expected $actual).Count){throw 'Export has unexpected modules'}
-foreach($file in @('README.md','PUBLIC_API.md','TASKS.md','TASK_COMPOSITION.md','TASK_SCHEDULER.md','TASK_CANCELLATION.md','TASK_DELAY.md','TASK_ARRAY.md','TASK_AND_BIND.md','TASK_COMPLETION.md','TASK_TCP.md','TASK_HV.md','TASK_EVENTS.md','TASK_KEYBOARD.md','TASK_GLFW_KEYBOARD.md','AOT_RUNTIME.md','ASYNC_SEQUENCE.md','DOMAIN_BUILDERS.md','aot_host/main.cpp','aot_host/CMakeLists.txt','aot_host/recover_064.h','main.das','identity_builder.das','manifest.json')){
+foreach($file in @('README.md','PUBLIC_API.md','TASKS.md','TASK_COMPOSITION.md','TASK_SCHEDULER.md','TASK_CANCELLATION.md','TASK_DELAY.md','TASK_ARRAY.md','TASK_AND_BIND.md','TASK_COMPLETION.md','TASK_TCP.md','TASK_HV.md','TASK_EVENTS.md','TASK_KEYBOARD.md','TASK_GLFW_KEYBOARD.md','AOT_RUNTIME.md','ASYNC_SEQUENCE.md','DOMAIN_BUILDERS.md','QUERY_OPERATORS.md','SEARCH_COMBINATORS.md','PARSER_COMBINATORS.md','aot_host/main.cpp','aot_host/CMakeLists.txt','aot_host/recover_064.h','main.das','identity_builder.das','manifest.json')){
     if(-not(Test-Path -LiteralPath (Join-Path $destination $file))){throw "Incomplete export: $file"}
 }
 & $Daslang (Join-Path $destination 'main.das') -no-module-cache
@@ -30,10 +30,34 @@ require daslib/async_boost
 def standard_value() : int {await_next_frame();yield 12}
 [export]
 def main() {
+    var inscope parsedItems <- computation(ParserBuilder(text="1,2")) {
+        var items & = parser_sep_by(parser_int(),parser_literal(",")) |> bind
+        parser_eof() |> bind
+        return <- items
+    }
+    assert(length((parsedItems as parsed).value)==2 && (parsedItems as parsed).value[1]==2)
     let parsed=computation(ParserBuilder(text="21")) {let n=parser_int() |> bind;parser_eof() |> bind;return n*2}
     assert(parsed is parsed && (parsed as parsed).value==42)
+    var inscope queryOrdered <- fixed_array(3,1,3,2) |> query_order_by(false) <| $(n:int) {return n}
+    var inscope queryUnique <- queryOrdered |> query_distinct()
+    assert(length(queryUnique)==3 && queryUnique[0]==1 && queryUnique[2]==3)
+    var inscope queryFiltered <- queryUnique |> query_where <| $(n:int) {return n>1}
+    var inscope queryProjected <- queryFiltered |> query_select <| $(n:int) {return n*10}
+    assert(length(queryProjected)==2 && queryProjected[0]==20 && queryProjected[1]==30)
+    var inscope queryGroups <- computation(QueryBuilder()) {
+        var group & = queryUnique |> query_group_by <| $(n:int) {return n%2} |> bind
+        return length(group.values)
+    }
+    assert(length(queryGroups)==2 && queryGroups[0]==2 && queryGroups[1]==1)
     var inscope queryRows <- computation(QueryBuilder()) {let n=fixed_array(1,2) |> bind;query_where(n>1) |> bind;return n*2}
     assert(length(queryRows)==1 && queryRows[0]==4)
+    var inscope alternatives <- computation(SearchBuilder()) {
+        let n=search_choose([1,2]) |> search_append(search_choose([10,20])) |> search_take(3) |> bind
+        yield n
+    }
+    var alternativeSum=0
+    sequence_each(alternatives) $(n:int) {alternativeSum+=n}
+    assert(alternativeSum==13)
     var inscope found <- computation(SearchBuilder()) {let n=search_choose([1,2]) |> bind;search_guard(n>1) |> bind;yield n}
     var foundSum=0
     sequence_each(found) $(n:int) {foundSum+=n}

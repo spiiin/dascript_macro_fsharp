@@ -85,7 +85,7 @@ move/clone/inscope-локальные владельцы преобразуют�
 [TASK_DELAY.md](TASK_DELAY.md): task_delay_ms. [TASK_TCP.md](TASK_TCP.md): сетевой тест.
 [AOT_RUNTIME.md](AOT_RUNTIME.md): сборка и настоящее исполнение AOT-хоста.
 
-Полная регрессия: run_computation.ps1 -Test. В mode_tests.json — 44 файла,
+Полная регрессия: run_computation.ps1 -Test. В mode_tests.json — 49 файлов,
 включая 27 положительных Task-тестов и восемь AsyncSequence; JIT и генерация AOT проверяются отдельно.
-run_aot.ps1 собирает и исполняет эти 39 тестов со строгой AOT-линковкой.
+run_aot.ps1 собирает и исполняет эти 44 сценария со строгой AOT-линковкой.
 Сетевой fixture отдельно проверяется в interpreter и JIT.

@@ -45,3 +45,62 @@ def search_choose(var values:array<auto(T)>) : iterator<T> {
         return false
     } finally {delete values}
 }
+
+// Own the source; close it before publishing the last permitted solution.
+// Nonpositive limits are empty and never step the source.
+def search_take(var source:iterator<auto(T)>; limit:int) : iterator<T> {
+    return <- generator<T> capture(<-source,copy(limit)) {
+        var remaining=limit
+        while(remaining>0) {
+            var value:T
+            var more=false
+            try {more=ce_sequence_next_value(source,value)} recover {
+                let message="{this_context().last_exception}"
+                sequence_close(source)
+                panic(message)
+            }
+            if(!more) {break}
+            remaining--
+            if(remaining==0) {sequence_close(source)}
+            yield value
+        }
+        sequence_close(source)
+        return false
+    } finally {ce_sequence_finalize($ {sequence_close(source)})}
+}
+
+// Always attempt both closes, even if one finalizer throws.
+def ce_search_close_pair(var left:iterator<auto(T)>;var right:iterator<T>) {
+    var failure=""
+    try {sequence_close(left)} recover {failure="{this_context().last_exception}"}
+    try {sequence_close(right)} recover {
+        if(failure=="") {failure="{this_context().last_exception}"}
+    }
+    if(failure!="") {panic(failure)}
+}
+
+// Ordered alternatives: exhaust left, then right. Duplicates are retained.
+// Both iterator handles are owned immediately, but their bodies remain lazy.
+def search_append(var left:iterator<auto(T)>;var right:iterator<T>) : iterator<T> {
+    return <- generator<T> capture(<-left,<-right) {
+        for(side in range(2)) {
+            while(true) {
+                var value:T
+                var more=false
+                try {
+                    if(side==0) {more=ce_sequence_next_value(left,value)}
+                    else {more=ce_sequence_next_value(right,value)}
+                } recover {
+                    let message="{this_context().last_exception}"
+                    ce_search_close_pair(left,right)
+                    panic(message)
+                }
+                if(!more) {break}
+                yield value
+            }
+            if(side==0) {sequence_close(left)}
+        }
+        ce_search_close_pair(left,right)
+        return false
+    } finally {ce_sequence_finalize($ {ce_search_close_pair(left,right)})}
+}

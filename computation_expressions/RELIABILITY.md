@@ -58,8 +58,8 @@ Task CE use_resource либо task_from_async(source, closeCallback), перед
 - `run_computation.ps1 -Test`: полный набор интерпретатора, включая ожидаемые
   ошибки компиляции и проверки раскрытия.
 - `run_modes.ps1 -Mode Jit`: явно перечисленное подмножество исполнения JIT.
-  Список задаётся в `mode_tests.json`: сейчас 44 файла — пять базовых CE-наборов,
-  27 Task-наборов, восемь AsyncSequence и четыре Parser/Search/Query/deferred. Проверяются также ошибки, отмена, таймауты, композиция,
+  Список задаётся в `mode_tests.json`: сейчас 49 файлов — пять базовых CE-наборов,
+  27 Task-наборов, восемь AsyncSequence и восемь Parser/Search/Query/deferred и полный пример Query. Проверяются также ошибки, отмена, таймауты, композиция,
   deferred, shared-await и владение результатами.
   Не означает успех всех тестов интерпретатора под JIT. Кеш JIT отключён.
 - `run_modes.ps1 -Mode AotGenerate`: генерация C++ через `daslang -aot`.

@@ -13,7 +13,7 @@ if(-not(Test-Path -LiteralPath (Join-Path $dasPackage 'DASConfig.cmake'))){throw
 $OutputDirectory=[IO.Path]::GetFullPath($OutputDirectory)
 $BuildDirectory=[IO.Path]::GetFullPath($BuildDirectory)
 New-Item -ItemType Directory -Force $OutputDirectory | Out-Null
-$tests=@(Get-Content (Join-Path $PSScriptRoot 'mode_tests.json') -Raw | ConvertFrom-Json | Where-Object {$_ -match '^tests/test_(task|async_sequence|parser|search|query|domain_deferred)'})
+$tests=@(Get-Content (Join-Path $PSScriptRoot 'mode_tests.json') -Raw | ConvertFrom-Json | Where-Object {$_ -match '^tests/test_(task|async_sequence|parser|search|query|domain_deferred)' -or $_ -eq 'examples/query_full_demo.das'})
 $files=@($tests | ForEach-Object {(Resolve-Path -LiteralPath (Join-Path $PSScriptRoot $_)).Path.Replace('\','/')})
 $manifest=Join-Path $OutputDirectory 'scripts.txt'
 [IO.File]::WriteAllLines($manifest,$files)

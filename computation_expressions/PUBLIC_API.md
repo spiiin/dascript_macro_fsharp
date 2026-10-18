@@ -180,3 +180,23 @@ task_event_close, task_event_subscriber_count, task_event_stats. Broadcast по 
 
 Новые builders работают с копируемыми значениями. Результаты Search нужно
 закрывать через `sequence_each`, `sequence_close` или владеющую область.
+
+Parser-комбинаторы: `parser_optional`, `parser_many`, `parser_many1`, `parser_sep_by`,
+`parser_attempt`, `parser_commit` (операция без аргумента и обёртка).
+Владеющие массивы связываются через `var items & = source |> bind`;
+`return <- items` передаёт владение. Контракт: [PARSER_COMBINATORS.md](PARSER_COMBINATORS.md).
+
+Search-комбинаторы: `source |> search_take(n)` ограничивает число решений и закрывает источник до последней выдачи;
+`left |> search_append(right)` последовательно объединяет альтернативы, владея обоими iterator.
+Контракт и пример: [SEARCH_COMBINATORS.md](SEARCH_COMBINATORS.md).
+
+Query-операции: `source |> query_order_by(key,descending=false)`, `source |> query_group_by(key)`,
+`source |> query_distinct()` / `query_distinct(key)`. Стабильный порядок, ключ вычисляется один раз на строку.
+Группы владеют вложенными массивами; внутри CE: `var group & = ... |> bind`.
+Контракт и пример: [QUERY_OPERATORS.md](QUERY_OPERATORS.md).
+
+Для блока в конце: `source |> query_order_by(descending) <| key`;
+это перегрузка `(source, descending, key)`, прежняя сигнатура сохранена.
+
+В примерах блоки `query_where`, `query_select`, `query_group_by` и `query_distinct(key)`
+передаются через `source |> query_operation <| $(row:Row) {...}`; прежние вызовы со скобками также поддерживаются.

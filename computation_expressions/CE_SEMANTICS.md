@@ -16,7 +16,7 @@ TaskBuilder и TaskResultBuilder предоставляют cold single-shot з�
 
 | Builder | Результат обычного CE | `and_bind` | `for` / `while` / zip-for | Ресурсы | `deferred` | Move-only payload результата |
 |---|---|---|---|---|---|---|
-| ParserBuilder(text=...) | parsed(value, position) / failure(ParseDiagnostic) | Нет: шаги зависят от позиции | Да / да / да | Да | Да | Нет |
+| ParserBuilder(text=...) | parsed(value, position, committed) / failure(ParseDiagnostic) | Нет: шаги зависят от позиции | Да / да / да | Да | Да | Да: owning массивы, var items & / return <- |
 | SearchBuilder(type<T>) | Ленивый depth-first iterator | Нет | Да / да / да | Да, до закрытия iterator | Да | Нет |
 | QueryBuilder(type<T>) | array<T>, запрос в памяти | Да: все пары | Да / да / да | Да | Да | Нет |
 | ResultBuilder | `ok:T / error:string` | Да: Result | Да / да / да | Да | Да | Нет; использовать MoveResult |
