@@ -134,10 +134,13 @@ def ce_list_rethrow(var values : array<auto(T)>) {
 def ce_try_with(builder : tuple<kind:ListContext;element:auto(T)>;
                 body : block<() : array<T>>; handler : block<(message:string) : array<T>>) : array<T> {
     var inscope values : array<T>
+    var failed=false
+    var message=""
     try { values <- invoke(body) } recover {
-        let message = "{this_context().last_exception}"
-        return <- invoke(handler, message)
+        message = "{this_context().last_exception}"
+        failed=true
     }
+    if(failed) {return <- invoke(handler, message)}
     return <- values
 }
 
@@ -377,10 +380,13 @@ def ce_using(builder : tuple<kind : MoveListContext; element : auto(T)?>; resour
 def ce_try_with(builder : tuple<kind:MoveListContext;element:auto(T)?>;
                 body : block<() : array<T>>; handler : block<(message:string) : array<T>>) : array<T> {
     var inscope values : array<T>
+    var failed=false
+    var message=""
     try { values <- invoke(body) } recover {
-        let message = "{this_context().last_exception}"
-        return <- invoke(handler, message)
+        message = "{this_context().last_exception}"
+        failed=true
     }
+    if(failed) {return <- invoke(handler, message)}
     return <- values
 }
 

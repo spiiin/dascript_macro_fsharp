@@ -6,8 +6,8 @@ $ErrorActionPreference = 'Stop'
 if (-not $Daslang) {
     $command = Get-Command daslang.exe -ErrorAction SilentlyContinue
     if ($command) { $Daslang = $command.Source }
-    elseif (Test-Path -LiteralPath 'C:\src\daslang-0.6.4\daslang_bundle\bin\daslang.exe') {
-        $Daslang = 'C:\src\daslang-0.6.4\daslang_bundle\bin\daslang.exe'
+    elseif (Test-Path -LiteralPath 'C:\src\daslang-0.6.5-RC2\sdk\daslang_bundle\bin\daslang.exe') {
+        $Daslang = 'C:\src\daslang-0.6.5-RC2\sdk\daslang_bundle\bin\daslang.exe'
     } else { throw 'Specify -Daslang <path to daslang.exe> or set DASLANG_EXE.' }
 }
 $Daslang = (Resolve-Path -LiteralPath $Daslang).Path

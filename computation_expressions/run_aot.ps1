@@ -5,7 +5,7 @@ param(
     [int]$Parallel=2
 )
 $ErrorActionPreference='Stop'
-if(-not $Daslang){$Daslang='C:/src/daslang-0.6.4/daslang_bundle/bin/daslang.exe'}
+if(-not $Daslang){$Daslang='C:/src/daslang-0.6.5-RC2/sdk/daslang_bundle/bin/daslang.exe'}
 $Daslang=(Resolve-Path -LiteralPath $Daslang).Path
 $sdk=Split-Path (Split-Path $Daslang -Parent) -Parent
 $OutputDirectory=[IO.Path]::GetFullPath($OutputDirectory)

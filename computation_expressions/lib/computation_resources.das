@@ -37,10 +37,14 @@ def ce_using(builder : auto; resource : auto(T); body : block<(item : T) : auto(
 def ce_try_with(builder : auto; body : block<() : auto(R)>;
                 handler : block<(message:string) : R>) : R {
     var result : R
+    var failed=false
+    var message=""
     try { result = invoke(body) } recover {
-        let message = "{this_context().last_exception}"
-        return invoke(handler, message)
+        message = "{this_context().last_exception}"
+        failed=true
     }
+    // JIT 0.6.5-RC2 treats return in recover as leaving that arm, not the function.
+    if(failed) {return invoke(handler, message)}
     return result
 }
 

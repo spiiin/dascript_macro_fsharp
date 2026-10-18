@@ -1,7 +1,7 @@
 param([string]$Daslang=$env:DASLANG_EXE)
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'source_paths.ps1')
-if(-not $Daslang){$Daslang='C:/src/daslang-0.6.4/daslang_bundle/bin/daslang.exe'}
+if(-not $Daslang){$Daslang='C:/src/daslang-0.6.5-RC2/sdk/daslang_bundle/bin/daslang.exe'}
 $cases=@(
     @{File='test_and_bind_unsupported.das';Message='and_bind is unsupported for builder';Marker='and_bind';ExactErrors=1},
     @{File='test_task_and_bind_unsupported.das';Message='and_bind is unsupported for builder';Marker='and_bind';ExactErrors=1},
@@ -19,7 +19,7 @@ try {
         $text=$lines -join "`n"
         if($code -eq 0 -or -not $text.Contains($case.Message)){throw "Missing diagnostic: $($case.File)"}
         # Check the compiler's standalone source-location line, not a filename embedded in the message.
-        if($text -notmatch ('(?m)^[^\r\n]*'+[regex]::Escape($case.File)+':'+$line+':\d+\s*$')){throw "Diagnostic not anchored to user line: $($case.File)"}
+        if($text -notmatch ('(?m)^[^\r\n]*'+[regex]::Escape($case.File)+':'+$line+':\d+\s*$')){throw "Diagnostic not anchored to user line: $($case.File):$line`n$text"}
         if($case.ExactErrors -gt 0 -and [regex]::Matches($text,'(?m)^error\[').Count -ne $case.ExactErrors){throw "Cascading diagnostics: $($case.File)"}
         if($text -match 'macro caused exception|macro integration error'){throw "Internal macro failure: $($case.File)"}
         Write-Host "Diagnostic anchored: $($case.File):$line"

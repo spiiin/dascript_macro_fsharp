@@ -100,10 +100,13 @@ def ce_merge_sources(builder:MoveOptionBuilder; var left:variant<some:auto(A);no
 
 def ce_try_with(builder:MoveResultBuilder; body:block<():auto(R)>; handler:block<(message:string):R>) : R {
     var inscope result:R
+    var failed=false
+    var message=""
     try {result <- invoke(body)} recover {
-        let message="{this_context().last_exception}"
-        return <- invoke(handler,message)
+        message="{this_context().last_exception}"
+        failed=true
     }
+    if(failed) {return <- invoke(handler,message)}
     return <- result
 }
 def ce_try_finally(builder:MoveResultBuilder; body:block<():auto(R)>; cleanup:block<():void>) : R {
@@ -132,10 +135,13 @@ def ce_using(builder:MoveResultBuilder; resource:auto(T); body:block<(item:T):au
 
 def ce_try_with(builder:MoveOptionBuilder; body:block<():auto(R)>; handler:block<(message:string):R>) : R {
     var inscope result:R
+    var failed=false
+    var message=""
     try {result <- invoke(body)} recover {
-        let message="{this_context().last_exception}"
-        return <- invoke(handler,message)
+        message="{this_context().last_exception}"
+        failed=true
     }
+    if(failed) {return <- invoke(handler,message)}
     return <- result
 }
 def ce_try_finally(builder:MoveOptionBuilder; body:block<():auto(R)>; cleanup:block<():void>) : R {

@@ -1,13 +1,14 @@
-# Type providers и computation expressions
+# Type providers, computation expressions и active patterns
 
 Таблица возможностей builders и общий контракт: [CE_SEMANTICS.md](computation_expressions/CE_SEMANTICS.md).
 
-Две независимые части библиотеки:
+Части репозитория:
 
 - [Type providers](type_providers/README.md): генерация типов, схемы, JSON-данные, примеры и проверки.
 - [Computation expressions](computation_expressions/README.md): макрос CE, builders, примеры, проверки и бенчмарки.
+- [Active patterns](active_patterns/README.md): полные, частичные и параметризованные распознаватели на стандартном `daslib/match`.
 
-Из корня запустите `./run.ps1 -Test`, чтобы проверить обе части.
+Из корня запустите `./run.ps1 -Test`, чтобы проверить все части.
 Скрипты переходят в собственный каталог; их можно вызывать из любой рабочей папки.
 Для прямого запуска daScript-примеров перейдите в каталог соответствующей части.
 Локальные `require` внутри каждой части сохранены: модули разрешаются рядом с исходным файлом.
@@ -18,22 +19,36 @@
 
 [GitHub Actions](https://github.com/spiiin/dascript_macro_fsharp/actions/workflows/ci.yml)
 запускается при каждом `push`, `pull_request` и вручную (`workflow_dispatch`).
-На Windows Server 2022 устанавливается официальный SDK Daslang **0.6.4**
+На Windows Server 2022 устанавливается официальный SDK Daslang **v0.6.5-RC2**
 с проверкой закреплённой SHA-256 архива. Секреты для запуска не требуются.
+
+Тот же SDK можно установить локально и сразу проверить репозиторий:
+
+```powershell
+$env:DASLANG_EXE = & ./.github/scripts/install-daslang.ps1 -Destination ./.work/sdk-0.6.5-RC2
+./run.ps1 -Test
+```
+
+Релиз RC2 содержит PR #4259; SHA-256 фиксирует конкретный архив, а не плавающий nightly.
 
 Отдельные шаги проверяют:
 
 - Type providers: все примеры и тесты через `type_providers/run.ps1 -Test`.
+- Active patterns: примеры, полные/частичные/параметризованные распознаватели
+  и ожидаемые ошибки через `active_patterns/run.ps1 -Test`, в интерпретаторе и JIT.
 - CE: примеры, положительные и отрицательные тесты, диагностику,
   независимый экспорт библиотеки и раскрытие оптимизаций через
   `computation_expressions/run_computation.ps1 -Test`.
-- JIT: 31 явно перечисленный тест `run_modes.ps1 -Mode Jit`.
-- AOT: генерацию C++ для тех же 31 теста, без сборки и исполнения AOT-хоста.
+- JIT: 32 явно перечисленных теста `run_modes.ps1 -Mode Jit`.
+- AOT: генерацию C++ для тех же 32 тестов и отдельную сборку/исполнение
+  строгого AOT-хоста с 27 Task-тестами.
+- Task-адаптеры: реальную сеть TCP/WebSocket, подписки событий, консольную
+  клавиатуру и скрытое окно GLFW, включая отмену и освобождение ресурсов.
 
 Ожидаемые ошибки компиляции проверяются по коду завершения и сообщению;
 неожиданная ошибка делает проверку красной. Остальные наборы продолжают
 проверяться после ошибки отдельного шага. Логи и отчёты режимов сохраняются
-в artifact `windows-daslang-0.6.4-results` на 14 дней, включая неудачные запуски.
+в artifact `windows-daslang-0.6.5-rc2-results` на 14 дней, включая неудачные запуски.
 Известные аварии JIT из `tests/repro/` в обычный CI не включены — см.
 [RELIABILITY.md](computation_expressions/RELIABILITY.md).
 Бенчмарки времени не служат порогом прохождения CI.

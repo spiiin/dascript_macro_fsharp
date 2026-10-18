@@ -4,7 +4,7 @@
 ./run_aot.ps1 -Daslang C:/sdk/bin/daslang.exe
 ```
 
-Нужны Windows x64, Visual Studio 2022 с C++ toolchain, CMake и SDK Daslang 0.6.4
+Нужны Windows x64, Visual Studio 2022 с C++ toolchain, CMake и SDK Daslang v0.6.5-RC2
 с headers, import libraries и runtime DLL. Скрипт собирает host в `.work/aot-build`,
 сохраняет runtime-логи и JSON в `.work/aot-runtime` и запускает каждый из 27
 положительных Task-тестов отдельным процессом. Список берётся из mode_tests.json;
@@ -44,14 +44,16 @@ CeUnit не изменилась. result_ok/some снимают const/ref с pay
 shallow copy, не очистив исходного владельца. Проверка включает owning пары
 в TaskResult and_bind и task_result_race, а также состояние исходного payload.
 
-В SDK 0.6.4 обнаружено отдельное отличие AOT `das_try_recover`: обработчик
+В SDK 0.6.4 и v0.6.5-RC2 обнаружено отдельное отличие AOT `das_try_recover`: обработчик
 вызывается до установки `last_exception` и восстановления контекста, поэтому
 теряется текст ошибки, а повторный panic из recover может попасть в тот же handler.
 Шаблон хоста принудительно подключает `aot_host/recover_064.h` ко всем единицам
 трансляции. Этот локальный shim воспроизводит порядок интерпретатора: сначала
 восстанавливает стек, ABI и внешний throwBuf, сбрасывает stopFlags, переносит
 exception в last_exception, затем вызывает handler. DLL и исходники SDK не меняются.
-При собственном хосте на 0.6.4 используйте тот же header и настройки CMake;
+На 0.6.5 также восстанавливается fastCallDepth перед handler.
+Имя recover_064.h сохранено для совместимости структуры экспорта.
+При собственном хосте используйте тот же header и настройки CMake;
 одной линковки с SDK без этого обхода для проверяемых сценариев недостаточно.
 
 Скрипт рассчитан на текущий Windows SDK. Это проверка перечисленных Task-сценариев,

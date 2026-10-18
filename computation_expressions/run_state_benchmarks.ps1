@@ -10,7 +10,7 @@ $ErrorActionPreference = 'Stop'
 if (-not $Daslang) {
     $command = Get-Command daslang.exe -ErrorAction SilentlyContinue
     if ($command) { $Daslang = $command.Source }
-    else { $Daslang = 'C:\src\daslang-0.6.4\daslang_bundle\bin\daslang.exe' }
+    else { $Daslang = 'C:\src\daslang-0.6.5-RC2\sdk\daslang_bundle\bin\daslang.exe' }
 }
 $Daslang = (Resolve-Path -LiteralPath $Daslang).Path
 $OutputDirectory = [IO.Path]::GetFullPath($OutputDirectory)

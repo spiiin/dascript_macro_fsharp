@@ -99,6 +99,10 @@ Runner также проверяет раскрытие state_expansion_demo.das
 
 ## Обнаруженное ограничение JIT
 
+Ниже сохранён результат исходных замеров на SDK 0.6.4. Для текущего CI на
+v0.6.5-RC2 добавлен библиотечный обход return внутри recover: State-repro проходит.
+Актуальные проверки и оставшийся standalone repro — [RELIABILITY.md](RELIABILITY.md).
+
 `test_benchmark_workloads.das -jit` проходит, как и все опубликованные замеры.
 Однако `test_state_optimized.das -jit` на этом bundle падает с
 EXCEPTION_ACCESS_VIOLATION в цепочке try/recover при проверке panic/cleanup.

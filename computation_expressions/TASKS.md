@@ -72,7 +72,7 @@ task_from_async принимает iterator<res:T/wait:bool> и void iterator<bo
 res не завершает Task, код и ошибки после него сохраняются. Поддержан move-only res.
 Для внешнего cleanup есть overload с close lambda.
 
-В исходном стандартном [async] SDK 0.6.4 inscope-локальные ресурсы могут
+В исходном стандартном [async] SDK 0.6.4 и 0.6.5-RC2 inscope-локальные ресурсы могут
 освободиться на await/yield: Task-адаптер не исправляет его сгенерированное тело.
 Там используйте явное внешнее владение/close callback. Внутри нашего Task CE
 move/clone/inscope-локальные владельцы преобразуются в защищённые области,

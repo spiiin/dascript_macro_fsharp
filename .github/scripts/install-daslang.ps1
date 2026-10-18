@@ -1,8 +1,9 @@
 param([Parameter(Mandatory)][string]$Destination)
 
 $ErrorActionPreference = 'Stop'
-$version = '0.6.4'
-$sha256 = '00409af672f0bc2aa6650bb4d1312f6505412c6ed8a309ad2ad4929b867f0d97'
+$version = '0.6.5-RC2'
+# This release contains merge 34cb1e7def64418dd447c117671812692619cdf4 (PR #4259).
+$sha256 = '519dccb27822f6d43196d5e48e9432549a5825f3782de09c368dadb5b1568070'
 $url = "https://github.com/GaijinEntertainment/daScript/releases/download/v$version/daslang-bundle-windows-x86_64.zip"
 $Destination = [IO.Path]::GetFullPath($Destination)
 New-Item -ItemType Directory -Path $Destination -Force | Out-Null

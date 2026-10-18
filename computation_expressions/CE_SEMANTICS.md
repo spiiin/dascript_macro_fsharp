@@ -259,10 +259,11 @@ builder × ресурс × тип × runtime. Основные существу�
   [test_deferred_move_collections.das](tests/test_deferred_move_collections.das): повторные запуски и владение.
 
 Полный запуск: `./run_computation.ps1 -Test` из этой папки, либо
-`../run.ps1 -Test` для обеих частей библиотеки. Это проверка интерпретатора
-Daslang 0.6.4, не подтверждение всех путей под JIT/AOT.
-Известный сбой JIT на State + panic/cleanup зафиксирован в
-[STATE_OPTIMIZATION.md](STATE_OPTIMIZATION.md#обнаруженное-ограничение-jit).
+`../run.ps1 -Test` для всего репозитория. Это проверка интерпретатора
+Daslang v0.6.5-RC2, не подтверждение всех путей под JIT/AOT.
+История сбоя JIT на State + panic/cleanup и текущий обход return в recover:
+[RELIABILITY.md](RELIABILITY.md). Отдельный `test_recover_portability` включён
+в interpreter/JIT-набор и проверяет State и владеющие результаты.
 
 Подробные контракты: [AND_BIND.md](AND_BIND.md), [LOOP_PROTOCOL.md](LOOP_PROTOCOL.md),
 [ZIP_FOR.md](ZIP_FOR.md), [RESOURCES.md](RESOURCES.md), [TRY_WITH.md](TRY_WITH.md),

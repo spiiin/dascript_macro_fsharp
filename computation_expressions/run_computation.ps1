@@ -4,8 +4,8 @@ $ErrorActionPreference = 'Stop'
 if (-not $Daslang) {
     $command = Get-Command daslang.exe -ErrorAction SilentlyContinue
     if ($command) { $Daslang = $command.Source }
-    elseif (Test-Path -LiteralPath 'C:\src\daslang-0.6.4\daslang_bundle\bin\daslang.exe') {
-        $Daslang = 'C:\src\daslang-0.6.4\daslang_bundle\bin\daslang.exe'
+    elseif (Test-Path -LiteralPath 'C:\src\daslang-0.6.5-RC2\sdk\daslang_bundle\bin\daslang.exe') {
+        $Daslang = 'C:\src\daslang-0.6.5-RC2\sdk\daslang_bundle\bin\daslang.exe'
     } else { throw 'Specify -Daslang or DASLANG_EXE.' }
 }
 $Daslang = (Resolve-Path -LiteralPath $Daslang).Path
@@ -250,6 +250,7 @@ try {
         Check 'tests/test_sequence_shared_type.das' $false 'initialization type mismatch'
         Check 'tests/test_sequence_shared_owned.das' $false 'shared locals require copyable values'
         Check 'tests/test_try_with.das' $true 'try_with eager checks OK'
+        Check 'tests/test_recover_portability.das' $true 'Recover portability checks OK'
         Check 'tests/test_sequence_try_with.das' $true 'try_with sequence checks OK'
         Check 'tests/test_try_with_lifetime.das' $true 'try_with lifetime checks OK'
         Check 'tests/test_try_with_blocks.das' $false 'try_with expects a body block'

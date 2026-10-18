@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   windows:
-    name: Windows / Daslang 0.6.4
+    name: Windows / Daslang 0.6.5-RC2
     runs-on: windows-2022
     timeout-minutes: 60
     defaults:
@@ -29,7 +29,7 @@ jobs:
       - name: Install pinned Daslang SDK
         id: sdk
         run: |
-          $exe = & ./.github/scripts/install-daslang.ps1 -Destination (Join-Path $env:RUNNER_TEMP 'daslang-0.6.4')
+          $exe = & ./.github/scripts/install-daslang.ps1 -Destination (Join-Path $env:RUNNER_TEMP 'daslang-0.6.5-RC2')
           "DASLANG_EXE=$exe" >> $env:GITHUB_ENV
 
       - name: Type providers / interpreter examples and tests
@@ -49,6 +49,16 @@ jobs:
           Start-Transcript -Path ci-results/computation-expressions.log
           try { & ./computation_expressions/run_computation.ps1 -Test }
           finally { Stop-Transcript }
+
+      - name: Active patterns / interpreter and JIT
+        if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          Start-Transcript -Path ci-results/active-patterns.log
+          try {
+            & ./active_patterns/run.ps1 -Test
+            & ./active_patterns/run.ps1 -Test -Jit
+          } finally { Stop-Transcript }
 
       - name: CE / JIT regression subset
         if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
@@ -98,7 +108,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: windows-daslang-0.6.4-results
+          name: windows-daslang-0.6.5-rc2-results
           path: ci-results/
           if-no-files-found: warn
           retention-days: 14
