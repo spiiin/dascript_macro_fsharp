@@ -278,3 +278,11 @@ ListBuilder выбирает `ce_collect_sink_protocol(type<T>)`, разреша
 накопления и владения. Полный контракт и ограничения: [LIST_OPTIMIZATION.md](LIST_OPTIMIZATION.md).
 
 Resumable builders используют ce_resumable_protocol(type<Event>) и hooks ожидания — см. [TASKS.md](TASKS.md). Этот путь не использует eager block-продолжения, которые не могут пережить возврат со стека.
+
+Для `source |> yield_from` resumable-builder может предоставить
+`ce_await_yield_from(builder, source)`: owning iterator своих событий. Общий lowerer
+передаёт эти события во внешний producer и закрывает iterator через защищённый
+sequence-механизм. AsyncSequenceBuilder реализует этот hook для дочернего
+AsyncSequence того же типа элементов: пересылает pending и some, поглощает
+терминальный none, распространяет Cancelled/Failed и владеет дочерним stream.
+Скалярные TaskBuilder/TaskResultBuilder такой операции не предоставляют.

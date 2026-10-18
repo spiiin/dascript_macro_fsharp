@@ -120,6 +120,16 @@ def task_create(var source:iterator<tuple<tag:TaskEventTag;ready:bool;value:auto
 def TaskBuilder(unused:type<auto(T)>) {var marker:T -const -&?;return (kind=TaskContext(),element=marker)}
 def TaskResultBuilder(unused:type<auto(T)>) {var marker:T -const -&?;return (kind=TaskResultContext(),element=marker)}
 
+// Resumable streams may emit values; single-result Task builders may not.
+def ce_await_yield(builder:auto; value:auto) {
+    concept_assert(false,"task: use source |> bind to await; yield is not supported")
+    return <- ce_await_pending(builder)
+}
+def ce_await_yield_move(builder:auto; var value:auto) {
+    concept_assert(false,"task: use source |> bind to await; yield is not supported")
+    return <- ce_await_pending(builder)
+}
+
 def ce_protocol(builder:tuple<kind:TaskContext;element:auto(T)?>) {
     return ce_resumable_protocol(type<tuple<tag:TaskEventTag;ready:bool;value:T>>)
 }

@@ -1,6 +1,6 @@
 # Публичный API computation expressions
 
-Требуется Daslang 0.6.4 со стандартной daslib. SDK не включён в экспорт.
+Проверенный SDK — Daslang v0.6.5-RC2 со стандартной daslib. SDK не включён в экспорт.
 Необязательный `./lib/task_hv.das` требует установленный `dashv/dashv_boost`.
 API: `hv_websocket`, `ws_connect`, `ws_send_text`, `ws_receive_text`,
 `HvWebSocketConfig`, `hv_websocket_stats`; контракт и пример: [TASK_HV.md](TASK_HV.md).
@@ -40,6 +40,7 @@ task_result_when_all, task_race и [and_bind для Task](TASK_AND_BIND.md); с�
 | CoroutineBuilder | Ленивый iterator<CoroutineFrame> |
 | TaskBuilder(type<T>) | Однократная задача с результатом T, запуск через task_poll |
 | TaskResultBuilder(type<T>) | Задача с Result<T>, Error пропускает продолжение |
+| AsyncSequenceBuilder(type<T>) | Асинхронный stream; next возвращает Task<Option<T>> |
 
 ListBuilder()/SequenceBuilder() выбирают int. Обычные Value CE выполняются
 немедленно; Sequence/Coroutine — при обходе/возобновлении. State/Reader и обычные
@@ -132,6 +133,19 @@ task_when_all(tasks) потребляет массив Task с одинаков�
 
 ## Полный Task API
 
+`./lib/async_sequence_builder.das`: AsyncSequenceBuilder, async_sequence_next,
+async_sequence_close. Получение элементов через bind в TaskBuilder; завершение —
+none, отмена/таймаут next закрывают stream. Владельцы: use_resource или inscope.
+Копируемые и move-only элементы, один активный next. Для owning значений:
+`yield <- value`, `var item & = async_sequence_next(stream) |> bind`; вне CE —
+`task_take(nextTask)` для переноса, task_value для deep clone.
+`child_stream() |> yield_from` передаёт элементы дочернего AsyncSequence во внешний;
+дочерний stream переносится во владение делегирования, в том числе с move-only payload.
+Контракт: [ASYNC_SEQUENCE.md](ASYNC_SEQUENCE.md).
+Для `deferred(AsyncSequenceBuilder(type<T>),data)` каждый run_deferred создаёт
+независимый stream и рабочий снимок, живущий до закрытия производителя;
+поддержаны move-only элементы и вариант без явных данных.
+
 [TASK_COMPLETION.md](TASK_COMPLETION.md): return_from, Unit, break/continue,
 move-only payload, deferred и shared-await. Task используют task_value для
 копии/clone и task_take для передачи владения. Combinators: task_when_all и
@@ -143,3 +157,18 @@ task_result_when_all (пара и массив), task_race и task_result_race.
 `./lib/task_events.das`: task_event_source(type<T>), task_wait_event, task_event_emit,
 task_event_close, task_event_subscriber_count, task_event_stats. Broadcast по активным
 подпискам, копируемый T, Task<Result<T>>. Контракт: [TASK_EVENTS.md](TASK_EVENTS.md).
+
+## Parser, Search и Query
+
+Отдельные модули: `./lib/parser_builder.das`, `./lib/search_builder.das`,
+`./lib/query_builder.das`. Протокол и примеры: [DOMAIN_BUILDERS.md](DOMAIN_BUILDERS.md).
+
+- `ParserBuilder(text=...)`: `parser_literal`, `parser_int`, `parser_spaces`,
+  `parser_eof`, `parser_choice`, `parser_call(@@grammar)`; результат parsed/failure.
+- `SearchBuilder(type<T>)`: `search_choose` потребляет массив,
+  `search_guard` отсекает ветвь, `search_once` / `search_cut` оставляют первое решение источника.
+- `QueryBuilder(type<T>)`: `query_where`, `query_select`, `query_join`;
+  стабильный inner join и накопление массива, без подключения СУБД.
+
+Новые builders работают с копируемыми значениями. Результаты Search нужно
+закрывать через `sequence_each`, `sequence_close` или владеющую область.

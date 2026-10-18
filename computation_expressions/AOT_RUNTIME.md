@@ -6,9 +6,15 @@
 
 Нужны Windows x64, Visual Studio 2022 с C++ toolchain, CMake и SDK Daslang v0.6.5-RC2
 с headers, import libraries и runtime DLL. Скрипт собирает host в `.work/aot-build`,
-сохраняет runtime-логи и JSON в `.work/aot-runtime` и запускает каждый из 27
-положительных Task-тестов отдельным процессом. Список берётся из mode_tests.json;
+сохраняет runtime-логи и JSON в `.work/aot-runtime` и запускает каждый из 36
+положительных тестов (27 Task, пять AsyncSequence и четыре Parser/Search/Query/deferred) отдельным процессом. Список берётся из mode_tests.json;
 отрицательные компиляционные тесты и сетевой fixture туда не входят.
+Скрипт задаёт DAS_DIR явно, чтобы ранее настроенный build-каталог не сохранял
+другой SDK из кеша CMake при изменении -Daslang.
+Перед сборкой и после неё runner сравнивает SHA-256 исходников библиотеки,
+выбранных тестов и support. Если исходники менялись параллельно, прогон
+прерывается: требуется повторная сборка согласованных AOT-файлов.
+Для Parser отдельно генерируется AOT стандартного daslib/strings_convert.
 
 Процесс соответствует [официальному AOT workflow](https://daslang.io/doc/reference/tutorials/integration_cpp_13_aot.html):
 
@@ -18,7 +24,7 @@
 3. CMake компилирует все .cpp и связывает их с DAS::libDaScriptDyn из SDK.
 4. Host включает policies.aot и fail_on_no_aot, проверяет simulate и main->aot,
    затем вызывает main через evalWithCatch. Исключение или отсутствие AOT даёт
-   ненулевой exit; интерпретатор не используется как скрытый fallback Task-тестов.
+   ненулевой exit; интерпретатор не используется как скрытый fallback тестов.
 
 Для долгоживущих задач host явно задаёт `policies.persistent_heap=true`.
 Именно policy применяется при simulate: одного аргумента `true` конструктору
@@ -56,6 +62,6 @@ exception в last_exception, затем вызывает handler. DLL и исх�
 При собственном хосте используйте тот же header и настройки CMake;
 одной линковки с SDK без этого обхода для проверяемых сценариев недостаточно.
 
-Скрипт рассчитан на текущий Windows SDK. Это проверка перечисленных Task-сценариев,
+Скрипт рассчитан на текущий Windows SDK. Это проверка перечисленных Task/AsyncSequence/Parser/Search/Query-сценариев,
 не утверждение о любом произвольном builder, внешнем модуле или C++-хосте. Известные
 State/JIT repro из RELIABILITY.md остаются отдельными проверками другого режима.

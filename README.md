@@ -1,6 +1,9 @@
 # Type providers, computation expressions и active patterns
 
 Таблица возможностей builders и общий контракт: [CE_SEMANTICS.md](computation_expressions/CE_SEMANTICS.md).
+Асинхронные последовательности с Task bind: [AsyncSequenceBuilder](computation_expressions/ASYNC_SEQUENCE.md).
+
+Parser, Search и Query: [DOMAIN_BUILDERS.md](computation_expressions/DOMAIN_BUILDERS.md).
 
 Части репозитория:
 
@@ -39,9 +42,9 @@ $env:DASLANG_EXE = & ./.github/scripts/install-daslang.ps1 -Destination ./.work/
 - CE: примеры, положительные и отрицательные тесты, диагностику,
   независимый экспорт библиотеки и раскрытие оптимизаций через
   `computation_expressions/run_computation.ps1 -Test`.
-- JIT: 32 явно перечисленных теста `run_modes.ps1 -Mode Jit`.
-- AOT: генерацию C++ для тех же 32 тестов и отдельную сборку/исполнение
-  строгого AOT-хоста с 27 Task-тестами.
+- JIT: 41 явно перечисленных тестов `run_modes.ps1 -Mode Jit`.
+- AOT: генерацию C++ для тех же 41 тестов и отдельную сборку/исполнение
+  строгого AOT-хоста с 27 Task-тестами, пятью AsyncSequence-тестами и четырьмя Parser/Search/Query/deferred-тестами.
 - Task-адаптеры: реальную сеть TCP/WebSocket, подписки событий, консольную
   клавиатуру и скрытое окно GLFW, включая отмену и освобождение ресурсов.
 
@@ -74,7 +77,7 @@ $env:DASLANG_EXE = & ./.github/scripts/install-daslang.ps1 -Destination ./.work/
 Реальный TCP и peer EOF: [TASK_TCP.md](computation_expressions/TASK_TCP.md).
 WebSocket через dasHV: [TASK_HV.md](computation_expressions/TASK_HV.md) —
 пайповый bind, echo, отмена, таймаут и закрытие соединения; интерпретатор и JIT.
-Сборка и исполнение 27 Task-тестов в AOT-хосте: [AOT_RUNTIME.md](computation_expressions/AOT_RUNTIME.md).
+Сборка и исполнение 36 Task/AsyncSequence/Parser/Search/Query-тестов в AOT-хосте: [AOT_RUNTIME.md](computation_expressions/AOT_RUNTIME.md).
 
 ## Подробности и история возможностей
 

@@ -19,6 +19,13 @@ function Check([string]$File, [bool]$Pass, [string]$Expected) {
 }
 Push-Location $PSScriptRoot
 try {
+    Check 'examples/parser_demo.das' $true 'Parser demo OK'
+    Check 'examples/search_demo.das' $true 'Search demo OK'
+    Check 'examples/query_demo.das' $true 'Query demo OK'
+    Check 'examples/async_sequence_yield_from_demo.das' $true 'Async sequence yield_from demo OK'
+    Check 'examples/deferred_async_sequence_demo.das' $true 'Deferred async sequence demo OK'
+    Check 'examples/async_sequence_move_demo.das' $true 'Async sequence move demo OK'
+    Check 'examples/async_sequence_demo.das' $true 'Async sequence demo OK'
     Check 'examples/task_events_demo.das' $true 'Task event demo OK'
     Check 'examples/task_array_demo.das' $true 'Task array demo OK'
     Check 'examples/task_and_bind_demo.das' $true 'Task and_bind demo OK'
@@ -74,6 +81,24 @@ try {
     Check 'examples/single_cleanup_demo.das' $true 'single For cleanup demo OK'
     Check 'examples/zip_cleanup_demo.das' $true 'zip cleanup demo OK'
     if ($Test) {
+        Check 'tests/failed_parser_and_bind.das' $false 'and_bind is unsupported for builder'
+        Check 'tests/failed_query_move.das' $false 'QueryBuilder requires copyable rows'
+        Check 'tests/failed_search_move.das' $false 'SearchBuilder requires copyable solutions'
+        Check 'tests/test_parser.das' $true 'Parser checks OK'
+        Check 'tests/test_search.das' $true 'Search checks OK'
+        Check 'tests/test_query.das' $true 'Query checks OK'
+        Check 'tests/test_domain_deferred.das' $true 'Domain deferred checks OK'
+        Check 'tests/failed_async_sequence_deferred_pointer.das' $false 'builder and snapshot must own their data'
+        Check 'tests/test_async_sequence_yield_from.das' $true 'Async sequence yield_from checks OK'
+        Check 'tests/test_async_sequence_deferred.das' $true 'Deferred async sequence checks OK'
+        Check 'tests/failed_async_sequence_move.das' $false 'move-only elements require yield <- value'
+        Check 'tests/failed_async_sequence_move_bind.das' $false "move-only bind needs 'var value & = source |> bind'"
+        Check 'tests/test_async_sequence_move.das' $true 'Async sequence move checks OK'
+        Check 'tests/failed_async_sequence_pointer.das' $false 'payload must own its data'
+        Check 'tests/failed_async_sequence_return.das' $false 'emit elements with yield'
+        Check 'tests/failed_task_yield.das' $false 'yield is not supported'
+        Check 'tests/test_async_sequence.das' $true 'Async sequence checks OK'
+        Check 'tests/test_async_sequence_lifetime.das' $true 'Async sequence lifetime checks OK'
         Check 'tests/test_task_array.das' $true 'Task array checks OK'
         Check 'tests/test_task_array_lifetime.das' $true 'Task array lifetime checks OK'
         & (Join-Path $PSScriptRoot 'test_task_keyboard.ps1') -Daslang $Daslang

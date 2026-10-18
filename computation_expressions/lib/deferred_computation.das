@@ -51,6 +51,12 @@ class DeferredResult : AstTypeInfoMacro {
         if(result.baseType==Type.tTuple && length(result.argTypes)==6 && result.argTypes[0].baseType==Type.tStructure
             && result.argTypes[0].structType.name=="TaskTag" && result.argTypes[0].structType._module.name=="task_builder") {
             if(!ce_snapshot_safe(result.argTypes[3])) {errors:="deferred: Task result must own its payload";return null}
+        } elif(result.baseType==Type.tTuple && length(result.argTypes)==3 && result.argTypes[0].baseType==Type.tStructure
+            && result.argTypes[0].structType.name=="AsyncSequenceTag" && result.argTypes[0].structType._module.name=="async_sequence_builder") {
+            let token=result.argTypes[2]
+            if(token.baseType!=Type.tIterator || token.firstType.flags.ref || !ce_snapshot_safe(token.firstType)) {
+                errors:="deferred: AsyncSequence elements must own their data";return null
+            }
         } elif (result.baseType==Type.tIterator && !result.flags.ref) {
             if (result.firstType.flags.ref || !ce_snapshot_safe(result.firstType)) {
                 errors := "deferred: iterator elements must own their data; references, pointers and nested iterators cannot escape a run snapshot"
@@ -93,7 +99,8 @@ class DeferredMacro : AstCallMacro {
         let moveList=ce_move_descriptor(bt,"list_builder","MoveListContext")
         let moveSequence=ce_move_descriptor(bt,"sequence_builder","MoveSequenceContext")
         let taskBuilder=ce_move_descriptor(bt,"task_builder","TaskContext") || ce_move_descriptor(bt,"task_builder","TaskResultContext")
-        if ((!ce_snapshot_safe(bt) && !moveList && !moveSequence && !taskBuilder) || !ce_snapshot_safe(et)) {
+        let asyncSequence=ce_move_descriptor(bt,"async_sequence_builder","AsyncSequenceContext")
+        if ((!ce_snapshot_safe(bt) && !moveList && !moveSequence && !taskBuilder && !asyncSequence) || !ce_snapshot_safe(et)) {
             macro_error(prog,expr.at,"deferred: builder and snapshot must own their data; pointers, blocks, lambdas, iterators and native handles are unsupported")
             return null
         }
@@ -120,7 +127,7 @@ class DeferredMacro : AstCallMacro {
                 return <- $e(inner)
             })
         }
-        if(taskBuilder) {
+        if(taskBuilder || asyncSequence) {
             let result=make_unique_private_name("__deferred_task",expr.at)
             callback=qmacro(@@($i(frame):tuple<marker:int;builder:$t(builderType);value:$t(et)>?) {
                 var $i(result) <- $e(inner)
@@ -135,12 +142,13 @@ class DeferredMacro : AstCallMacro {
             make=qmacro($($i(esource):$t(et)) { return <- ce_deferred_create($i(bsource),$i(esource),$e(callback),CeDeferredTypeBuilder()) })
         }
         if(taskBuilder) {make=qmacro($($i(esource):$t(et)) {return <- ce_deferred_create($i(bsource),$i(esource),$e(callback),CeDeferredTaskBuilder())})}
+        if(asyncSequence) {make=qmacro($($i(esource):$t(et)) {return <- ce_deferred_create($i(bsource),$i(esource),$e(callback),CeDeferredAsyncSequenceBuilder())})}
         var dataScope=ce_source_apply(data,make,true)
         // Borrow saved const builders while copying them into the owned frame.
         var builderInputType=clone_type(builderType)
         builderInputType.flags.constant=true
         var withBuilder=qmacro($($i(bsource):$t(builderInputType)) { return <- $e(dataScope) })
-        if (moveList || moveSequence || taskBuilder) {
+        if (moveList || moveSequence || taskBuilder || asyncSequence) {
             withBuilder=qmacro($($i(bsource):$t(builderInputType)) {
                 if ($i(bsource).element!=null) {panic("deferred: move-only builder type marker must be null")}
                 return <- $e(dataScope)

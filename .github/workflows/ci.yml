@@ -98,7 +98,7 @@ jobs:
         run: |
           & ./computation_expressions/test_task_glfw_keyboard.ps1 -Jit
 
-      - name: Task / build and execute strict AOT host
+      - name: Task, AsyncSequence and domain builders / build and execute strict AOT host
         if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
         run: |
           $PSNativeCommandUseErrorActionPreference = $false

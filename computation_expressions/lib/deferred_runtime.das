@@ -7,10 +7,12 @@ struct DeferredComputation {_ce_marker:uint8}
 struct CeDeferredValueBuilder {_ce_marker:uint8}
 struct CeDeferredTypeBuilder {_ce_marker:uint8}
 struct CeDeferredTaskBuilder {_ce_marker:uint8}
+struct CeDeferredAsyncSequenceBuilder {_ce_marker:uint8}
 def private ce_deferred_copy_builder(var target:auto; source:auto; policy:CeDeferredValueBuilder) {target := source}
 // The macro checks that this built-in phantom descriptor contains only null.
 def private ce_deferred_copy_builder(var target:auto; source:auto; policy:CeDeferredTypeBuilder) {target.element = null}
 def private ce_deferred_copy_builder(var target:auto; source:auto; policy:CeDeferredTaskBuilder) {target.element = null}
+def private ce_deferred_copy_builder(var target:auto; source:auto; policy:CeDeferredAsyncSequenceBuilder) {target.element = null}
 
 def private ce_deferred_finish(var result:auto;var frame:auto?;policy:auto) {
     unsafe {delete frame}
@@ -19,6 +21,15 @@ def private ce_deferred_finish(var result:auto;var frame:auto?;policy:auto) {
 def private ce_deferred_finish(var result:auto;var frame:auto?;policy:CeDeferredTaskBuilder) {
     var cleanup <- @ capture(move(frame)) {unsafe {delete frame}}
     result.source <- ce_deferred_wrap_sequence(result.source,cleanup)
+    return <- result
+}
+def private ce_deferred_finish(var result:tuple<tag:auto;owner:iterator<auto(State)?>;element:auto>;var frame:auto?;policy:CeDeferredAsyncSequenceBuilder) {
+    var cleanup <- @ capture(move(frame)) {unsafe {delete frame}}
+    // The producer owns the frame across all next-Tasks; its finalizers run
+    // before cleanup, even if the primary lease closes while next is pending.
+    var state:State?
+    if(!next(result.owner,state)) {panic("deferred: AsyncSequence owner is closed")}
+    unsafe {state.source <- ce_deferred_wrap_sequence(state.source,cleanup)}
     return <- result
 }
 

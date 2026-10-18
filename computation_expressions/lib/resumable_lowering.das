@@ -224,8 +224,27 @@ def ce_resumable_scope(node:ExpressionPtr; builder:string; var error:string&;
             let signal=stmt is ExprBreak ? 1 : 2
             output |> push <| qmacro(ce_task_loop_signal($i(control),$v(signal)))
             return qmacro_block() {$b(output);}
+        } elif(stmt is ExprCall && (stmt as ExprCall).name=="yield_from") {
+            let call=stmt as ExprCall
+            if(length(call.arguments)!=1) {error="async sequence: expected source |> yield_from";return blk}
+            let event=make_unique_private_name("__await_yield_from",stmt.at)
+            var loop=qmacro_expr() {
+                for($i(event) in ce_await_yield_from($i(builder),$e(call.arguments[0]))) {
+                    yield <- $i(event)
+                }
+            }
+            loop.at=stmt.at
+            (loop as ExprFor).body.at=stmt.at
+            output |> push <| loop
         } elif(stmt is ExprYield) {
-            error="task: use source |> bind to await; yield is not supported";return blk
+            let item=stmt as ExprYield
+            var emitted:ExpressionPtr
+            if(item.returnFlags.moveSemantics) {
+                emitted=qmacro_expr() {yield <- ce_await_yield_move($i(builder),$e(item.subexpr))}
+            } else {emitted=qmacro_expr() {yield <- ce_await_yield($i(builder),$e(item.subexpr))}}
+            emitted.at=stmt.at
+            (emitted as ExprYield).subexpr.at=stmt.at
+            output |> push <| emitted
         } else {output |> push <| stmt}
         // A structured statement may have signalled break/continue in a nested
         // await/resource generator. Keep lexical declarations in the same scope

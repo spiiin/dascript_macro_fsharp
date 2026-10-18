@@ -1236,8 +1236,11 @@ def ce_sequence_scope(node : ExpressionPtr; start : int; element : TypeDeclPtr; 
         } elif (stmt is ExprCall) { binding = clone_expression(stmt) }
         if (share && stmt is ExprLet && length((stmt as ExprLet).variables)==1) {
             let variable = (stmt as ExprLet).variables[0]
+            // A lowered await borrow is held by the enclosing source loop. It
+            // must not be virtualized as an ordinary mutable shared local.
             let marker = (binding != null && binding is ExprCall
-                && ((binding as ExprCall).name=="bind" || (binding as ExprCall).name=="use_resource" || (binding as ExprCall).name=="use_task_local"))
+                && ((binding as ExprCall).name=="bind" || (binding as ExprCall).name=="use_resource" || (binding as ExprCall).name=="use_task_local"
+                    || (binding as ExprCall).name=="ce_await_borrow_value"))
             if (!variable._type.flags.constant && !marker) {
                 if (variable._type.flags.ref || variable.flags.inScope || (stmt as ExprLet).letFlags.inScope
                         || variable.flags.init_via_move || variable.flags.init_via_clone) {

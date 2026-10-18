@@ -11,7 +11,7 @@
 daslang.exe C:/my_project/ce_example/main.das -no-module-cache
 ```
 
-Destination должен быть новым каталогом. Поставка содержит lib с 27 модулями,
+Destination должен быть новым каталогом. Поставка содержит lib с 34 модулями,
 manifest.json с SHA256, main.das, identity_builder.das, README.md,
 [PUBLIC_API.md](PUBLIC_API.md), [TASKS.md](TASKS.md) и
 [TASK_COMPOSITION.md](TASK_COMPOSITION.md), [TASK_SCHEDULER.md](TASK_SCHEDULER.md), [TASK_CANCELLATION.md](TASK_CANCELLATION.md), [TASK_DELAY.md](TASK_DELAY.md), [TASK_ARRAY.md](TASK_ARRAY.md), [TASK_AND_BIND.md](TASK_AND_BIND.md). Тестовые builders и type providers не требуются.
@@ -59,6 +59,8 @@ builder и smoke с State, ReaderResult, Validation, MoveResult и повтор�
 deferred List. Тест не использует support или тестовые builders.
 
 Полный Task-контракт: [TASK_COMPLETION.md](TASK_COMPLETION.md).
+Асинхронные последовательности: `require ./lib/async_sequence_builder.das`,
+контракт и пример — [ASYNC_SEQUENCE.md](ASYNC_SEQUENCE.md).
 Сеть подключается отдельным `require ./lib/task_tcp.das`, см. TASK_TCP.md.
 Для WebSocket: `require ./lib/task_hv.das`, см. [TASK_HV.md](TASK_HV.md).
 Этот необязательный модуль требует dasHV (`dashv/dashv_boost`) из SDK.

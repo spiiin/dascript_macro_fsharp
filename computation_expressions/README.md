@@ -4,7 +4,7 @@
 
 | Каталог | Содержимое |
 |---|---|
-| lib/ | 30 публичных модулей без тестовых builders |
+| lib/ | 34 публичных модуля без тестовых builders |
 | examples/ | Запускаемые примеры |
 | tests/ | Положительные и отрицательные проверки; tests/repro/ — известные сбои |
 | support/ | Демонстрационные builders и вспомогательные модули примеров/тестов |
@@ -35,6 +35,12 @@ daslang.exe examples/state_operations_demo.das -no-module-cache
 Исторические дампы и метаданные сохранены без переписывания путей внутри них.
 
 Типизированные задачи TaskBuilder / TaskResultBuilder, ожидание внешних операций и отмена: [TASKS.md](TASKS.md).
+Асинхронное получение элементов через Task bind: [AsyncSequenceBuilder](ASYNC_SEQUENCE.md),
+[пример](examples/async_sequence_demo.das).
+Move-only элементы: `yield <-`, заимствующий bind и передача владения;
+[пример с массивами](examples/async_sequence_move_demo.das).
+Deferred AsyncSequence, независимые снимки и повторные запуски:
+[пример](examples/deferred_async_sequence_demo.das).
 Пайповый `left |> and_bind(right) |> bind` для Task через общий протокол:
 [TASK_AND_BIND.md](TASK_AND_BIND.md), [пример](examples/task_and_bind_demo.das).
 
@@ -58,3 +64,5 @@ WebSocket через dasHV: [TASK_HV.md](TASK_HV.md), пайповый bind и �
 Реальный ввод с клавиатуры, отмена и таймаут без остановки фоновых задач: [TASK_KEYBOARD.md](TASK_KEYBOARD.md).
 
 Клавиатура окна dasGlfw без Python: [TASK_GLFW_KEYBOARD.md](TASK_GLFW_KEYBOARD.md).
+
+Parser, Search и Query: [DOMAIN_BUILDERS.md](DOMAIN_BUILDERS.md), примеры `parser_demo.das`, `search_demo.das`, `query_demo.das`.

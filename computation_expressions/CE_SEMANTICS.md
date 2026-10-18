@@ -4,7 +4,7 @@
 
 Этот документ фиксирует контракт текущей реализации. Сигнатуры конкретного
 builder определяют допустимые источники; общая запись `|> bind` не делает
-произвольные контейнеры совместимыми. SearchBuilder пока не реализован.
+произвольные контейнеры совместимыми. Parser, Search и Query описаны в [DOMAIN_BUILDERS.md](DOMAIN_BUILDERS.md).
 TaskBuilder и TaskResultBuilder предоставляют cold single-shot задачи и ожидание
 внешних операций через poll-адаптер, см. [TASKS.md](TASKS.md).
 
@@ -16,6 +16,9 @@ TaskBuilder и TaskResultBuilder предоставляют cold single-shot з�
 
 | Builder | Результат обычного CE | `and_bind` | `for` / `while` / zip-for | Ресурсы | `deferred` | Move-only payload результата |
 |---|---|---|---|---|---|---|
+| ParserBuilder(text=...) | parsed(value, position) / failure(ParseDiagnostic) | Нет: шаги зависят от позиции | Да / да / да | Да | Да | Нет |
+| SearchBuilder(type<T>) | Ленивый depth-first iterator | Нет | Да / да / да | Да, до закрытия iterator | Да | Нет |
+| QueryBuilder(type<T>) | array<T>, запрос в памяти | Да: все пары | Да / да / да | Да | Да | Нет |
 | ResultBuilder | `ok:T / error:string` | Да: Result | Да / да / да | Да | Да | Нет; использовать MoveResult |
 | TaskBuilder(type<T>) | Task<T>, cold single-shot | Да: Task | Да / да / native zip, break/continue | Да | Да | Да: owning bind/return |
 | TaskResultBuilder(type<T>) | Task<Result<T>>, cold single-shot | Да: Result и Unit | Да / да / native zip, break/continue | Да | Да | Да: owning bind/return |
@@ -30,6 +33,7 @@ TaskBuilder и TaskResultBuilder предоставляют cold single-shot з�
 | StateWriterResultBuilder(initial) | `(result:Result<T>, state:S, log:string)` | Нет | Да / да / да | Да | Да | Нет; состояние также копируемое |
 | ListBuilder(type<T>) | `array<T>` | Да: копируемые элементы, все пары | Да / да / да | Да | Да | Да: consuming bind и `return <-` / `yield <-` |
 | SequenceBuilder(type<T>) | Ленивый iterator | Нет | Да / да / да | Да, до закрытия iterator | Да: новый iterator на запуск | Да: owning slot и `yield <-` |
+| AsyncSequenceBuilder(type<T>) | Stream; next возвращает Task<Option<T>> | Нет | Да / да / native zip, break/continue | Да, до закрытия stream | Да: новый stream и снимок на запуск | Да: yield <-, owning bind и task_take |
 | MoveResultBuilder | Перемещаемый Result | Да: перенос payload в пару | Да / да / да | Да | Да | Да |
 | MoveOptionBuilder | Перемещаемый Option | Да: перенос payload в пару | Да / да / да | Да | Да | Да |
 | CoroutineBuilder | `iterator<CoroutineFrame>` | Нет | Да / да / да | Да, до завершения/отмены | Да: новый сценарий на запуск | Не контейнер результата; выдаёт кадры, поддерживает owning-ресурсы |
@@ -75,6 +79,9 @@ Result.error завершает TaskResult со статусом Succeeded; nati
 Task поддерживает break/continue, return_from, Unit/Zero, deferred, shared-await
 и move-only payload; контракт: [TASK_COMPLETION.md](TASK_COMPLETION.md).
 Нативные синхронные участки могут блокировать poll.
+AsyncSequence совмещает ожидание Task через bind и выдачу элементов через yield.
+Каждый next запрашивает только один элемент; отмена next закрывает stream целиком.
+Контракт владения и досрочного выхода: [ASYNC_SEQUENCE.md](ASYNC_SEQUENCE.md).
 `task_from_async` связывает стандартные [async]-источники с Task: ждёт полного
 завершения, возвращает последний res либо CeUnit для void. Промежуточный res
 не завершает Task; код и исключения после него сохраняются. Только wait-события

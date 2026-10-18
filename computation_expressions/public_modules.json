@@ -28,5 +28,9 @@
   "task_scheduler.das",
   "task_tcp.das",
   "task_hv.das",
-  "task_events.das"
+  "task_events.das",
+  "async_sequence_builder.das",
+  "parser_builder.das",
+  "search_builder.das",
+  "query_builder.das"
 ]

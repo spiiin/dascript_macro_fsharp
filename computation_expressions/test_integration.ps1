@@ -6,7 +6,7 @@ $destination=Join-Path ([IO.Path]::GetFullPath($OutputDirectory)) ('integration-
 $expected=@(Get-Content (Join-Path $PSScriptRoot 'public_modules.json') -Raw|ConvertFrom-Json)
 $actual=@(Get-ChildItem (Join-Path $destination 'lib') -Filter '*.das'|Select-Object -ExpandProperty Name)
 if(@(Compare-Object $expected $actual).Count){throw 'Export has unexpected modules'}
-foreach($file in @('README.md','PUBLIC_API.md','TASKS.md','TASK_COMPOSITION.md','TASK_SCHEDULER.md','TASK_CANCELLATION.md','TASK_DELAY.md','TASK_ARRAY.md','TASK_AND_BIND.md','TASK_COMPLETION.md','TASK_TCP.md','TASK_HV.md','TASK_EVENTS.md','TASK_KEYBOARD.md','TASK_GLFW_KEYBOARD.md','AOT_RUNTIME.md','aot_host/main.cpp','aot_host/CMakeLists.txt','aot_host/recover_064.h','main.das','identity_builder.das','manifest.json')){
+foreach($file in @('README.md','PUBLIC_API.md','TASKS.md','TASK_COMPOSITION.md','TASK_SCHEDULER.md','TASK_CANCELLATION.md','TASK_DELAY.md','TASK_ARRAY.md','TASK_AND_BIND.md','TASK_COMPLETION.md','TASK_TCP.md','TASK_HV.md','TASK_EVENTS.md','TASK_KEYBOARD.md','TASK_GLFW_KEYBOARD.md','AOT_RUNTIME.md','ASYNC_SEQUENCE.md','DOMAIN_BUILDERS.md','aot_host/main.cpp','aot_host/CMakeLists.txt','aot_host/recover_064.h','main.das','identity_builder.das','manifest.json')){
     if(-not(Test-Path -LiteralPath (Join-Path $destination $file))){throw "Incomplete export: $file"}
 }
 & $Daslang (Join-Path $destination 'main.das') -no-module-cache
@@ -21,11 +21,23 @@ require ./lib/task_builder.das
 require ./lib/task_combinators.das
 require ./lib/task_scheduler.das
 require ./lib/task_events.das
+require ./lib/async_sequence_builder.das
+require ./lib/parser_builder.das
+require ./lib/search_builder.das
+require ./lib/query_builder.das
 require daslib/async_boost
 [async]
 def standard_value() : int {await_next_frame();yield 12}
 [export]
 def main() {
+    let parsed=computation(ParserBuilder(text="21")) {let n=parser_int() |> bind;parser_eof() |> bind;return n*2}
+    assert(parsed is parsed && (parsed as parsed).value==42)
+    var inscope queryRows <- computation(QueryBuilder()) {let n=fixed_array(1,2) |> bind;query_where(n>1) |> bind;return n*2}
+    assert(length(queryRows)==1 && queryRows[0]==4)
+    var inscope found <- computation(SearchBuilder()) {let n=search_choose([1,2]) |> bind;search_guard(n>1) |> bind;yield n}
+    var foundSum=0
+    sequence_each(found) $(n:int) {foundSum+=n}
+    assert(foundSum==2)
     let state=computation(StateBuilder(5)) {
         state_modify($(n:int){return n+2}) |> bind
         let value=state_gets($(n:int){return n*2}) |> bind
@@ -100,6 +112,32 @@ def main() {
     verify(task_event_emit(eventBus,42)==1)
     verify(task_poll(eventWait)==TaskStatus.Succeeded && task_value(eventWait) as ok==42)
     verify(task_event_subscriber_count(eventBus)==0)
+    var inscope stream <- computation(AsyncSequenceBuilder()) {
+        let n=task_after_polls(1,42) |> bind
+        yield n
+    }
+    var inscope item <- async_sequence_next(stream)
+    verify(task_poll(item)==TaskStatus.Waiting)
+    verify(task_poll(item)==TaskStatus.Succeeded && task_value(item) as some==42)
+    var inscope end <- async_sequence_next(stream)
+    verify(task_poll(end)==TaskStatus.Succeeded && task_value(end) is none)
+    var inscope ownedStream <- computation(AsyncSequenceBuilder(type<array<int>>)) {yield <- [4,5]}
+    var inscope ownedNext <- async_sequence_next(ownedStream)
+    verify(task_poll(ownedNext)==TaskStatus.Succeeded)
+    var inscope ownedItem <- task_take(ownedNext)
+    async_sequence_close(ownedStream)
+    verify((ownedItem as some)[1]==5)
+    var savedAsync <- deferred(AsyncSequenceBuilder(type<array<int>>),[7,8]) $(snapshot) {yield <- snapshot}
+    var inscope runA <- run_deferred(savedAsync)
+    var inscope runB <- run_deferred(savedAsync)
+    delete savedAsync
+    var inscope nextA <- async_sequence_next(runA)
+    var inscope nextB <- async_sequence_next(runB)
+    verify(task_poll(nextA)==TaskStatus.Succeeded && task_poll(nextB)==TaskStatus.Succeeded)
+    var inscope itemA <- task_take(nextA)
+    var inscope itemB <- task_take(nextB)
+    (itemA as some)[0]=77
+    verify((itemB as some)[0]==7)
     print("Public module integration OK\n")
 }
 '@
