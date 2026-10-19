@@ -1,4 +1,4 @@
-# Type providers, computation expressions и active patterns
+# Type providers, computation expressions, active patterns и ReactiveX
 
 Таблица возможностей builders и общий контракт: [CE_SEMANTICS.md](computation_expressions/CE_SEMANTICS.md).
 Асинхронные последовательности с Task bind: [AsyncSequenceBuilder](computation_expressions/ASYNC_SEQUENCE.md).
@@ -10,6 +10,8 @@ Parser, Search и Query: [DOMAIN_BUILDERS.md](computation_expressions/DOMAIN_BUI
 - [Type providers](type_providers/README.md): генерация типов, схемы, JSON-данные, примеры и проверки.
 - [Computation expressions](computation_expressions/README.md): макрос CE, builders, примеры, проверки и бенчмарки.
 - [Active patterns](active_patterns/README.md): полные, частичные и параметризованные распознаватели на стандартном `daslib/match`.
+- [ReactiveX](reactivex/README.md): Observable/Subject, композиция, scheduler и виртуальное время, временные операторы и отдельные адаптеры CE Task.
+  Практические примеры: [UI dasGlfw и WebSocket с отменой](reactivex/INTEGRATIONS.md).
 
 Из корня запустите `./run.ps1 -Test`, чтобы проверить все части.
 Скрипты переходят в собственный каталог; их можно вызывать из любой рабочей папки.

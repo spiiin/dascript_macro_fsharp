@@ -80,6 +80,30 @@ def ce_task_cleanup_error(message:string) {
     let count=length(task_cleanup_scopes)
     if(count>0 && empty(task_cleanup_scopes[count-1].error)) {task_cleanup_scopes[count-1].error=message}
 }
+// Task/AsyncSequence resource scopes must not throw from native generator
+// finalizers: the SDK then skips freeing the iterator closure. Record cleanup
+// failures in the surrounding poll/cancel scope after releasing every owner.
+def ce_sequence_scoped(var source:iterator<tuple<tag:TaskEventTag;ready:bool;value:auto(ScopedTaskValue)>>;
+    var cleanup:lambda<():void>) : iterator<tuple<tag:TaskEventTag;ready:bool;value:ScopedTaskValue>> {
+    return <- generator<tuple<tag:TaskEventTag;ready:bool;value:ScopedTaskValue>> capture(<-source,<-cleanup) {
+        var event:tuple<tag:TaskEventTag;ready:bool;value:ScopedTaskValue>
+        while(ce_sequence_next_value(source,event)) {
+            static_if(typeinfo can_copy(type<ScopedTaskValue>)) {yield event}
+            else {yield <- event}
+        }
+        return false
+    } finally {ce_sequence_finalize($ {
+        var message=""
+        try {sequence_close(source)} recover {message="{this_context().last_exception}"}
+        try {invoke(cleanup)} recover {if(empty(message)) {message="{this_context().last_exception}"}}
+        try {unsafe {delete cleanup}} recover {if(empty(message)) {message="{this_context().last_exception}"}}
+        static_if(typeinfo can_delete(event)) {
+            try {delete event} recover {if(empty(message)) {message="{this_context().last_exception}"}}
+        }
+        if(!empty(message)) {ce_task_cleanup_error(message)}
+    })}
+}
+
 // Cancellation is a scoped control signal, never a catchable panic/string.
 def ce_task_cancelled() {
     let count=length(task_cleanup_scopes)

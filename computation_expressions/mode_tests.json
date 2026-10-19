@@ -7,6 +7,7 @@
   "tests/test_async_sequence_move.das",
   "tests/test_async_sequence.das",
   "tests/test_async_sequence_lifetime.das",
+  "tests/test_async_sequence_cleanup_failure.das",
   "tests/test_computation.das",
   "tests/test_composition_laws.das",
   "tests/test_recover_portability.das",

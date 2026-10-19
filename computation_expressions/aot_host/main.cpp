@@ -7,7 +7,7 @@ struct HostContext:Context {
     void to_out(const LineInfo *,int,const char *message) override {std::cout << message;}
 };
 int main(int argc, char **argv) {
-    if(argc < 3) {std::cerr << "Usage: ce_task_aot SDK_ROOT SCRIPT...\n";return 2;}
+    if(argc < 3) {std::cerr << "Usage: " << argv[0] << " SDK_ROOT SCRIPT...\n";return 2;}
     setDasRoot(argv[1]);
     NEED_ALL_DEFAULT_MODULES;
     Module::Initialize();

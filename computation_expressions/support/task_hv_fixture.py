@@ -1,5 +1,5 @@
 """Local RFC6455 fixture: real handshakes, fragmented echo, and peer closure."""
-import argparse,base64,hashlib,os,socket,struct,subprocess,tempfile,threading
+import argparse,base64,hashlib,json,os,socket,struct,subprocess,tempfile,threading
 from pathlib import Path
 
 GUID=b'258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
@@ -26,9 +26,13 @@ def read_frame(conn):
     return a&15,bytes(x^mask[i%4] for i,x in enumerate(data))
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--daslang',required=True)
+    ap=argparse.ArgumentParser()
+    execution=ap.add_mutually_exclusive_group(required=True)
+    execution.add_argument('--daslang');execution.add_argument('--aot-host')
+    ap.add_argument('--sdk-root');ap.add_argument('--report')
     ap.add_argument('--script',default=str(Path(__file__).resolve().parents[1]/'tests/test_task_hv.das'))
     ap.add_argument('--jit',action='store_true');args=ap.parse_args()
+    if args.aot_host and (not args.sdk_root or args.jit):ap.error('--aot-host requires --sdk-root and cannot use --jit')
     with tempfile.TemporaryDirectory(prefix='ce-hv-') as folder, socket.socket() as server:
         server.bind(('127.0.0.1',0));server.listen();server.settimeout(.1)
         stop=threading.Event();lock=threading.Lock();workers=[];errors=[]
@@ -84,12 +88,14 @@ def main():
                 worker=threading.Thread(target=client,args=(conn,),daemon=True);workers.append(worker);worker.start()
         thread=threading.Thread(target=accept_loop,daemon=True);thread.start()
         env=os.environ.copy();env['CE_HV_PORT']=str(server.getsockname()[1]);env['CE_HV_MARKERS']=folder.replace('\\','/')
-        command=[args.daslang,args.script,'-no-module-cache']
+        command=([args.aot_host,args.sdk_root,args.script] if args.aot_host else [args.daslang,args.script,'-no-module-cache'])
         if args.jit:command+=['-jit','-jit-no-cache']
         try:
             result=subprocess.run(command,env=env,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=180)
             print(result.stdout,end='')
             if result.returncode:raise RuntimeError(f'daslang exited {result.returncode}')
+            if args.aot_host and ('AOT RUNTIME PASS:' not in result.stdout or 'main->aot=yes, strict linking' not in result.stdout):
+                raise RuntimeError('Missing strict AOT execution marker')
         finally:
             stop.set();thread.join(2)
             for worker in workers:worker.join(9)
@@ -98,5 +104,6 @@ def main():
         assert not errors,errors
         assert counts['accepted']==counts['closed'],counts
         assert not any(w.is_alive() for w in workers),'live server connection'
+        if args.report:Path(args.report).write_text(json.dumps(dict(counts,peer_closure_verified=True,strict_aot=bool(args.aot_host))))
         print(f'WebSocket peer closure verified: {counts}')
 if __name__=='__main__':main()

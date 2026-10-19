@@ -60,6 +60,16 @@ jobs:
             & ./active_patterns/run.ps1 -Test -Jit
           } finally { Stop-Transcript }
 
+      - name: ReactiveX / interpreter and JIT
+        if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          Start-Transcript -Path ci-results/reactivex.log
+          try {
+            & ./reactivex/run.ps1 -Test
+            & ./reactivex/run.ps1 -Test -Jit
+          } finally { Stop-Transcript }
+
       - name: CE / JIT regression subset
         if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
         run: |
@@ -98,6 +108,14 @@ jobs:
         run: |
           & ./computation_expressions/test_task_glfw_keyboard.ps1 -Jit
 
+      - name: ReactiveX / GLFW UI and cancellable WebSocket stream (JIT)
+        if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          Start-Transcript -Path ci-results/reactivex-integrations.log
+          try { & ./reactivex/test_integrations.ps1 -Jit }
+          finally { Stop-Transcript }
+
       - name: Task, AsyncSequence and domain builders / build and execute strict AOT host
         if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
         run: |
@@ -109,6 +127,78 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-daslang-0.6.5-rc2-results
+          path: ci-results/
+          if-no-files-found: warn
+          retention-days: 14
+
+  reactivex-aot:
+    name: ReactiveX / AOT runtime / Daslang 0.6.5-RC2
+    runs-on: windows-2022
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install pinned Daslang SDK
+        run: |
+          $exe = & ./.github/scripts/install-daslang.ps1 -Destination (Join-Path $env:RUNNER_TEMP 'daslang-0.6.5-RC2')
+          "DASLANG_EXE=$exe" >> $env:GITHUB_ENV
+
+      - name: ReactiveX / build and execute all examples and positive tests
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          New-Item -ItemType Directory -Path ci-results -Force | Out-Null
+          Start-Transcript -Path ci-results/reactivex-aot-build.log
+          try {
+            & ./reactivex/run_aot.ps1 -OutputDirectory "$env:GITHUB_WORKSPACE/ci-results/reactivex-aot-runtime" -BuildDirectory "$env:RUNNER_TEMP/reactivex-aot-build"
+          } finally { Stop-Transcript }
+
+      - name: Upload AOT build and runtime reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: reactivex-aot-runtime-results
+          path: ci-results/
+          if-no-files-found: warn
+          retention-days: 14
+
+  reactivex-native-aot:
+    name: ReactiveX / GLFW and HV AOT runtime / Daslang 0.6.5-RC2
+    runs-on: windows-2022
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install pinned Daslang SDK
+        run: |
+          $exe = & ./.github/scripts/install-daslang.ps1 -Destination (Join-Path $env:RUNNER_TEMP 'daslang-0.6.5-RC2')
+          "DASLANG_EXE=$exe" >> $env:GITHUB_ENV
+
+      - name: Build and execute GLFW and HV integrations with strict AOT
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          New-Item -ItemType Directory -Path ci-results -Force | Out-Null
+          Start-Transcript -Path ci-results/reactivex-native-aot-build.log
+          try {
+            & ./reactivex/run_integrations_aot.ps1 -OutputDirectory "$env:GITHUB_WORKSPACE/ci-results/reactivex-native-aot" -BuildDirectory "$env:RUNNER_TEMP/reactivex-native-aot-build"
+          } finally { Stop-Transcript }
+
+      - name: Upload native AOT build and runtime reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: reactivex-native-aot-results
           path: ci-results/
           if-no-files-found: warn
           retention-days: 14

@@ -118,6 +118,7 @@ try {
         Check 'tests/failed_task_yield.das' $false 'yield is not supported'
         Check 'tests/test_async_sequence.das' $true 'Async sequence checks OK'
         Check 'tests/test_async_sequence_lifetime.das' $true 'Async sequence lifetime checks OK'
+        Check 'tests/test_async_sequence_cleanup_failure.das' $true 'Async sequence cleanup failure checks OK'
         Check 'tests/test_task_array.das' $true 'Task array checks OK'
         Check 'tests/test_task_array_lifetime.das' $true 'Task array lifetime checks OK'
         & (Join-Path $PSScriptRoot 'test_task_keyboard.ps1') -Daslang $Daslang
