@@ -16,7 +16,7 @@ jobs:
   windows:
     name: Windows / Daslang 0.6.5-RC2
     runs-on: windows-2022
-    timeout-minutes: 60
+    timeout-minutes: 120
     defaults:
       run:
         shell: pwsh

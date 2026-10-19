@@ -99,3 +99,5 @@ if((SourceStamp) -cne $stamp){throw 'Native AOT sources changed during runtime c
  ConvertTo-Json -Depth 7 | Set-Content (Join-Path $OutputDirectory 'runtime-summary.json') -Encoding UTF8
 if(@($rows | Where-Object {!$_.AotRuntimePassed}).Count -or !$fallbackRejected){throw 'Native AOT checks failed; see runtime-summary.json'}
 Write-Host 'All ReactiveX native AOT integration checks passed.'
+# The expected-failure unlinked check leaves a nonzero LASTEXITCODE; the GitHub pwsh wrapper would exit with it.
+exit 0
