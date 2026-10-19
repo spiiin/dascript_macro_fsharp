@@ -12,6 +12,8 @@
 | integration_example/ | Шаблон приложения и минимальный собственный builder |
 
 Подключение: [INTEGRATION.md](INTEGRATION.md), [PUBLIC_API.md](PUBLIC_API.md).
+Что такое CE, объяснение для C++-программистов: [INTRO_FOR_CPP.md](INTRO_FOR_CPP.md).
+Когда CE, а когда обычный daslang: [WHEN_TO_USE.md](WHEN_TO_USE.md).
 Таблица builders: [CE_SEMANTICS.md](CE_SEMANTICS.md). Синтаксис: [COMPUTATION.md](COMPUTATION.md).
 State: [STATE_OPERATIONS.md](STATE_OPERATIONS.md). Ошибки: [DIAGNOSTICS.md](DIAGNOSTICS.md).
 
