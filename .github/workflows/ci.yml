@@ -93,6 +93,12 @@ jobs:
           & ./computation_expressions/test_task_hv.ps1 -Jit
           & ./computation_expressions/test_task_hv.ps1 -AndBind -Jit
 
+      - name: Task / HTTP requests over jobque and dasHV (interpreter and JIT)
+        if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
+        run: |
+          & ./computation_expressions/test_task_http.ps1
+          & ./computation_expressions/test_task_http.ps1 -Jit
+
       - name: Task / event subscriptions (JIT)
         if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
         run: |
