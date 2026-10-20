@@ -63,6 +63,7 @@ if(RX_NATIVE_INTEGRATIONS)
     "${ce_root}/lib/task_hv.das"
     "${DAS_SDK_ROOT}/modules/dasHV/dashv/dashv_boost.das")
 endif()
+list(APPEND modules "${CMAKE_CURRENT_SOURCE_DIR}/../benchmarks/extended_workloads.das")
 foreach(script IN LISTS modules)
   local_dependencies("${script}" dependencies)
   get_filename_component(stem "${script}" NAME_WE)

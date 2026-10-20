@@ -151,3 +151,55 @@ terminal, pruning непрочитанной timed history и финализат
 Обработчики map/filter теперь удерживают состояния напрямую, без временных iterator
 leases; это сокращает выделения при подписке и повторные обращения к rx_state на событии.
 Сравнение: [MAP_FILTER_OPTIMIZATION.md](MAP_FILTER_OPTIMIZATION.md).
+
+## Простые операторы, длинные цепочки и очереди
+
+`benchmark_extended.das` проверяет 15 сценариев на размерах 32, 256 и 1024:
+scan, distinct, tap, take/skip и while-формы, pairwise, контрольный map,
+цепочку из 11 операторов, переподписки и четыре очереди. На каждый размер
+выполняются четыре пакета и пять повторов с чередованием ручного кода/Rx.
+Контрольная сумма включает результат, побочные эффекты tap и завершения.
+
+Очереди zip/concat_map/observe_on/delay дополнительно измеряются по фазам:
+заполнение и опустошение. Настройка подписки вынесена за их таймеры.
+LiveBytesAfterFill — прирост живого daScript heap к концу заполнения,
+включая snapshot, payload и таймеры; это не пик памяти. Drain включает
+complete и доставку накопленных событий. Scheduler использует виртуальные часы;
+стоимость измеряется обычным таймером, без реального sleep.
+После удаления всех владельцев проверяется возвращение heap к исходному размеру.
+
+```powershell
+./reactivex/run_extended_benchmarks.ps1 -Mode All
+```
+
+Для сравнения до/после сохраните перед изменением отдельный каталог с
+`lib/reactivex.das`, `lib/rx_scheduler.das`, `lib/rx_payload_checks.das` и теми же
+`benchmarks/benchmark_extended.das`, `benchmarks/extended_workloads.das`.
+В текущем локальном запуске такой снимок лежит в `.work/simple-operators/baseline`.
+
+```powershell
+./reactivex/run_extended_benchmarks.ps1 -BaselineDirectory ./reactivex/.work/simple-operators/baseline -BuildOnly
+# Дождаться завершения остальных тестов и сборок, затем:
+./reactivex/run_extended_benchmarks.ps1 -BaselineDirectory ./reactivex/.work/simple-operators/baseline -RunOnly
+```
+
+Runner выполняет два последовательных раунда: before/after и after/before.
+Ручной код и Rx чередуются внутри процесса. Interpreter, JIT и Release AOT
+запускаются отдельно; AOT проверяет strict linking и main->aot=yes.
+BuildOnly/RunOnly позволяют исключить параллельную сборку из замеров времени.
+Дочерний benchmark-процесс по умолчанию закреплён за логическим CPU 0.
+Параметр -Processor выбирает другое ядро; -Processor -1 отключает закрепление.
+Affinity остальных процессов не меняется.
+Проверяются хеши компилятора/исходников и совпадение benchmark до/после.
+Измерение времени не включает компиляцию самого запускаемого скрипта;
+стороннюю нагрузку ОС runner не контролирует.
+
+`samples.csv`, `queue-samples.csv`, `summary.json` и исходные логи сохраняются
+в `.work/extended-benchmarks` (либо OutputDirectory). Все нормированные значения
+вычисляются из накопительных счётчиков daScript heap, а не native allocator.
+Для очередей выводится цена входа/пары, для resubscribe — цена подписки.
+Ручные реализации специализированы и не включают общий протокол Rx.
+
+Тесты `test_simple_operator_ownership.das` и `test_extended_benchmarks.das`
+включены в общий scripts.ps1 для interpreter/JIT и исполнения AOT.
+Результаты оптимизации: [SIMPLE_OPERATORS_OPTIMIZATION.md](SIMPLE_OPERATORS_OPTIMIZATION.md).

@@ -2,7 +2,8 @@
 
 Исторический замер до оптимизации Subject. Актуальное сравнение:
 [SUBJECT_OPTIMIZATION.md](SUBJECT_OPTIMIZATION.md).
-Последнее сокращение расходов map/filter: [MAP_FILTER_OPTIMIZATION.md](MAP_FILTER_OPTIMIZATION.md).
+Новые замеры простых операторов, длинных цепочек и очередей: [SIMPLE_OPERATORS_OPTIMIZATION.md](SIMPLE_OPERATORS_OPTIMIZATION.md).
+Предыдущее сокращение расходов map/filter: [MAP_FILTER_OPTIMIZATION.md](MAP_FILTER_OPTIMIZATION.md).
 
 Локальный запуск 2026-10-19, Windows x64, Intel Family 6 Model 183, SDK 0.6.5-RC2. Размер 4096, четыре пакета, медиана пяти повторов. Время — нс на входной элемент, подписку или цепочку (см. методику).
 

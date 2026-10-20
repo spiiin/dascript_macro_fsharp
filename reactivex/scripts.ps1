@@ -29,6 +29,8 @@ $positive=@(
 if($IncludeTests){$positive+=@(
     'tests/test_reactivex.das',
     'tests/test_subscription_ownership.das',
+    'tests/test_simple_operator_ownership.das',
+    'tests/test_extended_benchmarks.das',
     'tests/test_operators.das',
     'tests/test_stateful_operators.das',
     'tests/test_stateful_lifetime.das',

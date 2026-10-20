@@ -384,75 +384,85 @@ def rx_start_with(var source:tuple<tag:auto;owner:iterator<auto?>;element:iterat
     return <- rx_concat(prefix,source)
 }
 
-def private rx_tap_handler(var keeper:auto;var downstream:auto;input:iterator<auto(TapInput)>) {
-    return <- @ capture(<-keeper,<-downstream) (value:TapInput) {
+def private rx_tap_handler(keeper:auto;downstream:auto;input:iterator<auto(TapInput)>) {
+    var node=rx_state(keeper)
+    var target=rx_state(downstream)
+    unsafe {node.references++;target.references++}
+    var handler <- @ capture(copy(node),copy(target)) (value:TapInput) {
         var failed=false;var message=""
-        unsafe {try {invoke(rx_state(keeper).data.on_next,value)} recover {failed=true;message="{this_context().last_exception}"}}
-        if(failed) {rx_error(downstream,message)} else {rx_next(downstream,value)}
-    } finally {rx_finalize($ {delete downstream;delete keeper})}
+        unsafe {try {invoke(node.data.on_next,value)} recover {failed=true;message="{this_context().last_exception}"}}
+        if(failed) {rx_terminal_state(target,true,message)} else {rx_next_state(target,value)}
+    } finally {rx_finalize($ {rx_release_state(target);rx_release_state(node)})}
+    return <- handler
 }
-def private rx_tap_finish(keeper:auto;downstream:auto;error:bool;message:string="") {
+def private rx_tap_finish(var keeper:auto?;var downstream:auto?;error:bool;message:string="") {
     var failed=false;var failure=""
     unsafe {
         try {
-            if(error) {invoke(rx_state(keeper).data.on_error,message)} else {invoke(rx_state(keeper).data.on_complete)}
+            if(error) {invoke(keeper.data.on_error,message)} else {invoke(keeper.data.on_complete)}
         } recover {failed=true;failure="{this_context().last_exception}"}
     }
-    if(failed) {rx_error(downstream,failure)} else {rx_terminal(downstream,error,message)}
+    if(failed) {rx_terminal_state(downstream,true,failure)} else {rx_terminal_state(downstream,error,message)}
 }
 def rx_connect(source:tuple<tag:RxTapTag;owner:iterator<auto?>;element:iterator<auto>>;observer:auto) {
     var state=rx_state(source)
-    var keeper <- rx_ref(source);var downstream <- rx_ref(observer)
-    var errors <- rx_ref(source);var errorSink <- rx_ref(observer)
-    var completed <- rx_ref(source);var doneSink <- rx_ref(observer)
-    var error <- @ capture(<-errors,<-errorSink) (message:string) {rx_tap_finish(errors,errorSink,true,message)} finally {rx_finalize($ {delete errors;delete errorSink})}
-    var done <- @ capture(<-completed,<-doneSink) () {rx_tap_finish(completed,doneSink,false)} finally {rx_finalize($ {delete completed;delete doneSink})}
+    var errors=state;var errorSink=rx_state(observer)
+    var completed=errors;var doneSink=errorSink
+    unsafe {errors.references+=2;errorSink.references+=2}
+    var error <- @ capture(copy(errors),copy(errorSink)) (message:string) {rx_tap_finish(errors,errorSink,true,message)} finally {rx_finalize($ {rx_release_state(errors);rx_release_state(errorSink)})}
+    var done <- @ capture(copy(completed),copy(doneSink)) () {rx_tap_finish(completed,doneSink,false)} finally {rx_finalize($ {rx_release_state(completed);rx_release_state(doneSink)})}
     unsafe {
-        var handler <- rx_tap_handler(keeper,downstream,source.element)
+        var handler <- rx_tap_handler(source,observer,source.element)
         var inscope inner <- rx_observer(rx_state(observer).control,handler,error,done,false)
         rx_connect_inner(state.data.source,inner)
     }
 }
-def private rx_scan_handler(var keeper:auto;var downstream:auto;input:iterator<auto(ScanIn)>;var accumulator:auto(ScanAcc)) {
-    return <- @ capture(<-keeper,<-downstream,copy(accumulator)) (value:ScanIn) {
+def private rx_scan_handler(keeper:auto;downstream:auto;input:iterator<auto(ScanIn)>;var accumulator:auto(ScanAcc)) {
+    var node=rx_state(keeper)
+    var target=rx_state(downstream)
+    unsafe {node.references++;target.references++}
+    var handler <- @ capture(copy(node),copy(target),copy(accumulator)) (value:ScanIn) {
         var failed=false;var message=""
         unsafe {
             try {
-                var updated=invoke(rx_state(keeper).data.reducer,accumulator,value)
+                var updated=invoke(node.data.reducer,accumulator,value)
                 static_if(typeinfo is_string(type<ScanAcc>)) {accumulator=string(updated)} else {accumulator=updated}
             } recover {failed=true;message="{this_context().last_exception}"}
         }
-        if(failed) {rx_error(downstream,message)} else {rx_next(downstream,accumulator)}
-    } finally {rx_finalize($ {delete downstream;delete keeper})}
+        if(failed) {rx_terminal_state(target,true,message)} else {rx_next_state(target,accumulator)}
+    } finally {rx_finalize($ {rx_release_state(target);rx_release_state(node)})}
+    return <- handler
 }
 def rx_connect(source:tuple<tag:RxScanTag;owner:iterator<auto?>;element:iterator<auto>>;observer:auto) {
     var state=rx_state(source)
-    var keeper <- rx_ref(source);var downstream <- rx_ref(observer)
     unsafe {
         var seed=state.data.seed
-        var handler <- rx_scan_handler(keeper,downstream,state.data.source.element,seed)
+        var handler <- rx_scan_handler(source,observer,state.data.source.element,seed)
         var inscope inner <- rx_forward(observer,handler)
         rx_connect_inner(state.data.source,inner)
     }
 }
-def private rx_distinct_handler(var keeper:auto;var downstream:auto;input:iterator<auto(DistinctInput)>) {
+def private rx_distinct_handler(keeper:auto;downstream:auto;input:iterator<auto(DistinctInput)>) {
     var previous:DistinctInput
     var seen=false
-    return <- @ capture(<-keeper,<-downstream,copy(previous),copy(seen)) (value:DistinctInput) {
+    var node=rx_state(keeper)
+    var target=rx_state(downstream)
+    unsafe {node.references++;target.references++}
+    var handler <- @ capture(copy(node),copy(target),copy(previous),copy(seen)) (value:DistinctInput) {
         var equal=false;var failed=false;var message=""
-        unsafe {if(seen) {try {equal=invoke(rx_state(keeper).data.equal,previous,value)} recover {failed=true;message="{this_context().last_exception}"}}}
-        if(failed) {rx_error(downstream,message)} elif(!equal) {
+        unsafe {if(seen) {try {equal=invoke(node.data.equal,previous,value)} recover {failed=true;message="{this_context().last_exception}"}}}
+        if(failed) {rx_terminal_state(target,true,message)} elif(!equal) {
             static_if(typeinfo is_string(type<DistinctInput>)) {previous=string(value)} else {previous=value}
             seen=true
-            rx_next(downstream,value)
+            rx_next_state(target,value)
         }
-    } finally {rx_finalize($ {delete downstream;delete keeper})}
+    } finally {rx_finalize($ {rx_release_state(target);rx_release_state(node)})}
+    return <- handler
 }
 def rx_connect(source:tuple<tag:RxDistinctTag;owner:iterator<auto?>;element:iterator<auto>>;observer:auto) {
     var state=rx_state(source)
-    var keeper <- rx_ref(source);var downstream <- rx_ref(observer)
     unsafe {
-        var handler <- rx_distinct_handler(keeper,downstream,source.element)
+        var handler <- rx_distinct_handler(source,observer,source.element)
         var inscope inner <- rx_forward(observer,handler)
         rx_connect_inner(state.data.source,inner)
     }
@@ -515,58 +525,65 @@ def rx_connect(source:tuple<tag:RxFilterTag;owner:iterator<auto?>;element:iterat
         rx_connect_inner(state.data.source,inner)
     }
 }
-def private rx_take_handler(var downstream:auto;limit:int;input:iterator<auto(T)>) {
+def private rx_take_handler(downstream:auto;limit:int;input:iterator<auto(T)>) {
     var count=0
-    return <- @ capture(<-downstream,copy(limit),copy(count)) (value:T) {
+    var target=rx_state(downstream)
+    unsafe {target.references++}
+    var handler <- @ capture(copy(target),copy(limit),copy(count)) (value:T) {
         count++
-        rx_next(downstream,value)
-        if(count>=limit) {rx_done(downstream)}
-    } finally {rx_finalize($ {delete downstream})}
+        rx_next_state(target,value)
+        if(count>=limit) {rx_terminal_state(target,false)}
+    } finally {rx_finalize($ {rx_release_state(target)})}
+    return <- handler
 }
 def rx_connect(source:tuple<tag:RxTakeTag;owner:iterator<auto?>;element:iterator<auto>>;observer:auto) {
     var state=rx_state(source)
     unsafe {
         if(state.data.count==0) {rx_done(observer);return}
-        var downstream <- rx_ref(observer)
-        var handler <- rx_take_handler(downstream,state.data.count,source.element)
+        var handler <- rx_take_handler(observer,state.data.count,source.element)
         var inscope inner <- rx_forward(observer,handler)
         rx_connect_inner(state.data.source,inner)
     }
 }
-def private rx_skip_handler(var downstream:auto;remaining:int;input:iterator<auto(T)>) {
+def private rx_skip_handler(downstream:auto;remaining:int;input:iterator<auto(T)>) {
     var left=remaining
-    return <- @ capture(<-downstream,copy(left)) (value:T) {
+    var target=rx_state(downstream)
+    unsafe {target.references++}
+    var handler <- @ capture(copy(target),copy(left)) (value:T) {
         if(left>0) {left--;return}
-        rx_next(downstream,value)
-    } finally {rx_finalize($ {delete downstream})}
+        rx_next_state(target,value)
+    } finally {rx_finalize($ {rx_release_state(target)})}
+    return <- handler
 }
 
 def rx_connect(source:tuple<tag:RxSkipTag;owner:iterator<auto?>;element:iterator<auto>>;observer:auto) {
     unsafe {
-        var downstream <- rx_ref(observer)
-        var handler <- rx_skip_handler(downstream,rx_state(source).data.count,source.element)
+        var handler <- rx_skip_handler(observer,rx_state(source).data.count,source.element)
         var inscope inner <- rx_forward(observer,handler)
         rx_connect_inner(rx_state(source).data.source,inner)
     }
 }
 
-def private rx_while_handler(var keeper:auto;var downstream:auto;input:iterator<auto(T)>;skip:bool) {
+def private rx_while_handler(keeper:auto;downstream:auto;input:iterator<auto(T)>;skip:bool) {
     var skipping=true
-    return <- @ capture(<-keeper,<-downstream,copy(skip),copy(skipping)) (value:T) {
-        if(skip && !skipping) {rx_next(downstream,value);return}
+    var node=rx_state(keeper)
+    var target=rx_state(downstream)
+    unsafe {node.references++;target.references++}
+    var handler <- @ capture(copy(node),copy(target),copy(skip),copy(skipping)) (value:T) {
+        if(skip && !skipping) {rx_next_state(target,value);return}
         var accepted=false;var failed=false;var message=""
-        unsafe {try {accepted=invoke(rx_state(keeper).data.predicate,value)} recover {failed=true;message="{this_context().last_exception}"}}
-        if(failed) {rx_error(downstream,message);return}
+        unsafe {try {accepted=invoke(node.data.predicate,value)} recover {failed=true;message="{this_context().last_exception}"}}
+        if(failed) {rx_terminal_state(target,true,message);return}
         if(skip) {
-            if(!accepted) {skipping=false;rx_next(downstream,value)}
-        } elif(accepted) {rx_next(downstream,value)}
-        else {rx_done(downstream)}
-    } finally {rx_finalize($ {delete downstream;delete keeper})}
+            if(!accepted) {skipping=false;rx_next_state(target,value)}
+        } elif(accepted) {rx_next_state(target,value)}
+        else {rx_terminal_state(target,false)}
+    } finally {rx_finalize($ {rx_release_state(target);rx_release_state(node)})}
+    return <- handler
 }
 
 def private rx_while_connect(source:auto;observer:auto;skip:bool) {
-    var keeper <- rx_ref(source);var downstream <- rx_ref(observer)
-    var handler <- rx_while_handler(keeper,downstream,source.element,skip)
+    var handler <- rx_while_handler(source,observer,source.element,skip)
     var inscope inner <- rx_forward(observer,handler)
     unsafe {rx_connect_inner(rx_state(source).data.source,inner)}
 }
@@ -574,23 +591,25 @@ def private rx_while_connect(source:auto;observer:auto;skip:bool) {
 def rx_connect(source:tuple<tag:RxTakeWhileTag;owner:iterator<auto?>;element:iterator<auto>>;observer:auto) {rx_while_connect(source,observer,false)}
 def rx_connect(source:tuple<tag:RxSkipWhileTag;owner:iterator<auto?>;element:iterator<auto>>;observer:auto) {rx_while_connect(source,observer,true)}
 
-def private rx_pairwise_handler(var downstream:auto;input:iterator<auto(T)>) {
+def private rx_pairwise_handler(downstream:auto;input:iterator<auto(T)>) {
     var previous:T -const -&
     var seen=false
-    return <- @ capture(<-downstream,copy(previous),copy(seen)) (value:T) {
+    var target=rx_state(downstream)
+    unsafe {target.references++}
+    var handler <- @ capture(copy(target),copy(previous),copy(seen)) (value:T) {
         var current:T -const -&
         static_if(typeinfo is_string(type<T>)) {current=clone_string(value)} else {current=value}
         var pair=(previous=previous,current=current)
         let emit=seen
         // Commit history before downstream code can reenter the producer.
         previous=current;seen=true
-        if(emit) {rx_next(downstream,pair)}
-    } finally {rx_finalize($ {delete downstream})}
+        if(emit) {rx_next_state(target,pair)}
+    } finally {rx_finalize($ {rx_release_state(target)})}
+    return <- handler
 }
 
 def rx_connect(source:tuple<tag:RxPairwiseTag;owner:iterator<auto?>;element:iterator<auto>>;observer:auto) {
-    var downstream <- rx_ref(observer)
-    var handler <- rx_pairwise_handler(downstream,rx_state(source).data.source.element)
+    var handler <- rx_pairwise_handler(observer,rx_state(source).data.source.element)
     var inscope inner <- rx_forward(observer,handler)
     unsafe {rx_connect_inner(rx_state(source).data.source,inner)}
 }

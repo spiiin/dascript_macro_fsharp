@@ -22,6 +22,7 @@ $manifest=Join-Path $OutputDirectory 'scripts.txt'
 function Get-AotSourceStamp {
     $sources=@(Get-ChildItem (Join-Path $PSScriptRoot 'lib') -Filter '*.das' -File)
     $sources+=@(Get-ChildItem (Join-Path $PSScriptRoot '../computation_expressions/lib') -Filter '*.das' -File)
+    $sources+=@(Get-Item (Join-Path $PSScriptRoot 'benchmarks/extended_workloads.das'))
     $sources+=@($files | ForEach-Object {Get-Item -LiteralPath $_})
     return (($sources | Sort-Object FullName -Unique | ForEach-Object {
         "$($_.FullName):$((Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash)"
