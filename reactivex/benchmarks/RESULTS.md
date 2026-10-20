@@ -2,6 +2,7 @@
 
 Исторический замер до оптимизации Subject. Актуальное сравнение:
 [SUBJECT_OPTIMIZATION.md](SUBJECT_OPTIMIZATION.md).
+Новые замеры внутренних подписок concat_map: [CONCAT_INNER_OPTIMIZATION.md](CONCAT_INNER_OPTIMIZATION.md).
 Новое сравнение отложенных событий observe_on/delay: [TIME_OPERATORS_OPTIMIZATION.md](TIME_OPERATORS_OPTIMIZATION.md).
 Новые замеры простых операторов, длинных цепочек и очередей: [SIMPLE_OPERATORS_OPTIMIZATION.md](SIMPLE_OPERATORS_OPTIMIZATION.md).
 Предыдущее сокращение расходов map/filter: [MAP_FILTER_OPTIMIZATION.md](MAP_FILTER_OPTIMIZATION.md).

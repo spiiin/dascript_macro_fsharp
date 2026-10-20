@@ -188,6 +188,10 @@ def private rx_state(handle:tuple<tag:auto;owner:iterator<auto(S)?>;element:auto
         return state
     }
 }
+// Borrowed callback view: its creator must pin storage for the whole frame.
+// This tuple owns no reference and must not escape the retaining callback.
+def private rx_state(handle:tuple<callback_state:auto(S)?>) : S? {unsafe {return reinterpret<S?>(handle.callback_state)}}
+
 def private rx_ref(handle:tuple<tag:auto(Tag);owner:iterator<auto(S)?>>) {
     var state=rx_state(handle)
     unsafe {state.references++}
@@ -1742,7 +1746,7 @@ def private rx_flat_child(id:uint64;marker:type<auto(U)>) {
 }
 
 // Detach the owning list before invoking teardown. Callbacks retain their own
-// child leases, so erasing/reallocating the list cannot invalidate active frames.
+// child references, so erasing/reallocating the list cannot invalidate active frames.
 def private rx_flat_stop_children(run:auto) : void {
     unsafe {
         let state=rx_state(run)
@@ -1871,35 +1875,38 @@ def private rx_flat_accept(run:auto;value:auto(QueuedInput)) : void {
 }
 def private rx_flat_start_child(run,child:auto;source:tuple<tag:auto;owner:iterator<auto?>;element:iterator<auto(U)>>) : void {
     unsafe {
-        let state=rx_state(run)
-        let inner=rx_state(child)
-        var values <- rx_ref(run);var valueChild <- rx_ref(child)
-        var errors <- rx_ref(run);var errorChild <- rx_ref(child)
-        var completed <- rx_ref(run);var doneChild <- rx_ref(child)
-        var on_next <- @ capture(<-values,<-valueChild) (value:U) {
+        var state=rx_state(run)
+        var inner=rx_state(child)
+        // Three independent callback owners for both run and child storage.
+        // Keep the child pinned even if completion/cancellation erases its slot.
+        var values=state;var valueChild=inner
+        var errors=state;var errorChild=inner
+        var completed=state;var doneChild=inner
+        state.references+=3;inner.references+=3
+        var on_next <- @ capture(copy(values),copy(valueChild)) (value:U) {
             unsafe {
-                let target=rx_state(values)
-                if(!rx_state(valueChild).data.active || target.data.stopped || rx_stopped(target.data.observer)) {return}
+                let target=values
+                if(!valueChild.data.active || target.data.stopped || rx_stopped(target.data.observer)) {return}
                 target.data.queue |> push((kind=0,value=value,error=""))
             }
-            rx_serial_drain(values)
-        } finally {rx_finalize($ {delete valueChild;delete values})}
-        var on_error <- @ capture(<-errors,<-errorChild) (message:string) {
-            unsafe {if(rx_state(errorChild).data.active) {rx_flat_error(errors,message)}}
-        } finally {rx_finalize($ {delete errorChild;delete errors})}
-        var on_complete <- @ capture(<-completed,<-doneChild) () {
+            rx_serial_drain((callback_state=values))
+        } finally {rx_finalize($ {rx_release_state(valueChild);rx_release_state(values)})}
+        var on_error <- @ capture(copy(errors),copy(errorChild)) (message:string) {
+            unsafe {if(errorChild.data.active) {rx_flat_error((callback_state=errors),message)}}
+        } finally {rx_finalize($ {rx_release_state(errorChild);rx_release_state(errors)})}
+        var on_complete <- @ capture(copy(completed),copy(doneChild)) () {
             unsafe {
-                let target=rx_state(doneChild)
+                let target=doneChild
                 target.data.done=true
-                if(!target.data.connecting) {rx_flat_child_finished(completed,doneChild)}
+                if(!target.data.connecting) {rx_flat_child_finished((callback_state=completed),(callback_state=doneChild))}
             }
-        } finally {rx_finalize($ {delete doneChild;delete completed})}
+        } finally {rx_finalize($ {rx_release_state(doneChild);rx_release_state(completed)})}
         rx_subscribe_with(inner.data.control,source,on_next,on_error,on_complete)
         inner.data.connecting=false
         if(inner.data.done) {rx_flat_child_finished(run,child)}
     }
 }
-def private rx_flat_project(run:tuple<tag:RxFlatRunTag;owner:iterator<auto?>;element:iterator<auto(U)>>;value:auto) : void {
+def private rx_flat_project(run:auto;value:auto) : void {
     unsafe {
         let state=rx_state(run)
         if(state.data.stopped || rx_stopped(state.data.observer)) {return}
@@ -1923,7 +1930,8 @@ def private rx_flat_project(run:tuple<tag:RxFlatRunTag;owner:iterator<auto?>;ele
         if(failed) {delete mapped;rx_flat_error(run,message);return}
         if(state.data.stopped || rx_stopped(state.data.observer) || (state.data.switching && state.data.serial!=id)) {delete mapped;return}
         if(empty(mapped.owner)) {delete mapped;rx_flat_error(run,"rx: selector returned a moved or deleted Observable");return}
-        var child <- rx_flat_child(id,type<U>)
+        // Infer the element from storage, including callback-local borrowed views.
+        var child <- rx_flat_child(id,type<typedecl(state.data.queue[0].value) -const -&>)
         state.data.children |> emplace(rx_ref(child))
         try {rx_flat_start_child(run,child,mapped)} recover {failed=true;message="{this_context().last_exception}"}
         delete mapped
@@ -2027,10 +2035,6 @@ def rx_subscribe_on(var source:tuple<tag:auto;owner:iterator<auto?>;element:iter
 
 def rx_debounce(var source:tuple<tag:auto;owner:iterator<auto?>;element:iterator<auto>>;duration_ms:int|int64;scheduler:RxScheduler) {return <- rx_time_node(source,int64(duration_ms),scheduler,3)}
 def rx_timeout(var source:tuple<tag:auto;owner:iterator<auto?>;element:iterator<auto>>;duration_ms:int|int64;scheduler:RxScheduler) {return <- rx_time_node(source,int64(duration_ms),scheduler,4)}
-
-// Borrowed view used only while a scheduled callback holds an intrusive ref.
-// It allocates no iterator; never store this view beyond the callback frame.
-def private rx_state(handle:tuple<time_state:auto(S)?>) : S? {unsafe {return reinterpret<S?>(handle.time_state)}}
 
 def private rx_time_clear(run:auto) : void {
     unsafe {
@@ -2148,13 +2152,13 @@ def private rx_time_schedule(run:auto;duration:int64;kind:int;value:auto;error_m
         var saved_error=clone_string(error_message)
         static_if(typeinfo is_string(type<typedecl(value) -const -&>)) {saved=clone_string(value)}
         else {saved=value}
-        var action <- @ capture(copy(owner),copy(serial),copy(kind),<-saved,<-saved_error) () {rx_time_fire((time_state=owner),serial,kind,saved,saved_error)} finally {rx_finalize($ {
+        var action <- @ capture(copy(owner),copy(serial),copy(kind),<-saved,<-saved_error) () {rx_time_fire((callback_state=owner),serial,kind,saved,saved_error)} finally {rx_finalize($ {
             var failed=false;var message=""
             try {rx_queue_dispose(saved)} recover {failed=true;message="{this_context().last_exception}"}
             rx_release_state(owner)
             if(failed) {panic(message)}
         })}
-        var on_close <- @ capture(copy(closing)) () {rx_time_error((time_state=closing),"rx scheduler closed")} finally {rx_finalize($ {rx_release_state(closing)})}
+        var on_close <- @ capture(copy(closing)) () {rx_time_error((callback_state=closing),"rx scheduler closed")} finally {rx_finalize($ {rx_release_state(closing)})}
         var handle:RxScheduledId
         var failed=false
         var message=""

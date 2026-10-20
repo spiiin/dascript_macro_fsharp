@@ -54,6 +54,7 @@ if($IncludeTests){$positive+=@(
     'tests/test_flat_switch_lifetime.das',
     'tests/test_concat_flat_limit.das',
     'tests/test_concat_flat_lifetime.das',
+    'tests/test_concat_inner_ownership.das',
     'tests/test_scheduler.das',
     'tests/test_scheduling.das',
     'tests/test_scheduling_lifetime.das',

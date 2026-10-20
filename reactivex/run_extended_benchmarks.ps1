@@ -105,7 +105,7 @@ foreach($current in $modes){
             if($text -notcontains 'ReactiveX extended benchmarks OK'){throw "Missing marker: $log"}
             if($current -eq 'Aot' -and !($text -join "`n").Contains('main->aot=yes, strict linking')){throw 'AOT main/strict linking not checked'}
             $rows=@($text | Where-Object {$_.StartsWith('RXEXT,')} | ConvertFrom-Csv -Header marker,case,implementation,size,sample,elapsed_ns,checksum,allocations,allocated_bytes,string_allocations,string_bytes,retained_bytes)
-            if($rows.Count -ne 450){throw "Unexpected sample count: $log"}
+            if($rows.Count -ne 510){throw "Unexpected sample count: $log"}
             foreach($row in $rows){
                 foreach($field in @('size','sample','elapsed_ns','checksum','allocations','allocated_bytes','string_allocations','string_bytes','retained_bytes')){$row.$field=Number $row.$field}
                 if($row.retained_bytes -ne 0 -or $row.elapsed_ns -le 0){throw "Invalid sample: $log"}
@@ -129,7 +129,7 @@ foreach($current in $modes){
                     $queueRows.Add($queue)
                 }
             }
-            Write-Host "$current round $round $($variant.Name): 450 samples OK"
+            Write-Host "$current round $round $($variant.Name): 510 samples OK"
         }
     }
 }

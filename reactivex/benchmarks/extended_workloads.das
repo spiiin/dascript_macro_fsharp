@@ -55,7 +55,11 @@ def extended_workload(name:string;manual:bool;count,batches:int) : int64 {
                     let pairs=name=="zip_queue"
                     for(item,n in queue,range(count)) {extended_total+=int64(pairs ? item+n : item)}
                 } else {
-                    if(name=="scan") {
+                    if(name=="concat_sync") {
+                        for(n in range(count)) {extended_total+=int64(n)}
+                    } elif(name=="concat_reuse") {
+                        for(n in range(count)) {extended_total+=1l}
+                    } elif(name=="scan") {
                         var acc=0
                         for(n in range(count)) {acc+=n;extended_total+=int64(acc)}
                     } elif(name=="distinct") {
@@ -102,6 +106,17 @@ def extended_workload(name:string;manual:bool;count,batches:int) : int64 {
                 } elif(name=="long_chain") {
                     var inscope source <- rx_range(0,count) |> extended_chain()
                     var inscope sub <- extended_watch(source)
+                } elif(name=="concat_sync") {
+                    var inscope source <- rx_range(0,count) |> rx_concat_map(@(n:int) {return <- rx_just(n)})
+                    var inscope sub <- extended_watch(source)
+                    verify(rx_is_closed(sub))
+                } elif(name=="concat_reuse") {
+                    var prepared <- rx_just(1)
+                    var inscope source <- rx_range(0,count) |> rx_concat_map(@ capture(<-prepared) (n:int) {
+                        return <- rx_clone(prepared)
+                    } finally {delete prepared})
+                    var inscope sub <- extended_watch(source)
+                    verify(rx_is_closed(sub))
                 } elif(name=="zip_queue") {
                     var inscope left <- rx_subject(type<int>)
                     var inscope right <- rx_subject(type<int>)

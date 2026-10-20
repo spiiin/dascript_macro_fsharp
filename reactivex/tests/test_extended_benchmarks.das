@@ -3,7 +3,7 @@ options max_infer_passes=2048
 require ../benchmarks/extended_workloads.das
 
 def check_workloads(size:int) {
-    for(name in fixed_array("map_control","scan","distinct","tap","take","skip","take_while","skip_while","pairwise","long_chain","resubscribe","zip_queue","concat_queue","observe_queue","delay_queue")) {
+    for(name in fixed_array("map_control","scan","distinct","tap","take","skip","take_while","skip_while","pairwise","long_chain","resubscribe","zip_queue","concat_queue","concat_sync","concat_reuse","observe_queue","delay_queue")) {
         verify(extended_workload(name,true,size,2)==extended_workload(name,false,size,2))
     }
 }

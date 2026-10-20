@@ -154,9 +154,10 @@ leases; это сокращает выделения при подписке и 
 
 ## Простые операторы, длинные цепочки и очереди
 
-`benchmark_extended.das` проверяет 15 сценариев на размерах 32, 256 и 1024:
+`benchmark_extended.das` проверяет 17 сценариев на размерах 32, 256 и 1024:
 scan, distinct, tap, take/skip и while-формы, pairwise, контрольный map,
-цепочку из 11 операторов, переподписки и четыре очереди. На каждый размер
+цепочку из 11 операторов, переподписки, четыре очереди и два сценария
+concat_map: синхронные rx_just и повторная подписка на готовый inner. На каждый размер
 выполняются четыре пакета и пять повторов с чередованием ручного кода/Rx.
 Контрольная сумма включает результат, побочные эффекты tap и завершения.
 
@@ -175,12 +176,12 @@ complete и доставку накопленных событий. Scheduler и
 Для сравнения до/после сохраните перед изменением отдельный каталог с
 `lib/reactivex.das`, `lib/rx_scheduler.das`, `lib/rx_payload_checks.das` и теми же
 `benchmarks/benchmark_extended.das`, `benchmarks/extended_workloads.das`.
-В текущем локальном запуске такой снимок лежит в `.work/simple-operators/baseline`.
+В текущем локальном запуске такой снимок лежит в `.work/concat-subscriptions/baseline`.
 
 ```powershell
-./reactivex/run_extended_benchmarks.ps1 -BaselineDirectory ./reactivex/.work/simple-operators/baseline -BuildOnly
+./reactivex/run_extended_benchmarks.ps1 -BaselineDirectory ./reactivex/.work/concat-subscriptions/baseline -BuildOnly
 # Дождаться завершения остальных тестов и сборок, затем:
-./reactivex/run_extended_benchmarks.ps1 -BaselineDirectory ./reactivex/.work/simple-operators/baseline -RunOnly
+./reactivex/run_extended_benchmarks.ps1 -BaselineDirectory ./reactivex/.work/concat-subscriptions/baseline -RunOnly
 ```
 
 Runner выполняет два последовательных раунда: before/after и after/before.
@@ -207,3 +208,6 @@ Affinity остальных процессов не меняется.
 Сокращение выделений на отложенное событие observe_on/delay, сохранение
 порядка scheduler и регрессионные проверки владения:
 [TIME_OPERATORS_OPTIMIZATION.md](TIME_OPERATORS_OPTIMIZATION.md).
+
+Создание внутренних подписок concat_map и общих flatten-операторов:
+[CONCAT_INNER_OPTIMIZATION.md](CONCAT_INNER_OPTIMIZATION.md).

@@ -4,7 +4,7 @@ require ./extended_workloads.das
 
 [export]
 def main() {
-    for(name in fixed_array("map_control","scan","distinct","tap","take","skip","take_while","skip_while","pairwise","long_chain","resubscribe","zip_queue","concat_queue","observe_queue","delay_queue")) {
+    for(name in fixed_array("map_control","scan","distinct","tap","take","skip","take_while","skip_while","pairwise","long_chain","resubscribe","zip_queue","concat_queue","concat_sync","concat_reuse","observe_queue","delay_queue")) {
         verify(extended_workload(name,true,8,2)==extended_workload(name,false,8,2))
         for(size in fixed_array(32,256,1024)) {
             for(repetition in range(5)) {
