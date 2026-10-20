@@ -4,7 +4,7 @@ require daslib/rtti
 var journal=""
 def document(text:string) : JsonResource {
  let parsed=open_document(text)
- if(parsed is error) {panic(parsed as error)}
+ if(parsed is err) {panic(parsed as err)}
  return parsed as ok
 }
 def enemy_health(fail:bool) {

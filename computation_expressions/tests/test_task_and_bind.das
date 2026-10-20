@@ -64,11 +64,11 @@ def main() {
     }
     verify(task_poll(failed)==TaskStatus.Succeeded && continued==1)
     let error=task_value(failed)
-    verify(error is error && error as error=="denied")
+    verify(error is err && error as err=="denied")
     verify(trace=="a:create;b:create;a:start;a:done;")
     var inscope data <- computation(TaskBuilder(type<int>)) {
         let p=task_after_polls(0,result_error("data",type<int>)) |> and_bind(task_after_polls(0,2)) |> bind
-        return p.first is error ? p.second : 0
+        return p.first is err ? p.second : 0
     }
     verify(task_poll(data)==TaskStatus.Succeeded && task_value(data)==2)
     var inscope custom <- computation(ReverseTasks()) {

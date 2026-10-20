@@ -1,5 +1,8 @@
 options gen2
 module builder_protocol public
+require daslib/result public
+require daslib/ast_boost
+require daslib/templates_boost
 require ./computation_resources.das public
 require daslib/rtti
 
@@ -9,6 +12,15 @@ struct CeCollectProtocol {_ce_marker:uint8}
 struct CeSequenceProtocol {_ce_marker:uint8}
 struct CeResumableProtocol {_ce_marker:uint8}
 struct CeUnit {_ce_marker:uint8}
+
+// Standard Option representation, with a separate field move for the SDK AOT
+// tuple-in-variant initializer bug. Arrays and tuple/struct payloads stay owned.
+def ce_move_some(var value:auto(T)) : $Option<T -const -&> {
+    var vacant=default<T -const -&>
+    var result <- option::move_some(vacant)
+    result as some <- value
+    return <- result
+}
 struct CeResumableNoZero {_ce_marker:uint8}
 def ce_await_zero(builder:auto) {return CeResumableNoZero()}
 
@@ -31,9 +43,25 @@ def ce_resumable_protocol(unused:type<auto(T)>) {
 // Default for copyable eager outcomes. Move-only builders override this.
 def ce_delay(builder : auto; body : block<() : auto(R)>) : R { return invoke(body) }
 
-// A shared, explicitly typed pair avoids carrying const/ref qualifiers in fields.
-def ce_source_pair(first : auto(A); second : auto(B)) : tuple<first:A -const -&;second:B -const -&> {
-    return (first=first, second=second)
+// Do not export generic deduction aliases into nested standard templates.
+def private ce_canonical_type(t:TypeDeclPtr) : TypeDeclPtr {
+    var result=clone_type(t)
+    result.alias:=""
+    if(result.firstType!=null) {result.firstType=ce_canonical_type(result.firstType)}
+    if(result.secondType!=null) {result.secondType=ce_canonical_type(result.secondType)}
+    for(field in result.argTypes) {field=ce_canonical_type(field)}
+    return result
+}
+[typeinfo_macro(name="ce_canonical")]
+class CeCanonical : AstTypeInfoMacro {
+    def override getAstChange(expr:ExprTypeInfo?;var errors:das_string) : ExpressionPtr {
+        if(expr.subexpr==null || expr.subexpr._type==null || expr.subexpr._type.isAutoOrAlias) {return null}
+        let clean=ce_canonical_type(expr.subexpr._type)
+        return qmacro_expr() {reinterpret<$t(clean)>($e(expr.subexpr))}
+    }
+}
+def ce_source_pair(first:auto;second:auto) {
+    unsafe {return typeinfo ce_canonical((first=first,second=second))}
 }
 
 // Release an owned source/result before rethrowing a native exception.

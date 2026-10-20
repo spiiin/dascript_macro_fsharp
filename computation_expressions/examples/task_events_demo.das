@@ -20,7 +20,7 @@ def confirmation_dialog() {
 def main() {
     actions <- task_event_source(type<string>)
     var inscope token <- cancellation_token()
-    var inscope scheduler <- task_scheduler(type<variant<ok:string;error:string>>)
+    var inscope scheduler <- task_scheduler(type<$Result<string;string>>)
     let dialog=task_spawn(scheduler,task_with_cancellation(confirmation_dialog(),token),TaskTimeout(after_ms=5000))
     verify(task_tick(scheduler,0)==1)
     verify(task_event_subscriber_count(actions)==1)

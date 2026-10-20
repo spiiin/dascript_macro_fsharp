@@ -2,7 +2,7 @@ options gen2
 require ../lib/computation.das
 require ../lib/deferred_computation.das
 var external=42
-def ce_run(builder:ResultBuilder; value:variant<ok:int;error:string>) {
+def ce_run(builder:ResultBuilder; value:$Result<int;string>) {
     return <- generator<int&> {yield external;return false}
 }
 [export]

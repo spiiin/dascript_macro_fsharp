@@ -71,7 +71,7 @@ def checks() {
     }
     verify(opened==closed && continued==before)
     {
-        var inscope scheduler <- task_scheduler(type<variant<ok:int;error:string>>)
+        var inscope scheduler <- task_scheduler(type<$Result<int;string>>)
         let id=task_spawn(scheduler,checked_job(),TaskTimeout(after_ms=1))
         verify(task_tick(scheduler,0)==1)
         verify(task_tick(scheduler,1)==0 && task_status(scheduler,id)==TaskStatus.Cancelled)

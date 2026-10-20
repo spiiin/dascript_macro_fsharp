@@ -23,7 +23,7 @@ def updates() {
 [export]
 def main() {
     var inscope stream <- updates()
-    var inscope scheduler <- task_scheduler(type<variant<some:string;none:bool>>)
+    var inscope scheduler <- task_scheduler(type<$Option<string>>)
     var now:int64=0
     var count=0
     while(true) {

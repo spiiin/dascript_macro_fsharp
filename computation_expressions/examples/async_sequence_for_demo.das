@@ -25,7 +25,7 @@ def totals() {
 }
 
 def sum_stream(var stream:auto) {
-    var inscope scheduler <- task_scheduler(type<variant<some:int;none:bool>>)
+    var inscope scheduler <- task_scheduler(type<$Option<int>>)
     var now:int64=0
     var result=0
     while(true) {

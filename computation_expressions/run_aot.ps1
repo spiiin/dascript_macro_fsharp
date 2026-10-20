@@ -2,7 +2,8 @@ param(
     [string]$Daslang=$env:DASLANG_EXE,
     [string]$OutputDirectory=(Join-Path $PSScriptRoot '.work/aot-runtime'),
     [string]$BuildDirectory=(Join-Path $PSScriptRoot '.work/aot-build'),
-    [int]$Parallel=2
+    [int]$Parallel=2,
+    [string[]]$Scripts=@()
 )
 $ErrorActionPreference='Stop'
 if(-not $Daslang){$Daslang='C:/src/daslang-0.6.5-RC2/sdk/daslang_bundle/bin/daslang.exe'}
@@ -13,7 +14,7 @@ if(-not(Test-Path -LiteralPath (Join-Path $dasPackage 'DASConfig.cmake'))){throw
 $OutputDirectory=[IO.Path]::GetFullPath($OutputDirectory)
 $BuildDirectory=[IO.Path]::GetFullPath($BuildDirectory)
 New-Item -ItemType Directory -Force $OutputDirectory | Out-Null
-$tests=@(Get-Content (Join-Path $PSScriptRoot 'mode_tests.json') -Raw | ConvertFrom-Json | Where-Object {$_ -match '^tests/test_(task|async_sequence|parser|search|query|domain_deferred)' -or $_ -eq 'examples/query_full_demo.das'})
+$tests=if($Scripts.Count){$Scripts}else{@(Get-Content (Join-Path $PSScriptRoot 'mode_tests.json') -Raw | ConvertFrom-Json | Where-Object {$_ -match '^tests/test_(task|async_sequence|parser|search|query|domain_deferred)' -or $_ -eq 'tests/test_standard_outcomes.das' -or $_ -eq 'tests/test_move_ce.das' -or $_ -eq 'examples/query_full_demo.das'})}
 $files=@($tests | ForEach-Object {(Resolve-Path -LiteralPath (Join-Path $PSScriptRoot $_)).Path.Replace('\','/')})
 $manifest=Join-Path $OutputDirectory 'scripts.txt'
 [IO.File]::WriteAllLines($manifest,$files)

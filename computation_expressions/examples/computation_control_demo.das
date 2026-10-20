@@ -26,9 +26,9 @@ def main() {
         after_result++
         return accepted
     }
-    assert(result is error && (result as error) == "rejected 3")
+    assert(result is err && (result as err) == "rejected 3")
     assert(accepted == 3 && after_result == 0)
-    print("Result: {result as error}; completed={accepted}; after={after_result}\n")
+    print("Result: {result as err}; completed={accepted}; after={after_result}\n")
 
     var i = 0
     var after_option = 0

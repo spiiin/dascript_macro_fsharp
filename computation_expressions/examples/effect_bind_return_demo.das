@@ -15,7 +15,7 @@ def main() {
         let reward=result_error("Quest is incomplete",type<int>) |> bind
         return reward*2
     }
-    assert(rejected.result is error && rejected.state.gold==10 && rejected.state.experience==0)
+    assert(rejected.result is err && rejected.state.gold==10 && rejected.state.experience==0)
     let journal=computation(WriterResultBuilder()) {
         tell("Quest opened; ") |> bind
         let reward=writer_result_ok(25,"reward checked; ") |> bind

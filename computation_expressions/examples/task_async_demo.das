@@ -9,7 +9,7 @@ def standard_name() : string {
     yield "Alice"
 }
 [async]
-def standard_health(allowed:bool) : variant<ok:int;error:string> {
+def standard_health(allowed:bool) : $Result<int;string> {
     await_next_frame()
     yield allowed ? result_ok(85) : result_error("access denied",type<int>)
 }
@@ -30,6 +30,6 @@ def main() {
     verify(task_poll(rejected)==TaskStatus.Waiting)
     verify(task_poll(rejected)==TaskStatus.Succeeded)
     let result=task_value(rejected)
-    verify(result is error)
-    print("{result as error}\nTask async demo OK\n")
+    verify(result is err)
+    print("{result as err}\nTask async demo OK\n")
 }

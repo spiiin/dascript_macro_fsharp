@@ -65,25 +65,25 @@ def main() {
         let n=result_error("stop",type<int>) |> bind
         return mapped(n)
     }
-    assert(rollback.result is error && rollback.state==10 && maps==20)
+    assert(rollback.result is err && rollback.state==10 && maps==20)
     let foreignError=computation(StateResultBuilder(10)) {
         state_put(99) |> bind
         let n=state_result_error("foreign",type<int>,777) |> bind
         return mapped(n)
     }
-    assert(foreignError.result is error && foreignError.state==10 && maps==20)
+    assert(foreignError.result is err && foreignError.state==10 && maps==20)
     let loggedError=computation(WriterResultBuilder()) {
         tell("before;") |> bind
         let n=writer_result_error("stop",type<int>,"failure;") |> bind
         return mapped(n)
     }
-    assert(loggedError.result is error && loggedError.log=="before;failure;" && maps==20)
+    assert(loggedError.result is err && loggedError.log=="before;failure;" && maps==20)
     let bareError=computation(WriterResultBuilder()) {
         tell("before;") |> bind
         let n=result_error("stop",type<int>) |> bind
         return mapped(n)
     }
-    assert(bareError.result is error && bareError.log=="before;" && maps==20)
+    assert(bareError.result is err && bareError.log=="before;" && maps==20)
     var state=StateBuilder(10)
     let snapshot=ce_bind_return(state,state_get(),$(n:int) { state.state=20; return n+1 })
     assert(snapshot.value==11 && snapshot.state==20 && state.state==20)
@@ -96,7 +96,7 @@ def main() {
     } recover { caught=true }
     assert(caught && transaction.state==50)
     let reset=ce_bind_return(transaction,result_error("reset",type<int>),$(n:int) { return mapped(n) })
-    assert(reset.result is error && transaction.state==10 && reset.state==10 && maps==20)
+    assert(reset.result is err && transaction.state==10 && reset.state==10 && maps==20)
     caught=false
     try {
         let unused=computation(StateResultBuilder(10)) {

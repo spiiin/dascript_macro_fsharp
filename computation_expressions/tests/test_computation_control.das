@@ -28,12 +28,12 @@ def condition(var trace : Trace; i, count : int) : bool {
     trace.condition++
     return i < count
 }
-def check(builder : ResultBuilder; value : variant<ok : int; error : string>; failed : bool; expected : int) {
+def check(builder : ResultBuilder; value : $Result<int;string>; failed : bool; expected : int) {
     if (failed) {
-        assert(value is error && (value as error) == "failed {expected}")
+        assert(value is err && (value as err) == "failed {expected}")
     } else { assert(value is ok && (value as ok) == expected) }
 }
-def check(builder : OptionBuilder; value : variant<some : int; none : bool>; failed : bool; expected : int) {
+def check(builder : OptionBuilder; value : $Option<int>; failed : bool; expected : int) {
     if (failed) { assert(value is none) }
     else { assert(value is some && (value as some) == expected) }
 }

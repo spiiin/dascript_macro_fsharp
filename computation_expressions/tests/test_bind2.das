@@ -21,21 +21,21 @@ def main() {
             let n=later()
             return p.first+p.second+n
         }
-        assert(order=="12" && calls==0 && r1 is error)
+        assert(order=="12" && calls==0 && r1 is err)
         order=""; calls=0
         let r2=computation(ResultBuilder()) {
             let p=observed(1,result_ok(2)) |> and_bind(observed(2,result_error("failure",type<int>))) |> bind
             let n=later()
             return p.first+p.second+n
         }
-        assert(order=="12" && calls==0 && r2 is error)
+        assert(order=="12" && calls==0 && r2 is err)
         order=""; calls=0
         let r3=computation(ResultBuilder()) {
             let p=observed(1,result_error("failure",type<int>)) |> and_bind(observed(2,result_error("failure",type<int>))) |> bind
             let n=later()
             return p.first+p.second+n
         }
-        assert(order=="12" && calls==0 && r3 is error)
+        assert(order=="12" && calls==0 && r3 is err)
         let fast=computation(ResultBuilder()) {
             let p=result_ok((name="Mage",level=2)) |> and_bind(result_ok(3)) |> bind
             let n=p.second
@@ -141,7 +141,7 @@ def main() {
         let unused=later()
         return p.first+p.second+n
     }
-    assert(nested is error && nested as error=="later failure" && calls==0)
+    assert(nested is err && nested as err=="later failure" && calls==0)
     order=""
     var caught=false
     try {
@@ -154,4 +154,4 @@ def main() {
     assert(caught && order=="1" && calls==0)
     print("bind2 value checks OK\n")
 }
-def explode() : variant<ok:int;error:string> { panic("source failed"); return result_ok(0) }
+def explode() : $Result<int;string> { panic("source failed"); return result_ok(0) }

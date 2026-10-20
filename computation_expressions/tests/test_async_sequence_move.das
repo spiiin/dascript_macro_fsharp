@@ -95,7 +95,7 @@ def checks() {
     // A value taken from next survives closing the stream. Clone is independent.
     {
         var stream <- packets()
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,async_sequence_next(stream))
         verify(task_tick(scheduler,0)==1 && task_tick(scheduler,1)==0)
         {
@@ -113,7 +113,7 @@ def checks() {
     // Delete the stream with an active next holding an as-yet unyielded Packet.
     {
         var stream <- packets(100)
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,async_sequence_next(stream))
         verify(task_tick(scheduler,0)==1)
         delete stream
@@ -130,7 +130,7 @@ def checks() {
     {
         var inscope stream <- packets(0)
         var ready <- async_sequence_next(stream)
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,ready)
         verify(task_tick(scheduler,0)==0 && allocated==released+1)
         task_forget(scheduler,id)

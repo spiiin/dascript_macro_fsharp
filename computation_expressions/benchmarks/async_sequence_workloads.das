@@ -22,10 +22,10 @@ def async_bench_feed_ce(count,seed,work,pending:int) {
 // Native generators use the same stream/next ownership API and primitive Tasks.
 // They specialize the successful workloads, without the general CE lowering.
 def async_bench_feed_manual(count,seed,work,pending:int) {
-    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:int;none:bool>>> {
+    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:$Option<int>>> {
         for(i in range(count)) {
             var inscope request <- task_after_polls(pending,i+seed)
-            while(task_poll(request)==TaskStatus.Waiting) {yield task_pending(type<variant<some:int;none:bool>>)}
+            while(task_poll(request)==TaskStatus.Waiting) {yield task_pending(type<$Option<int>>)}
             verify(request.status==TaskStatus.Succeeded)
             yield task_ready(some(async_bench_mix(task_value(request),work)))
         }
@@ -43,10 +43,10 @@ def private async_bench_for_ce(count,seed,work,pending:int) {
 }
 def private async_bench_for_manual(count,seed,work,pending:int) {
     var source <- async_bench_feed_manual(count,seed,0,pending)
-    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:int;none:bool>>> capture(<-source) {
+    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:$Option<int>>> capture(<-source) {
         while(true) {
             var inscope request <- async_sequence_next(source)
-            while(task_poll(request)==TaskStatus.Waiting) {yield task_pending(type<variant<some:int;none:bool>>)}
+            while(task_poll(request)==TaskStatus.Waiting) {yield task_pending(type<$Option<int>>)}
             verify(request.status==TaskStatus.Succeeded)
             let item=task_take(request)
             if(item is none) {break}
@@ -67,7 +67,7 @@ def private async_bench_zip_ce(count,seed,work,pending:int) {
 def private async_bench_zip_manual(count,seed,work,pending:int) {
     var left <- async_bench_feed_manual(count,seed,0,pending)
     var right <- async_bench_feed_manual(count,seed+17,0,pending*2)
-    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:int;none:bool>>> capture(<-left,<-right) {
+    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:$Option<int>>> capture(<-left,<-right) {
         while(true) {
             var inscope first <- async_sequence_next(left)
             var inscope second <- async_sequence_next(right)
@@ -82,7 +82,7 @@ def private async_bench_zip_manual(count,seed,work,pending:int) {
                     yield task_ready(some(async_bench_mix((first.value as some) ^ (second.value as some),work)))
                     break
                 }
-                yield task_pending(type<variant<some:int;none:bool>>)
+                yield task_pending(type<$Option<int>>)
             }
         }
         return false
@@ -99,10 +99,10 @@ def private async_bench_group_ce(count,seed,work,pending:int) {
     }
 }
 def private async_bench_group_manual(count,seed,work,pending:int) {
-    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:int;none:bool>>> {
+    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:$Option<int>>> {
         for(i in range(count)) {
             var inscope request <- task_when_all(task_after_polls(pending,i+seed),task_after_polls(pending*2,i+seed+17))
-            while(task_poll(request)==TaskStatus.Waiting) {yield task_pending(type<variant<some:int;none:bool>>)}
+            while(task_poll(request)==TaskStatus.Waiting) {yield task_pending(type<$Option<int>>)}
             verify(request.status==TaskStatus.Succeeded)
             let pair=task_take(request)
             yield task_ready(some(async_bench_mix(pair.first ^ pair.second,work)))
@@ -121,10 +121,10 @@ def private async_bench_move_ce(count,seed,work,pending:int) {
     }
 }
 def private async_bench_move_manual(count,seed,work,pending:int) {
-    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:array<int>;none:bool>>> {
+    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:$Option<array<int>>>> {
         for(i in range(count)) {
             var inscope request <- task_after_polls(pending,i+seed)
-            while(task_poll(request)==TaskStatus.Waiting) {yield <- task_pending(type<variant<some:array<int>;none:bool>>)}
+            while(task_poll(request)==TaskStatus.Waiting) {yield <- task_pending(type<$Option<array<int>>>)}
             verify(request.status==TaskStatus.Succeeded)
             var inscope value <- [async_bench_mix(task_value(request),work),i]
             yield <- ce_await_yield_move(AsyncSequenceBuilder(type<array<int>>),value)

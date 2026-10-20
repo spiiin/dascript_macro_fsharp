@@ -10,12 +10,12 @@ require ./support/bounded_result_builder.das
 var turns = 0
 let result = computation(BoundedResultBuilder(limit=3)) {
     while (turns < 10) {
-        variant<ok:bool;error:string>(ok=true) |> bind
+        variant type<$Result<bool;string>>(ok=true) |> bind
         turns++
     }
     return turns
 }
-assert(result is error && turns == 3)
+assert(result is err && turns == 3)
 ```
 
 `bounded_result_builder.das` — рабочий пример внешнего builder. Лимит действует

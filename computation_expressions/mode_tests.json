@@ -1,4 +1,6 @@
 [
+  "tests/test_standard_outcomes.das",
+  "tests/test_move_ce.das",
   "tests/test_async_sequence_and_bind.das",
   "tests/test_async_sequence_zip.das",
   "tests/test_async_sequence_for.das",

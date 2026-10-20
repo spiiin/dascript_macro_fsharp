@@ -25,13 +25,13 @@ def main() {
         continued++
         return pair.first + pair.second
     }
-    assert(rejected is error && (rejected as error) == "error1")
+    assert(rejected is err && (rejected as err) == "error1")
     assert(calls == 2 && order == "12" && continued == 0 && constructors == 1)
     let rightError = computation(ResultBuilder()) {
         let p = result_ok(1) |> and_bind(result_error("right", type<string>)) |> bind
         return p.second
     }
-    assert(rightError is error && (rightError as error) == "right")
+    assert(rightError is err && (rightError as err) == "right")
     let success = computation(ResultBuilder()) {
         let p = result_ok(3) |> and_bind(result_ok("mage")) |> and_bind(result_ok(4)) |> bind
         return "{p.first.second}:{p.first.first+p.second}"
@@ -42,7 +42,7 @@ def main() {
         result_source(3,false) |> and_bind(result_source(4,false)) |> bind
         return 0
     }
-    assert(skippedGroup is error && calls == 2)
+    assert(skippedGroup is err && calls == 2)
     let absent = computation(OptionBuilder()) {
         option_source(1,true) |> and_bind(option_source(2,false)) |> bind
         continued++
@@ -74,7 +74,7 @@ def main() {
         continued++
         return 1
     }
-    assert(loop is error && iterations == 1 && continued == 0)
+    assert(loop is err && iterations == 1 && continued == 0)
     let beforeTriple = calls
     order = ""
     let tripleError = computation(ResultBuilder()) {
@@ -82,7 +82,7 @@ def main() {
         continued++
         return 0
     }
-    assert(tripleError is error && (tripleError as error)=="error1")
+    assert(tripleError is err && (tripleError as err)=="error1")
     assert(calls==beforeTriple+3 && order=="123" && continued==0)
     print("and_bind value checks OK\n")
 }

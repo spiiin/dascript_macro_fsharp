@@ -16,7 +16,7 @@ def main() {
     let failed=computation(ResultBuilder()) { let x=result_error("bad",type<int>) |> bind; return map_value(x) }
     let absent=computation(OptionBuilder()) { let x=none(type<int>) |> bind; return map_value(x) }
     let invalid=computation(ValidationBuilder()) { let x=validation_error("bad",type<int>) |> bind; return map_value(x) }
-    assert(failed is error && absent is none && invalid is invalid && mappedCount==0)
+    assert(failed is err && absent is none && invalid is invalid && mappedCount==0)
     let ok=computation(ResultBuilder()) { let x=result_ok(3) |> bind; return map_value(x) }
     assert(ok is ok && (ok as ok)==6 && mappedCount==1)
     let baseline=heap_bytes_allocated()

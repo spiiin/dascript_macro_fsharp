@@ -28,13 +28,13 @@ def basics() {
         tell("unreachable") |> bind
         return missing
     }
-    assert(failed.result is error && failed.result as error=="failed")
+    assert(failed.result is err && failed.result as err=="failed")
     assert(failed.state==10 && failed.log=="a" && after==0)
     let forwarded=computation(StateWriterResultBuilder(10)) {
         tell("outer") |> bind
         return state_writer_result_error("child",type<int>,99,"inner") |> return_from
     }
-    assert(forwarded.result is error && forwarded.state==10 && forwarded.log=="outerinner")
+    assert(forwarded.result is err && forwarded.state==10 && forwarded.log=="outerinner")
     let committed=computation(StateWriterResultBuilder(10)) {
         tell("outer") |> bind
         return state_writer_result_ok(42,99,"inner") |> return_from
@@ -45,7 +45,7 @@ def basics() {
         tell("raw") |> bind
         return result_error("raw error",type<int>) |> return_from
     }
-    assert(raw.result is error && raw.state==10 && raw.log=="raw")
+    assert(raw.result is err && raw.state==10 && raw.log=="raw")
 }
 def child(initial:int; fail:bool) {
     return computation(StateWriterResultBuilder(initial)) {
@@ -67,14 +67,14 @@ def nested() {
             tell("after;") |> bind
             return payload
         }
-        assert((value.result is error)==fail && value.state==(fail ? 10 : 25))
+        assert((value.result is err)==fail && value.state==(fail ? 10 : 25))
         assert(value.log==(fail ? "parent;child;" : "parent;child;after;"))
     }
     let later=computation(StateWriterResultBuilder(10)) {
         child(20,false) |> bind
         result_error("later",type<CeUnit>) |> bind
     }
-    assert(later.result is error && later.state==10 && later.log=="child;")
+    assert(later.result is err && later.state==10 && later.log=="child;")
 }
 def loops(failAt:int; useWhile:bool) {
     var visits=0
@@ -104,7 +104,7 @@ def loops(failAt:int; useWhile:bool) {
     for (i in range(failAt<0 ? 3 : failAt+1)) {expected+="{i};"}
     if (failAt<0) {expected+="end;"}
     assert(value.log==expected && value.state==(failAt<0 ? 13 : 10))
-    assert((value.result is error)==(failAt>=0) && visits==(failAt<0 ? 3 : failAt+1))
+    assert((value.result is err)==(failAt>=0) && visits==(failAt<0 ? 3 : failAt+1))
 }
 def zip_loop() {
     let value=computation(StateWriterResultBuilder(10)) {
@@ -117,7 +117,7 @@ def zip_loop() {
         after++
         return 42
     }
-    assert(value.result is error && value.state==10 && value.log=="00;11;" && after==0)
+    assert(value.result is err && value.state==10 && value.log=="00;11;" && after==0)
 }
 def resources() {
     let before=closed
@@ -127,7 +127,7 @@ def resources() {
         state_put(20) |> bind
         result_error("stop",type<CeUnit>) |> bind
     }
-    assert(failed.result is error && failed.state==10 && failed.log=="open;" && closed==before+1)
+    assert(failed.result is err && failed.state==10 && failed.log=="open;" && closed==before+1)
     var caught=false
     try {
         let thrown=computation(StateWriterResultBuilder(10)) {

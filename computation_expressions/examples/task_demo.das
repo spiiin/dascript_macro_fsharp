@@ -26,6 +26,6 @@ def main() {
     let player=task_value(good)
     let rejected=task_value(bad)
     verify(player is ok && player as ok=="Alice: health=85")
-    verify(rejected is error && rejected as error=="access denied")
-    print("{player as ok}\n{rejected as error}\nTask demo OK\n")
+    verify(rejected is err && rejected as err=="access denied")
+    print("{player as ok}\n{rejected as err}\nTask demo OK\n")
 }

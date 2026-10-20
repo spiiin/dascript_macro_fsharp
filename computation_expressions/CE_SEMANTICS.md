@@ -19,10 +19,10 @@ TaskBuilder и TaskResultBuilder предоставляют cold single-shot з�
 | ParserBuilder(text=...) | parsed(value, position, committed) / failure(ParseDiagnostic) | Нет: шаги зависят от позиции | Да / да / да | Да | Да | Да: owning массивы, var items & / return <- |
 | SearchBuilder(type<T>) | Ленивый depth-first iterator | Нет | Да / да / да | Да, до закрытия iterator | Да | Нет |
 | QueryBuilder(type<T>) | array<T>, запрос в памяти | Да: все пары | Да / да / да | Да | Да | Нет |
-| ResultBuilder | `ok:T / error:string` | Да: Result | Да / да / да | Да | Да | Нет; использовать MoveResult |
+| ResultBuilder | `$Result<T;string>` (`err / ok`) | Да: Result | Да / да / да | Да | Да | Нет; использовать MoveResult |
 | TaskBuilder(type<T>) | Task<T>, cold single-shot | Да: Task | Да: native/async / да / native и async zip, break/continue | Да | Да | Да: owning bind/return |
 | TaskResultBuilder(type<T>) | Task<Result<T>>, cold single-shot | Да: Result и Unit | Да: native/async / да / native и async zip, break/continue | Да | Да | Да: owning bind/return |
-| OptionBuilder | `some:T / none:bool` | Да: Option | Да / да / да | Да | Да | Нет; использовать MoveOption |
+| OptionBuilder | `$Option<T>` (`none / some`) | Да: Option | Да / да / да | Да | Да | Нет; использовать MoveOption |
 | ValidationBuilder | `valid:T / invalid:…` | Да: накопление ошибок | Да / да / да | Да | Да | Нет |
 | StateBuilder(initial) | `(value:T, state:S)` | Нет | Да / да / да | Да | Да | Нет; состояние также копируемое |
 | WriterBuilder | `(value:T, log:string)` | Нет | Да / да / да | Да | Да | Нет |
@@ -167,7 +167,7 @@ let outcome = computation(StateResultBuilder(100)) {
     result_error("отказ", type<CeUnit>) |> bind
     return "готово"
 }
-assert(outcome.result is error && outcome.state == 100)
+assert(outcome.result is err && outcome.state == 100)
 ```
 
 Откат касается значения поля state. Он не отменяет печать, сетевые запросы,

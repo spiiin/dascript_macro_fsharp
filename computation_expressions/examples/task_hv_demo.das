@@ -20,7 +20,7 @@ def echo(url:string) {
 def main() {
     let port=to_int(get_env_variable("CE_HV_PORT"))
     var inscope token <- cancellation_token()
-    var inscope scheduler <- task_scheduler(type<variant<ok:string;error:string>>)
+    var inscope scheduler <- task_scheduler(type<$Result<string;string>>)
     let id=task_spawn(scheduler,task_with_cancellation(echo("ws://127.0.0.1:{port}/echo_demo"),token),TaskTimeout(after_ms=5000))
     let started=ref_time_ticks()
     while(task_status(scheduler,id)==TaskStatus.Created || task_status(scheduler,id)==TaskStatus.Waiting) {

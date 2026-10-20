@@ -16,7 +16,7 @@ def batches() {
     }
 }
 def sum_stream(var stream:auto) {
-    var inscope scheduler <- task_scheduler(type<variant<some:array<int>;none:bool>>)
+    var inscope scheduler <- task_scheduler(type<$Option<array<int>>>)
     var sum=0
     var now:int64=0
     while(true) {

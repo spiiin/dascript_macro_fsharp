@@ -1,16 +1,17 @@
 options gen2
+require daslib/result
 
 def checked(n:int) {
-    if(n%7==0){return variant<ok:int;error:string>(error="invalid")}
-    return variant<ok:int;error:string>(ok=n+1)
+    if(n%7==0){return variant type<$Result<int;string>>(err="invalid")}
+    return variant type<$Result<int;string>>(ok=n+1)
 }
 def work(seed:int) : int64 {
     let a=checked(seed)
-    if(a is error){return -1l}
+    if(a is err){return -1l}
     let b=checked((a as ok)*2)
-    if(b is error){return -1l}
+    if(b is err){return -1l}
     let c=checked((b as ok)+3)
-    return c is error ? -1l : int64(c as ok)*2l
+    return c is err ? -1l : int64(c as ok)*2l
 }
 [export]
 def main() {

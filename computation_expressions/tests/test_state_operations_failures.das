@@ -23,7 +23,7 @@ def main() {
         let n=state_gets($(value:int){calls++;return value}) |> bind
         return n
     }
-    assert(rejected.result is error && rejected.state==5 && calls==1)
+    assert(rejected.result is err && rejected.state==5 && calls==1)
     let projected=computation(StateWriterResultBuilder(7)) {
         tell("before;") |> bind
         try_with($ {
@@ -33,7 +33,7 @@ def main() {
             return result_error("projection failed",type<int>) |> return_from
         })
     }
-    assert(projected.result is error && projected.state==7 && projected.log=="before;" && calls==2)
+    assert(projected.result is err && projected.state==7 && projected.log=="before;" && calls==2)
     // Snapshots are recreated after a failed run; external effects are retained.
     var inscope task <- deferred(StateBuilder(3)) {
         state_modify($(n:int){calls++;if(calls==3){panic("first run")};return n+2}) |> bind

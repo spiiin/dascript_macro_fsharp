@@ -110,7 +110,7 @@ def consume(limit:int=10;wait:int=1;hold:int=1;breakAt:int=0;skip:int=0;fail:boo
 }
 
 def drive(var stream:auto) {
-    var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+    var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
     var now:int64=0
     var sum=0
     while(true) {
@@ -201,7 +201,7 @@ def checks() {
     // Primary owner closes the loop's source despite an outstanding next lease.
     {
         var stream <- transformed(100)
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,async_sequence_next(stream))
         verify(task_tick(scheduler,0)==1)
         delete stream
@@ -211,7 +211,7 @@ def checks() {
     // A value moved out of the For body remains owned by the consumer.
     {
         var stream <- transformed(0,0)
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,async_sequence_next(stream))
         verify(task_tick(scheduler,0)==0)
         {
@@ -273,7 +273,7 @@ def checks() {
         var saved <- saved_outer(100)
         var stream <- run_deferred(saved)
         delete saved
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,async_sequence_next(stream))
         verify(task_tick(scheduler,0)==1 && snapshots==before+4)
         delete stream
@@ -290,7 +290,7 @@ def checks() {
     }
     {
         var inscope stream <- scoped_iterations(100)
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,async_sequence_next(stream))
         verify(task_tick(scheduler,0)==1 && activeChildren==2)
         verify(task_cancel(scheduler,id) && task_status(scheduler,id)==TaskStatus.Cancelled)

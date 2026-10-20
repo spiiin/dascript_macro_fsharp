@@ -27,7 +27,7 @@ def main() {
     verify(task_forget(scheduler,player))
     verify(task_prune(scheduler)==1)
 
-    var inscope requests <- task_scheduler(type<variant<ok:int;error:string>>)
+    var inscope requests <- task_scheduler(type<$Result<int;string>>)
     var requestTask <- computation(TaskResultBuilder(type<int>)) {
         let n=task_after_polls(1,result_ok(8)) |> bind
         return n+1

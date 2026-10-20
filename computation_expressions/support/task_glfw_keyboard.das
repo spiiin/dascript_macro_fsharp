@@ -14,7 +14,7 @@ var private scheduler_live=false
 var private reader_live=false
 var private background_live=false
 var private events:typedecl(task_event_source(type<string>))
-var private scheduler:typedecl(task_scheduler(type<variant<ok:string;error:string>>))
+var private scheduler:typedecl(task_scheduler(type<$Result<string;string>>))
 var private token:CancellationToken
 var private reader:TaskId
 var private background:TaskId
@@ -39,9 +39,9 @@ var private char_handler:lambda<(w:GLFWwindow const?;codepoint:uint):void>
 
 def private encode_utf8(cp:uint) {
     if(cp<0x80u) {return to_char(int(cp))}
-    if(cp<0x800u) {return to_char(int(0xC0u|(cp>>6u)))+to_char(int(0x80u|(cp&0x3Fu)))}
-    if(cp<0x10000u) {return to_char(int(0xE0u|(cp>>12u)))+to_char(int(0x80u|((cp>>6u)&0x3Fu)))+to_char(int(0x80u|(cp&0x3Fu)))}
-    return to_char(int(0xF0u|(cp>>18u)))+to_char(int(0x80u|((cp>>12u)&0x3Fu)))+to_char(int(0x80u|((cp>>6u)&0x3Fu)))+to_char(int(0x80u|(cp&0x3Fu)))
+    if(cp<0x800u) {return to_char(int(0xC0u|(cp/64u)))+to_char(int(0x80u|(cp&0x3Fu)))}
+    if(cp<0x10000u) {return to_char(int(0xE0u|(cp/4096u)))+to_char(int(0x80u|((cp/64u)&0x3Fu)))+to_char(int(0x80u|(cp&0x3Fu)))}
+    return to_char(int(0xF0u|(cp/262144u)))+to_char(int(0x80u|((cp/4096u)&0x3Fu)))+to_char(int(0x80u|((cp/64u)&0x3Fu)))+to_char(int(0x80u|(cp&0x3Fu)))
 }
 def private rebuild_text() {
     text=""
@@ -101,7 +101,7 @@ def private update_status() {
         else {
             let result=task_value(scheduler,reader)
             if(result is ok) {result_text=result as ok;status_text="Accepted: {result_text} - F2 retries"}
-            else {status_text="Error: {result as error} - F2 retries"}
+            else {status_text="Error: {result as err} - F2 retries"}
         }
         verify(task_event_subscriber_count(events)==0)
         print("{status_text}; background ticks={ticks}\n")
@@ -148,7 +148,7 @@ def glfw_keyboard_open(hidden:bool=false;timeout:int64=15000l;interval:int=500) 
         demo_window=glfwCreateWindow(1100,100,"Task keyboard",null,null)
         if(demo_window==null) {panic("glfwCreateWindow failed")}
         events <- task_event_source(type<string>);events_live=true
-        scheduler <- task_scheduler(type<variant<ok:string;error:string>>);scheduler_live=true
+        scheduler <- task_scheduler(type<$Result<string;string>>);scheduler_live=true
         start_reader()
         background=task_spawn(scheduler,heartbeat());background_live=true
         // Native callbacks do not own script lambdas. Keep them until chain_clear.

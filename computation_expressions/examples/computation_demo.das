@@ -1,7 +1,7 @@
 options gen2
 require ../lib/computation.das
 
-def checked_number(value : int) : variant<ok : int; error : string> {
+def checked_number(value : int) : $Result<int;string> {
     if (value < 0) { return result_error("negative number", type<int>) }
     return result_ok(value)
 }
@@ -35,7 +35,7 @@ def main() {
         skipped++
         return number + 1
     }
-    assert(failed is error && absent is none && skipped == 0)
-    print("Error: {failed as error}; None: true; skipped steps executed: {skipped}\n")
+    assert(failed is err && absent is none && skipped == 0)
+    print("Error: {failed as err}; None: true; skipped steps executed: {skipped}\n")
     print("computation demo OK\n")
 }

@@ -69,7 +69,7 @@ def main() {
     verify(task_tick(scheduler,10)==2 && trace=="xz")
     verify(task_tick(scheduler,11)==1 && trace=="xzx")
     verify(task_tick(scheduler,12)==0 && trace=="xzxz")
-    var inscope outcomes <- task_scheduler(type<variant<ok:int;error:string>>)
+    var inscope outcomes <- task_scheduler(type<$Result<int;string>>)
     var domainTask <- computation(TaskResultBuilder(type<int>)) {
         let n=task_after_polls(0,result_error("denied",type<int>)) |> bind
         panic("must not run")
@@ -78,6 +78,6 @@ def main() {
     let domainError=task_spawn(outcomes,domainTask)
     verify(task_tick(outcomes,0)==0 && task_status(outcomes,domainError)==TaskStatus.Succeeded)
     let result=task_value(outcomes,domainError)
-    verify(result is error && result as error=="denied")
+    verify(result is err && result as err=="denied")
     print("Task scheduler checks OK\n")
 }

@@ -14,6 +14,10 @@ def success() {
     glfw_keyboard_open(true,1000l,10)
     verify(glfw_keyboard_snapshot().subscriptions==1 && glfw_keyboard_snapshot().callbacks==2)
     character(uint('a'));character(0x1F642u)
+    verify(glfw_keyboard_snapshot().text=="a🙂")
+    key(int(GLFW_KEY_BACKSPACE),int(GLFW_REPEAT))
+    character(0x20ACu)
+    verify(glfw_keyboard_snapshot().text=="a€")
     key(int(GLFW_KEY_BACKSPACE),int(GLFW_REPEAT))
     character(0x416u) // Cyrillic Ж, after removing one entire astral character.
     key(int(GLFW_KEY_ENTER),int(GLFW_REPEAT)) // Repeated Enter must not submit.

@@ -14,7 +14,7 @@ def main() {
     }
     var inscope handle <- task_share(run_deferred(saved))
     var inscope token <- cancellation_token()
-    var inscope scheduler <- task_scheduler(type<variant<ok:array<int>;error:string>>)
+    var inscope scheduler <- task_scheduler(type<$Result<array<int>;string>>)
     let cancelled=task_spawn(scheduler,task_with_cancellation(ce_task_source(handle),token))
     let completed=task_spawn(scheduler,handle)
     verify(task_tick(scheduler,0)==2)

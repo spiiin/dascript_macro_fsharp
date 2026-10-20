@@ -10,8 +10,8 @@ def find_item(id : int) {
         else { return result_error("item not found", type<ShopItem>) |> return_from }
     }
 }
-def check_balance(balance, price : int) : variant<ok : CeUnit; error : string> {
-    if (balance < price) { return variant<ok : CeUnit; error : string>(error="insufficient gold") }
+def check_balance(balance, price : int) : $Result<CeUnit;string> {
+    if (balance < price) { return variant type<$Result<CeUnit;string>>(err="insufficient gold") }
     return ce_zero(ResultBuilder())
 }
 def purchase(id, balance : int; var completed : int&) {

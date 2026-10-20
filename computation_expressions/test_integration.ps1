@@ -179,7 +179,7 @@ require ./lib/task_hv.das
 def main() {
     var inscope socket <- hv_websocket()
     var inscope job <- ws_connect(socket,"invalid-url")
-    verify(task_poll(job)==TaskStatus.Succeeded && task_value(job) is error)
+    verify(task_poll(job)==TaskStatus.Succeeded && task_value(job) is err)
     print("Exported dasHV adapter OK\n")
 }
 '@

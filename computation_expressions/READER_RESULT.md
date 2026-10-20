@@ -15,7 +15,7 @@ let damage = computation(ReaderResultBuilder(rules)) {
 ```
 
 `validate_attack` возвращает `result_ok(value)` или
-`result_error(message, type<T>)`. Итог CE — `variant<ok:T; error:string>`.
+`result_error(message, type<T>)`. Итог CE — `$Result<T;string>`.
 Обычные функции могут принимать окружение, выполнять собственный ReaderResult CE
 и возвращать Result для следующего пайпового bind. Пример двух атак:
 `reader_result_demo.das`.

@@ -86,7 +86,7 @@ def checks() {
         var inscope task <- task_result_when_all(jobs)
         verify(task_poll(task)==TaskStatus.Succeeded)
         var inscope data <- task_take(task)
-        verify(data is error && data as error=="denied")
+        verify(data is err && data as err=="denied")
     }
     {
         var inscope raced <- task_result_race(result_job(1,3),result_job(2))

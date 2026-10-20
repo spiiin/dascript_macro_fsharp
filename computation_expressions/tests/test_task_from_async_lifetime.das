@@ -28,7 +28,7 @@ def borrowed_value(buffer:Buffer?; fail:bool) : int {
     after++
 }
 [async]
-def borrowed_error(buffer:Buffer?) : variant<ok:int;error:string> {
+def borrowed_error(buffer:Buffer?) : $Result<int;string> {
     await_next_frame()
     yield result_error("resource denied",type<int>)
     after++
@@ -132,7 +132,7 @@ def ownership_checks() {
         verify(task_poll(task)==TaskStatus.Waiting)
         verify(task_poll(task)==TaskStatus.Succeeded)
         let result=task_value(task)
-        verify(result is error && result as error=="resource denied")
+        verify(result is err && result as err=="resource denied")
         verify(order=="child;parent;" && opened==closed && parentOpened==parentClosed)
     }
     {

@@ -55,6 +55,6 @@ def task_tcp_request_line(host:string;port:int;request:string;max_bytes:int=6553
         reader.tick()
         if(!empty(reader.error)) {return task_ready(result_error(reader.error,type<string>))}
         if(reader.complete) {return task_ready(result_ok(string(reader.bytes)))}
-        return task_pending(type<variant<ok:string;error:string>>)
+        return task_pending(type<$Result<string;string>>)
     },@() {unsafe {delete reader}})
 }

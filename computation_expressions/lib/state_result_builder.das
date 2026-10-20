@@ -10,7 +10,7 @@ def ce_state_gets(builder:tuple<kind:StateResultContext;initial:auto(S);state:S>
 def StateResultBuilder(initial : auto(S)) : tuple<kind : StateResultContext; initial : S -const; state : S -const> {
     return (kind = StateResultContext(), initial = initial, state = initial)
 }
-def state_result_value(value : variant<ok : auto(T); error : string>; state : auto(S)) {
+def state_result_value(value : $Result<auto(T);string>; state : auto(S)) {
     return (result = value, state = state)
 }
 def state_result_ok(value : auto(T); state : auto(S)) {
@@ -23,7 +23,7 @@ def private sr_failure(var builder : tuple<kind : StateResultContext; initial : 
                        message : string; unused : type<auto(R)>) : R {
     builder.state = builder.initial
     var failed = default<R>
-    failed.result = variant type<typedecl(failed.result)>(error=message)
+    failed.result = variant type<typedecl(failed.result)>(err=message)
     failed.state = builder.initial
     return failed
 }
@@ -33,9 +33,9 @@ def ce_unwrap(builder : tuple<kind : StateResultContext; initial : auto(S); stat
 def ce_unwrap(builder : tuple<kind : StateResultContext; initial : auto(S); state : S>;
               op : tuple<operation : StatePut; state : S>) : CeUnit { return CeUnit() }
 def ce_unwrap(builder : tuple<kind : StateResultContext; initial : auto(S); state : S>;
-              op : variant<ok : auto(T); error : string>) : T { return op as ok }
+              op : $Result<auto(T);string>) : T { return op as ok }
 def ce_unwrap(builder : tuple<kind : StateResultContext; initial : auto(S); state : S>;
-              op : tuple<result : variant<ok : auto(T); error : string>; state : S>) : T { return op.result as ok }
+              op : tuple<result : $Result<auto(T);string>; state : S>) : T { return op.result as ok }
 
 def ce_bind(var builder : tuple<kind : StateResultContext; initial : auto(S); state : S>; op : StateGet;
             next : block<(item : S) : auto(R)>) : R {
@@ -48,14 +48,14 @@ def ce_bind(var builder : tuple<kind : StateResultContext; initial : auto(S); st
     return invoke(next, CeUnit())
 }
 def ce_bind(var builder : tuple<kind : StateResultContext; initial : auto(S); state : S>;
-            op : variant<ok : auto(T); error : string>; next : block<(item : T) : auto(R)>) : R {
-    if (op is error) { return sr_failure(builder, op as error, type<R>) }
+            op : $Result<auto(T);string>; next : block<(item : T) : auto(R)>) : R {
+    if (op is err) { return sr_failure(builder, op as err, type<R>) }
     return invoke(next, op as ok)
 }
 def ce_bind(var builder : tuple<kind : StateResultContext; initial : auto(S); state : S>;
-            op : tuple<result : variant<ok : auto(T); error : string>; state : S>;
+            op : tuple<result : $Result<auto(T);string>; state : S>;
             next : block<(item : T) : auto(R)>) : R {
-    if (op.result is error) { return sr_failure(builder, op.result as error, type<R>) }
+    if (op.result is err) { return sr_failure(builder, op.result as err, type<R>) }
     builder.state = op.state
     return invoke(next, op.result as ok)
 }
@@ -66,31 +66,31 @@ def ce_zero(builder : tuple<kind : StateResultContext; initial : auto(S); state 
     return state_result_value(ce_zero(ResultBuilder()), builder.state)
 }
 def ce_return_from(var builder : tuple<kind : StateResultContext; initial : auto(S); state : S>;
-                   value : variant<ok : auto(T); error : string>) {
-    if (value is error) { builder.state = builder.initial }
+                   value : $Result<auto(T);string>) {
+    if (value is err) { builder.state = builder.initial }
     return state_result_value(value, builder.state)
 }
 def ce_return_from(var builder : tuple<kind : StateResultContext; initial : auto(S); state : S>;
-                   value : tuple<result : variant<ok : auto(T); error : string>; state : S>) {
-    if (value.result is error) { builder.state = builder.initial }
+                   value : tuple<result : $Result<auto(T);string>; state : S>) {
+    if (value.result is err) { builder.state = builder.initial }
     else { builder.state = value.state }
     return state_result_value(value.result, builder.state)
 }
 def ce_combine(var builder : tuple<kind : StateResultContext; initial : auto(S); state : S>;
-               first : tuple<result : variant<ok : CeUnit; error : string>; state : S>;
+               first : tuple<result : $Result<CeUnit;string>; state : S>;
                next : block<() : auto(R)>) : R {
-    if (first.result is error) { return sr_failure(builder, first.result as error, type<R>) }
+    if (first.result is err) { return sr_failure(builder, first.result as err, type<R>) }
     builder.state = first.state
     return ce_delay(builder, next)
 }
 def ce_loop_failed(builder : tuple<kind : StateResultContext; initial : auto(S); state : S>;
-                   value : tuple<result : variant<ok : CeUnit; error : string>; state : S>) : bool {
-    return value.result is error
+                   value : tuple<result : $Result<CeUnit;string>; state : S>) : bool {
+    return value.result is err
 }
 def ce_loop_append(var builder : tuple<kind : StateResultContext; initial : auto(S); state : S>;
-                   first, step : tuple<result : variant<ok : CeUnit; error : string>; state : S>) {
-    if (first.result is error) { return sr_failure(builder, first.result as error, type<typedecl(first)>) }
-    if (step.result is error) { return sr_failure(builder, step.result as error, type<typedecl(step)>) }
+                   first, step : tuple<result : $Result<CeUnit;string>; state : S>) {
+    if (first.result is err) { return sr_failure(builder, first.result as err, type<typedecl(first)>) }
+    if (step.result is err) { return sr_failure(builder, step.result as err, type<typedecl(step)>) }
     builder.state = step.state
     return step
 }
@@ -111,16 +111,16 @@ def ce_bind_return(var builder:tuple<kind:StateResultContext;initial:auto(S);sta
     return state_result_ok(mapped,builder.state)
 }
 def ce_bind_return(var builder:tuple<kind:StateResultContext;initial:auto(S);state:S>;
-                   op:variant<ok:auto(T);error:string>;
+                   op:$Result<auto(T);string>;
                    mapper:block<(value:T):auto(U)>) : typedecl(ce_return(builder,default<U>)) {
-    if (op is error) { return sr_failure(builder,op as error,type<typedecl(ce_return(builder,default<U>))>) }
+    if (op is err) { return sr_failure(builder,op as err,type<typedecl(ce_return(builder,default<U>))>) }
     let mapped=invoke(mapper,op as ok)
     return state_result_ok(mapped,builder.state)
 }
 def ce_bind_return(var builder:tuple<kind:StateResultContext;initial:auto(S);state:S>;
-                   op:tuple<result:variant<ok:auto(T);error:string>;state:S>;
+                   op:tuple<result:$Result<auto(T);string>;state:S>;
                    mapper:block<(value:T):auto(U)>) : typedecl(ce_return(builder,default<U>)) {
-    if (op.result is error) { return sr_failure(builder,op.result as error,type<typedecl(ce_return(builder,default<U>))>) }
+    if (op.result is err) { return sr_failure(builder,op.result as err,type<typedecl(ce_return(builder,default<U>))>) }
     builder.state=op.state
     let mapped=invoke(mapper,op.result as ok)
     return state_result_ok(mapped,builder.state)

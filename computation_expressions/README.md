@@ -11,6 +11,8 @@
 | benchmarks/ | Временные нагрузки; benchmarks/metrics/ — независимые пары CE/ручного кода |
 | integration_example/ | Шаблон приложения и минимальный собственный builder |
 
+Стандартные Result/Option и миграция: [STANDARD_TYPES.md](STANDARD_TYPES.md).
+
 Подключение: [INTEGRATION.md](INTEGRATION.md), [PUBLIC_API.md](PUBLIC_API.md).
 Что такое CE, объяснение для C++-программистов: [INTRO_FOR_CPP.md](INTRO_FOR_CPP.md).
 Когда CE, а когда обычный daslang: [WHEN_TO_USE.md](WHEN_TO_USE.md).

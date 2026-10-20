@@ -24,7 +24,7 @@ def two_requests(urlA:string;urlB:string) {
 }
 def run_demo(urlA:string;urlB:string;cancel_after_ms:int=-1;timeout_ms:int=5000) {
     var inscope token <- cancellation_token()
-    var inscope scheduler <- task_scheduler(type<variant<ok:string;error:string>>)
+    var inscope scheduler <- task_scheduler(type<$Result<string;string>>)
     let id=task_spawn(scheduler,task_with_cancellation(two_requests(urlA,urlB),token),TaskTimeout(after_ms=int64(timeout_ms)))
     let started=ref_time_ticks()
     while(task_status(scheduler,id)==TaskStatus.Created || task_status(scheduler,id)==TaskStatus.Waiting) {
@@ -41,7 +41,7 @@ def run_demo(urlA:string;urlB:string;cancel_after_ms:int=-1;timeout_ms:int=5000)
         let result=task_value(scheduler,id)
         verify(result is ok && result as ok=="A=one; B=two")
         if(result is ok) {print("{result as ok}\n")}
-        else {print("Error: {result as error}\n")}
+        else {print("Error: {result as err}\n")}
     }
     verify(hv_websocket_stats().active==0 && hv_websocket_stats().active_operations==0)
     return task_status(scheduler,id)

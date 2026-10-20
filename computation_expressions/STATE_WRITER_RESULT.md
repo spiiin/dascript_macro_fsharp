@@ -15,7 +15,7 @@ let outcome = computation(StateWriterResultBuilder(10)) {
 // outcome.result = Ok(10), outcome.state = 15, outcome.log = "added 5; "
 ```
 
-Результат имеет поля `result:variant<ok:T;error:string>`, `state:S`, `log:string`.
+Результат имеет поля `result:$Result<T;string>`, `state:S`, `log:string`.
 Операции `state_get`, `state_put`, `tell`, `result_ok` и `result_error` используют
 существующие типы библиотеки. Данные состояния и успешный результат должны быть
 копируемыми. Выполнение обычного CE немедленное.

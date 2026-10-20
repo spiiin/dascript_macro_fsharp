@@ -14,12 +14,12 @@ def record(var counts : Counts; step : int) {
     elif (step == 2) { counts.second++ }
     else { counts.third++ }
 }
-def result_step(var counts : Counts; step, fail_at : int) : variant<ok : int; error : string> {
+def result_step(var counts : Counts; step, fail_at : int) : $Result<int;string> {
     record(counts, step)
     if (step == fail_at) { return result_error("failure at {step}", type<int>) }
     return result_ok(step)
 }
-def option_step(var counts : Counts; step, fail_at : int) : variant<some : int; none : bool> {
+def option_step(var counts : Counts; step, fail_at : int) : $Option<int> {
     record(counts, step)
     if (step == fail_at) { return none(type<int>) }
     return some(step)
@@ -53,9 +53,9 @@ def test_result(fail_at : int) {
     if (fail_at == 0) {
         assert(value is ok && (value as ok) == "sum=6")
     } else {
-        assert(value is error)
+        assert(value is err)
         let expected = "failure at {fail_at}"
-        assert((value as error) == expected)
+        assert((value as err) == expected)
     }
     print("Result fail_at={fail_at}: steps={counts.first}/{counts.second}/{counts.third}, return={counts.finished}\n")
 }
@@ -98,7 +98,7 @@ def main() {
     let forwarded = computation(ResultBuilder()) {
         return result_error("forwarded", type<string>) |> return_from
     }
-    assert(forwarded is error && (forwarded as error) == "forwarded")
+    assert(forwarded is err && (forwarded as err) == "forwarded")
     let forwarded_none = computation(OptionBuilder()) {
         return none(type<int>) |> return_from
     }

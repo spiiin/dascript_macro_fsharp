@@ -249,17 +249,17 @@ def parser_read(builder:ParserBuilder; op:tuple<parserOptional:parserOptionalTag
     var cursor=builder
     cursor.committed=false
     var inscope result <- parser_read(cursor,op.source)
-    var inscope value:variant<some:typedecl((result as parsed).value) -const -&;none:bool>
+    var inscope value:$Option<typedecl((result as parsed).value) -const -&>
     if(result is failure) {
         if(!parser_absent(result as failure,builder.position)) {
             var diagnostic=result as failure
             diagnostic.committed = diagnostic.committed || builder.committed
             return <- parser_failure(diagnostic,type<typedecl(value)>)
         }
-        value=variant type<typedecl(value)>(none=true)
+        value=default<typedecl(value)>
         return <- parser_ok_move(value,builder.position,builder.committed)
     }
-    value as some <- (result as parsed).value
+    value <- ce_move_some((result as parsed).value)
     return <- parser_ok_move(value,(result as parsed).position,builder.committed || (result as parsed).committed)
 }
 def private parser_progress_diagnostic(builder:ParserBuilder; operationName:string) {

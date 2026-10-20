@@ -28,7 +28,7 @@ def test_linear(fail_at : int) {
     for (i in range(fail_at < 0 ? 3 : fail_at + 1)) { expected += "try{i};" }
     if (fail_at >= 0) {
         expected += "FAIL;"
-        assert(output.result is error && (output.result as error) == "failure {fail_at}")
+        assert(output.result is err && (output.result as err) == "failure {fail_at}")
     } else { assert(output.result is ok && (output.result as ok) == "sum=1") }
     assert(output.log == expected)
 }
@@ -69,7 +69,7 @@ def test_loops(count, fail_at : int; use_while : bool) {
     for (i in range(successful)) { expected += "try{i};done{i};" }
     if (failed) {
         expected += "try{fail_at};FAIL;"
-        assert(output.result is error && (output.result as error) == "failure {fail_at}")
+        assert(output.result is err && (output.result as err) == "failure {fail_at}")
     } else {
         expected += "end;"
         assert(output.result is ok && (output.result as ok) == count)
@@ -95,7 +95,7 @@ def test_nested(fail_at : int) {
     for (i in range(fail_at < 0 ? 4 : fail_at + 1)) { expected += "try{i};" }
     if (fail_at >= 0) {
         expected += "FAIL;"
-        assert(output.result is error && (output.result as error) == "failure {fail_at}")
+        assert(output.result is err && (output.result as err) == "failure {fail_at}")
     } else { assert(output.result is ok) }
     assert(output.log == expected)
 }
@@ -117,18 +117,18 @@ def test_lifts() {
         tell("WRONG;") |> bind
         return "unreachable"
     }
-    assert(plain_error.result is error && (plain_error.result as error) == "plain")
+    assert(plain_error.result is err && (plain_error.result as err) == "plain")
     assert(plain_error.log == "before;" && skipped == 0)
     let forwarded = computation(WriterResultBuilder()) {
         tell("before;") |> bind
         return writer_result_error("forwarded", type<string>, "failure;") |> return_from
     }
-    assert(forwarded.result is error && forwarded.log == "before;failure;")
+    assert(forwarded.result is err && forwarded.log == "before;failure;")
     let forwarded_plain = computation(WriterResultBuilder()) {
         tell("before;") |> bind
         return result_error("plain", type<int>) |> return_from
     }
-    assert(forwarded_plain.result is error && forwarded_plain.log == "before;")
+    assert(forwarded_plain.result is err && forwarded_plain.log == "before;")
     let forwarded_tell = computation(WriterResultBuilder()) { return tell("last;") |> return_from }
     assert(forwarded_tell.result is ok && forwarded_tell.log == "last;")
     let nested = computation(WriterResultBuilder()) {
@@ -154,7 +154,7 @@ def test_lifts() {
         while (loop_condition(trace, 0, 1)) { tell("WRONG;") |> bind }
         return 42
     }
-    assert(stopped.result is error && stopped.log == "try0;FAIL;")
+    assert(stopped.result is err && stopped.log == "try0;FAIL;")
     assert(trace.calls == 1 && trace.source == 0 && trace.condition == 0)
     let independent = computation(WriterResultBuilder()) { return 1 }
     assert(independent.log == "")

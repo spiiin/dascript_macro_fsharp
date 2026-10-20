@@ -10,7 +10,7 @@ def map_pair(p:tuple<first:int;second:int>) { maps++; return (sum=p.first+p.seco
 [export]
 def main() {
     let rejected=computation(ResultBuilder()) { let p=failed_result(1) |> and_bind(failed_result(2)) |> bind; return map_pair(p) }
-    assert(rejected is error && (rejected as error)=="error1" && maps==0 && calls==2 && order=="12")
+    assert(rejected is err && (rejected as err)=="error1" && maps==0 && calls==2 && order=="12")
     let absent=computation(OptionBuilder()) { let p=some(1) |> and_bind(none(type<int>)) |> bind; return map_pair(p) }
     assert(absent is none && maps==0)
     let invalid=computation(ValidationBuilder()) { let p=validation_error("left",type<int>) |> and_bind(validation_error("right",type<int>)) |> bind; return map_pair(p) }

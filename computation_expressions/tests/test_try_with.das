@@ -28,7 +28,7 @@ def main() {
  let error=computation(ResultBuilder()) {
   try_with($ {return result_error("value",type<int>) |> return_from}, $(message:string) {handlers++;return 0})
  }
- assert(error is error && handlers==1)
+ assert(error is err && handlers==1)
  let absent=computation(OptionBuilder()) {
   try_with($ {return none(type<int>) |> return_from}, $(message:string) {handlers++;return 0})
  }
@@ -49,7 +49,7 @@ def main() {
    return result_error("rollback",type<int>) |> return_from
   })
  }
- assert(sr.result is error && sr.state==1)
+ assert(sr.result is err && sr.state==1)
  let writer=computation(WriterBuilder()) {
   try_with($ {tell("lost;") |> bind;panic("writer");return 0}, $(message:string) {
    tell("recovered;") |> bind

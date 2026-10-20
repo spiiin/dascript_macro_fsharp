@@ -10,7 +10,7 @@ def ce_state_gets(builder:tuple<kind:StateWriterResultContext;initial:auto(S);st
 def StateWriterResultBuilder(initial : auto(TransactionState)) : tuple<kind : StateWriterResultContext; initial : TransactionState -const; state : TransactionState -const> {
     return (kind = StateWriterResultContext(), initial = initial, state = initial)
 }
-def state_writer_result_value(value : variant<ok : auto(T); error : string>; state : auto(TransactionState); log : string = "") {
+def state_writer_result_value(value : $Result<auto(T);string>; state : auto(TransactionState); log : string = "") {
     return (result = value, state = state, log = log)
 }
 def state_writer_result_ok(value : auto(T); state : auto(TransactionState); log : string = "") {
@@ -23,7 +23,7 @@ def private swr_failure(var builder : tuple<kind : StateWriterResultContext; ini
                        message, log : string; unused : type<auto(R)>) : R {
     builder.state = builder.initial
     var failed = default<R>
-    failed.result = variant type<typedecl(failed.result)>(error=message)
+    failed.result = variant type<typedecl(failed.result)>(err=message)
     failed.state = builder.initial
     failed.log = log
     return failed
@@ -34,9 +34,9 @@ def ce_unwrap(builder : tuple<kind : StateWriterResultContext; initial : auto(Tr
 def ce_unwrap(builder : tuple<kind : StateWriterResultContext; initial : auto(TransactionState); state : TransactionState>;
               op : tuple<operation : StatePut; state : TransactionState>) : CeUnit { return CeUnit() }
 def ce_unwrap(builder : tuple<kind : StateWriterResultContext; initial : auto(TransactionState); state : TransactionState>;
-              op : variant<ok : auto(T); error : string>) : T { return op as ok }
+              op : $Result<auto(T);string>) : T { return op as ok }
 def ce_unwrap(builder : tuple<kind : StateWriterResultContext; initial : auto(TransactionState); state : TransactionState>;
-              op : tuple<result : variant<ok : auto(T); error : string>; state : TransactionState; log : string>) : T { return op.result as ok }
+              op : tuple<result : $Result<auto(T);string>; state : TransactionState; log : string>) : T { return op.result as ok }
 
 def ce_bind(var builder : tuple<kind : StateWriterResultContext; initial : auto(TransactionState); state : TransactionState>; op : StateGet;
             next : block<(item : TransactionState) : auto(R)>) : R {
@@ -49,14 +49,14 @@ def ce_bind(var builder : tuple<kind : StateWriterResultContext; initial : auto(
     return invoke(next, CeUnit())
 }
 def ce_bind(var builder : tuple<kind : StateWriterResultContext; initial : auto(TransactionState); state : TransactionState>;
-            op : variant<ok : auto(T); error : string>; next : block<(item : T) : auto(R)>) : R {
-    if (op is error) { return swr_failure(builder, op as error, "", type<R>) }
+            op : $Result<auto(T);string>; next : block<(item : T) : auto(R)>) : R {
+    if (op is err) { return swr_failure(builder, op as err, "", type<R>) }
     return invoke(next, op as ok)
 }
 def ce_bind(var builder : tuple<kind : StateWriterResultContext; initial : auto(TransactionState); state : TransactionState>;
-            op : tuple<result : variant<ok : auto(T); error : string>; state : TransactionState; log : string>;
+            op : tuple<result : $Result<auto(T);string>; state : TransactionState; log : string>;
             next : block<(item : T) : auto(R)>) : R {
-    if (op.result is error) { return swr_failure(builder, op.result as error, op.log, type<R>) }
+    if (op.result is err) { return swr_failure(builder, op.result as err, op.log, type<R>) }
     builder.state = op.state
     var rest = invoke(next, op.result as ok)
     rest.log = op.log + rest.log
@@ -69,33 +69,33 @@ def ce_zero(builder : tuple<kind : StateWriterResultContext; initial : auto(Tran
     return state_writer_result_value(ce_zero(ResultBuilder()), builder.state)
 }
 def ce_return_from(var builder : tuple<kind : StateWriterResultContext; initial : auto(TransactionState); state : TransactionState>;
-                   value : variant<ok : auto(T); error : string>) {
-    if (value is error) { builder.state = builder.initial }
+                   value : $Result<auto(T);string>) {
+    if (value is err) { builder.state = builder.initial }
     return state_writer_result_value(value, builder.state)
 }
 def ce_return_from(var builder : tuple<kind : StateWriterResultContext; initial : auto(TransactionState); state : TransactionState>;
-                   value : tuple<result : variant<ok : auto(T); error : string>; state : TransactionState; log : string>) {
-    if (value.result is error) { builder.state = builder.initial }
+                   value : tuple<result : $Result<auto(T);string>; state : TransactionState; log : string>) {
+    if (value.result is err) { builder.state = builder.initial }
     else { builder.state = value.state }
     return state_writer_result_value(value.result, builder.state, value.log)
 }
 def ce_combine(var builder : tuple<kind : StateWriterResultContext; initial : auto(TransactionState); state : TransactionState>;
-               first : tuple<result : variant<ok : CeUnit; error : string>; state : TransactionState; log : string>;
+               first : tuple<result : $Result<CeUnit;string>; state : TransactionState; log : string>;
                next : block<() : auto(R)>) : R {
-    if (first.result is error) { return swr_failure(builder, first.result as error, first.log, type<R>) }
+    if (first.result is err) { return swr_failure(builder, first.result as err, first.log, type<R>) }
     builder.state = first.state
     var rest = ce_delay(builder, next)
     rest.log = first.log + rest.log
     return rest
 }
 def ce_loop_failed(builder : tuple<kind : StateWriterResultContext; initial : auto(TransactionState); state : TransactionState>;
-                   value : tuple<result : variant<ok : CeUnit; error : string>; state : TransactionState; log : string>) : bool {
-    return value.result is error
+                   value : tuple<result : $Result<CeUnit;string>; state : TransactionState; log : string>) : bool {
+    return value.result is err
 }
 def ce_loop_append(var builder : tuple<kind : StateWriterResultContext; initial : auto(TransactionState); state : TransactionState>;
-                   first, step : tuple<result : variant<ok : CeUnit; error : string>; state : TransactionState; log : string>) {
-    if (first.result is error) { return swr_failure(builder, first.result as error, first.log, type<typedecl(first)>) }
-    if (step.result is error) { return swr_failure(builder, step.result as error, first.log + step.log, type<typedecl(step)>) }
+                   first, step : tuple<result : $Result<CeUnit;string>; state : TransactionState; log : string>) {
+    if (first.result is err) { return swr_failure(builder, first.result as err, first.log, type<typedecl(first)>) }
+    if (step.result is err) { return swr_failure(builder, step.result as err, first.log + step.log, type<typedecl(step)>) }
     builder.state = step.state
     return state_writer_result_value(step.result, builder.state, first.log + step.log)
 }

@@ -15,16 +15,16 @@ def source() { sources++; return range(5) }
 def condition(n:int) { conditions++; return n<5 }
 def step(builder:ResultBuilder; i:int) {
     attempted++
-    if (i==2) { return variant<ok:int;error:string>(error="stop") }
-    return variant<ok:int;error:string>(ok=i)
+    if (i==2) { return variant type<$Result<int;string>>(err="stop") }
+    return variant type<$Result<int;string>>(ok=i)
 }
 def step(builder:OptionBuilder; i:int) {
     attempted++
-    if (i==2) { return variant<some:int;none:bool>(none=true) }
-    return variant<some:int;none:bool>(some=i)
+    if (i==2) { return default<$Option<int>> }
+    return variant type<$Option<int>>(some=i)
 }
-def failed(value:variant<ok:auto;error:string>) { return value is error }
-def failed(value:variant<some:auto;none:bool>) { return value is none }
+def failed(value:$Result<auto;string>) { return value is err }
+def failed(value:$Option<auto>) { return value is none }
 def reset() { sources=0; conditions=0; attempted=0; completed=0; after=0 }
 
 def stops(builder:auto) {
@@ -120,9 +120,9 @@ def temporary_lifetime() {
     let before=heap_bytes_allocated()
     for (round in range(10)) {
         let r=computation(ResultBuilder()) {
-            for (v in temporary()) { variant<ok:int;error:string>(error="stop") |> bind }
+            for (v in temporary()) { variant type<$Result<int;string>>(err="stop") |> bind }
         }
-        assert(r is error)
+        assert(r is err)
     }
     let afterBytes=heap_bytes_allocated()
     assert(before==afterBytes)
@@ -141,7 +141,7 @@ def main() {
         after++
         return 9
     }
-    assert(limited is error && limited as error=="for budget exhausted")
+    assert(limited is err && limited as err=="for budget exhausted")
     assert(sources==1 && completed==2 && after==0)
     reset()
     var n=0
@@ -150,13 +150,13 @@ def main() {
         after++
         return n
     }
-    assert(bounded is error && n==2 && conditions==3 && after==0)
+    assert(bounded is err && n==2 && conditions==3 && after==0)
     // User errors win over budget errors and do not evaluate another guard.
     reset()
     let userError=computation(BoundedResultBuilder(limit=10)) {
-        while (condition(0)) { variant<ok:int;error:string>(error="user") |> bind }
+        while (condition(0)) { variant type<$Result<int;string>>(err="user") |> bind }
     }
-    assert(userError is error && userError as error=="user" && conditions==1)
+    assert(userError is err && userError as err=="user" && conditions==1)
     let empty=computation(BoundedResultBuilder(limit=0)) {
         for (i in range(0)) { panic("unreachable") }
         while (false) { panic("unreachable") }
@@ -170,6 +170,6 @@ def main() {
     completed=0
     let first=run_deferred(task)
     let second=run_deferred(task)
-    assert(first is error && second is error && completed==4)
+    assert(first is err && second is err && completed==4)
     print("loop protocol checks OK\n")
 }

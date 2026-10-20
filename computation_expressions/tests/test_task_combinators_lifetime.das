@@ -99,14 +99,14 @@ def checks() {
         }
         verify(task_poll(task)==TaskStatus.Succeeded && continued==0 && polls[1]==0)
         let result=task_value(task)
-        verify(result is error && result as error=="denied" && order=="0;1;")
+        verify(result is err && result as err=="denied" && order=="0;1;")
     }
     balanced();reset()
     {
         var inscope task <- task_result_when_all(owned(0,3,result_ok(1)),owned(1,0,result_error("right",type<string>)))
         verify(task_poll(task)==TaskStatus.Succeeded && order=="1;0;")
         let result=task_value(task)
-        verify(result is error && result as error=="right")
+        verify(result is err && result as err=="right")
     }
     balanced();reset()
     {

@@ -19,7 +19,7 @@ def request(command:string) {
 def main() {
     port=to_int(get_env_variable("CE_TASK_TCP_PORT"))
     verify(port>0)
-    var inscope scheduler <- task_scheduler(type<variant<ok:string;error:string>>)
+    var inscope scheduler <- task_scheduler(type<$Result<string;string>>)
     let start=ref_time_ticks()
     let success=task_spawn(scheduler,request("ok\n"))
     while(task_status(scheduler,success)==TaskStatus.Created || task_status(scheduler,success)==TaskStatus.Waiting) {
@@ -54,7 +54,7 @@ def main() {
         task_tick(scheduler,now);sleep(1u)
     }
     let error=task_value(scheduler,eof)
-    verify(error is error && continued==1 && task_tcp_stats().active==0)
+    verify(error is err && continued==1 && task_tcp_stats().active==0)
     task_scheduler_close(scheduler)
     let stats=task_tcp_stats()
     verify(stats.created==4 && stats.released==4)

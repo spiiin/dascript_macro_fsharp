@@ -19,7 +19,7 @@ def main() {
         if(hp<100){result_error("rollback",type<CeUnit>) |> bind}
         return hp
     }
-    assert(rollback.result is error && rollback.state==100)
+    assert(rollback.result is err && rollback.state==100)
     let logged=computation(StateWriterResultBuilder(5)) {
         state_modify($(n:int){return n+2}) |> bind
         tell("modified;") |> bind

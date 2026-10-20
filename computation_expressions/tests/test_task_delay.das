@@ -51,7 +51,7 @@ def budgets_and_result() {
     verify(task_tick(scheduler,100)==2) // b starts its own wait at 100.
     verify(task_tick(scheduler,109)==1 && task_value(scheduler,a)==1)
     verify(task_tick(scheduler,110)==0 && task_value(scheduler,b)==2)
-    var inscope results <- task_scheduler(type<variant<ok:int;error:string>>)
+    var inscope results <- task_scheduler(type<$Result<int;string>>)
     var source <- computation(TaskResultBuilder(type<int>)) {
         task_delay_ms(5) |> bind
         let n=task_after_polls(0,result_ok(6)) |> bind

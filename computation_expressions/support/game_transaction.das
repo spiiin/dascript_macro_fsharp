@@ -3,8 +3,8 @@ module game_transaction public
 require ../lib/computation.das public
 struct AdventureState { health : int; gold : int; potions : int; turns : int }
 
-def check_alive(health : int) : variant<ok : CeUnit; error : string> {
-    if (health <= 0) { return variant<ok : CeUnit; error : string>(error="hero defeated") }
+def check_alive(health : int) : $Result<CeUnit;string> {
+    if (health <= 0) { return variant type<$Result<CeUnit;string>>(err="hero defeated") }
     return ce_zero(ResultBuilder())
 }
 // Purchase, use a potion, take damage, then validate: failure rolls back all steps.

@@ -103,7 +103,7 @@ def private ce_event_poll(var op:auto(O)?) {
             if(slot.id==op.id && slot.ready) {return task_ready(result_ok(slot.value))}
         }
         if(state.closed) {return task_ready(result_error("task event source is closed",type<typedecl(state.slots[0].value) -const -&>))}
-        return task_pending(type<variant<ok:typedecl(state.slots[0].value) -const -&;error:string>>)
+        return task_pending(type<$Result<typedecl(state.slots[0].value) -const -&;string>>)
     }
 }
 

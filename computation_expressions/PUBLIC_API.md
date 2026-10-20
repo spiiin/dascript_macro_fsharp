@@ -1,6 +1,8 @@
 # Публичный API computation expressions
 
 Проверенный SDK — Daslang v0.6.5-RC2 со стандартной daslib. SDK не включён в экспорт.
+Result и Option теперь являются стандартными `$Result<T;string>` / `$Option<T>`.
+Миграция и правила владения: [STANDARD_TYPES.md](STANDARD_TYPES.md).
 Необязательный `./lib/task_hv.das` требует установленный `dashv/dashv_boost`.
 API: `hv_websocket`, `ws_connect`, `ws_send_text`, `ws_receive_text`,
 `HvWebSocketConfig`, `hv_websocket_stats`; контракт и пример: [TASK_HV.md](TASK_HV.md).
@@ -26,7 +28,7 @@ task_result_when_all, task_race и [and_bind для Task](TASK_AND_BIND.md); с�
 
 | Builder | Результат |
 |---|---|
-| ResultBuilder / OptionBuilder | variant ok/error / some/none |
+| ResultBuilder / OptionBuilder | `$Result<T;string>` (err/ok) / `$Option<T>` (none/some) |
 | MoveResultBuilder / MoveOptionBuilder | Те же варианты с передаваемым владением |
 | StateBuilder(initial) | `(value, state)` |
 | WriterBuilder | `(value, log)` |
@@ -61,9 +63,10 @@ task_error, task_cancel, task_scope, task_from_poll, task_after_polls.
 
 | Операция | Назначение |
 |---|---|
-| `result_ok(value)`, `result_error(message, type<T>)` | Успех / прикладная ошибка |
-| `some(value)`, `none(type<T>)` | Наличие / отсутствие |
-| `move_ok(value)`, `move_some(value)` | Потребляют value перемещением |
+| `ok(value,type<string>)`, `err(message,type<T>)` | Стандартные конструкторы Result; совместимые обёртки `result_ok` / `result_error` сохранены |
+| `some(value)`, `none(type<T>)` | Стандартные конструкторы Option из daslib/option |
+| `move_ok(value[,type<E>])`, `move_some(value)` | Перемещение: одноаргументный move_ok — обёртка для Result<T,string>, остальные — стандартные функции |
+| `ce_move_some(value)` | Стандартный Option с обходом AOT-перемещения tuple; см. STANDARD_TYPES.md |
 | `move_error(message, type<T>)`, `move_none(type<T>)` | Неуспешные owning-результаты |
 | `state_get()`, `state_put(state)` | Описания чтения / замены состояния, выполняемые через bind |
 | `state_modify($(state:S) {return nextState})` | Преобразовать состояние, завершается bind |

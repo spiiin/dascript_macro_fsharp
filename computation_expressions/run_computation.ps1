@@ -19,6 +19,7 @@ function Check([string]$File, [bool]$Pass, [string]$Expected) {
 }
 Push-Location $PSScriptRoot
 try {
+    Check 'tests/test_standard_outcomes.das' $true 'Standard outcome interoperability checks OK'
     Check 'examples/parser_combinators_demo.das' $true 'Parser combinators demo OK'
     Check 'examples/parser_demo.das' $true 'Parser demo OK'
     Check 'examples/search_alternatives_demo.das' $true 'Search alternatives demo OK'

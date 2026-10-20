@@ -4,7 +4,8 @@
 
 Таблица возможностей builders и общий контракт: [CE_SEMANTICS.md](CE_SEMANTICS.md).
 
-Рабочий синхронный DSL на AST-макросах Daslang 0.6.4.
+Рабочий синхронный DSL на AST-макросах Daslang 0.6.5-RC2.
+Использует стандартные Result и Option: [переход и совместимость](STANDARD_TYPES.md).
 `computation` общий для builders; связывание записывается пайпом.
 StateBuilder и WriterBuilder описаны в [STATE_WRITER.md](STATE_WRITER.md).
 
@@ -30,7 +31,7 @@ let outcome = computation(ResultBuilder()) {
 }
 ```
 
-`checked_number` из демо возвращает `variant<ok:int; error:string>`.
+`checked_number` из демо возвращает `$Result<int;string>`.
 При `ok` извлекается значение и выполняется продолжение. При `error`
 ошибка возвращается сразу; последующие выражения не вычисляются.
 `return value` упаковывается в успешный Result.
@@ -56,7 +57,7 @@ let greeting = computation(OptionBuilder()) {
 }
 ```
 
-Option представлен `variant<some:T; none:bool>`. Значим тег `none`,
+Option представлен `$Option<T>`. Значим тег `none`,
 а его bool-поле — техническая заглушка. Создавайте отсутствие через
 `none(type<T>)`. При отсутствии значения продолжение не вызывается.
 

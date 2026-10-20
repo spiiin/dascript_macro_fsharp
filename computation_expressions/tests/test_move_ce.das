@@ -31,7 +31,7 @@ def success() {
             items |> push(9)
             return <- items
         }
-        assert(length(initial as ok)==0)
+        assert(initial is err) // A moved-from standard Result resets to its default err.
         assert(length(result as ok)==4 && (result as ok)[3]==9)
         var inscope from_function <- upgrade()
         assert(length(from_function as ok)==4)
@@ -54,7 +54,7 @@ def failures() {
             after++
             return <- items
         }
-        assert(result is error && result as error=="stop" && after==0)
+        assert(result is err && result as err=="stop" && after==0)
         var inscope option <- computation(MoveOptionBuilder()) {
             var items & = optional_inventory() |> bind
             move_none(type<CeUnit>) |> bind
@@ -94,7 +94,7 @@ def groups() {
             after++
             return <- pair
         }
-        assert(failed is error && after==0)
+        assert(failed is err && after==0)
     }
     let current=heap_bytes_allocated()
     assert(baseline==current)
@@ -112,7 +112,7 @@ def control() {
             after++
             return <- items
         }
-        assert(result is error && attempted==3 && after==0)
+        assert(result is err && attempted==3 && after==0)
         var inscope forwarded <- computation(MoveResultBuilder()) {return inventory() |> return_from}
         assert(length(forwarded as ok)==3)
         var inscope recovered <- computation(MoveResultBuilder()) {
@@ -142,7 +142,7 @@ def pack() {
     p.items |> push(42)
     return <- move_ok(p)
 }
-def explode() : variant<ok:array<int>;error:string> {panic("source panic");return <- move_error("unreachable",type<array<int>>)}
+def explode() : $Result<array<int>;string> {panic("source panic");return <- move_error("unreachable",type<array<int>>)}
 def more_ownership() {
     let baseline=heap_bytes_allocated()
     {
@@ -164,7 +164,7 @@ def more_ownership() {
             after++
             return <- pair
         }
-        assert(right_error is error && after==0)
+        assert(right_error is err && after==0)
         var inscope opt <- computation(MoveOptionBuilder()) {
             var pair & = optional_inventory() |> and_bind(optional_inventory()) |> bind
             return <- pair
@@ -247,7 +247,7 @@ def owned_loops() {
                 return <- items
             }, $ {closed++})
         }
-        assert(failed is error && closed==1)
+        assert(failed is err && closed==1)
         var caught=false
         try {
             var inscope r <- computation(MoveOptionBuilder()) {

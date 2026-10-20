@@ -11,9 +11,9 @@ def source(seed:int) {trace+="m;"; if(seed<0){return result_error("negative",typ
 def f(seed:int) {trace+="f;"; if(seed==2){return result_error("two",type<int>)};return result_ok(seed+1)}
 def g(seed:int) {trace+="g;"; return result_ok(seed*3)}
 def map_pair(x,y:int) {trace+="{x}:{y};";return x+y}
-def equivalent(a,b:variant<ok:int;error:string>) {
+def equivalent(a,b:$Result<int;string>) {
     assert((a is ok)==(b is ok))
-    if(a is ok){assert((a as ok)==(b as ok))}else{assert((a as error)==(b as error))}
+    if(a is ok){assert((a as ok)==(b as ok))}else{assert((a as err)==(b as err))}
 }
 def grouped(seed:int) {
     return computation(ResultBuilder()) {

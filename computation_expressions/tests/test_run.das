@@ -12,11 +12,11 @@ def make_probe() { creations++; return Probe() }
 def ce_protocol(builder:Probe) { return CeValueProtocol() }
 def ce_return(builder:Probe; value:auto) { return result_ok(value) }
 def ce_zero(builder:Probe) { return result_ok(CeUnit()) }
-def ce_bind(builder:Probe; source:variant<ok:auto(T);error:string>; next:block<(value:T):auto(R)>) : R {
+def ce_bind(builder:Probe; source:$Result<auto(T);string>; next:block<(value:T):auto(R)>) : R {
     return ce_bind(ResultBuilder(),source,next)
 }
-def ce_unwrap(builder:Probe; source:variant<ok:auto(T);error:string>) : T { return source as ok }
-def ce_run(builder:Probe; outcome:variant<ok:auto(T);error:string>) {
+def ce_unwrap(builder:Probe; source:$Result<auto(T);string>) : T { return source as ok }
+def ce_run(builder:Probe; outcome:$Result<auto(T);string>) {
     runs++; events+="run;"
     return (success=outcome is ok,outcome=outcome)
 }

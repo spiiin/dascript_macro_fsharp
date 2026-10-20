@@ -7,7 +7,7 @@ def builder() { events+="B"; return Observed() }
 def environment() { events+="D"; return [7] }
 def ce_protocol(b:Observed) { events+="P"; return CeValueProtocol() }
 def ce_return(b:Observed; value:int) { events+="T"; return result_ok(value) }
-def ce_run(b:Observed; result:variant<ok:int;error:string>) { events+="R"; return result as ok }
+def ce_run(b:Observed; result:$Result<int;string>) { events+="R"; return result as ok }
 [export]
 def main() {
     let baseline=heap_bytes_allocated()

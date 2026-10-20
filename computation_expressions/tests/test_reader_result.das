@@ -40,24 +40,24 @@ def basics() {
         let config=reader_ask() |> bind
         return missing*config.multiplier
     }
-    assert(skipped is error && skipped as error=="missing" && reached==0)
+    assert(skipped is err && skipped as err=="missing" && reached==0)
     let optimized=computation(ReaderResultBuilder(builder.environment)) {
         let missing=result_error("map",type<int>) |> bind
         return missing+1
     }
-    assert(optimized is error && optimized as error=="map")
+    assert(optimized is err && optimized as err=="map")
     let empty=computation(ReaderResultBuilder(builder.environment)) { }
     assert(empty is ok)
     let forwarded=computation(ReaderResultBuilder(builder.environment)) {
         return result_error("forwarded",type<int>) |> return_from
     }
-    assert(forwarded is error && forwarded as error=="forwarded")
+    assert(forwarded is err && forwarded as err=="forwarded")
     let branch=computation(ReaderResultBuilder(builder.environment)) {
         if (true) {result_error("branch",type<CeUnit>) |> bind}
         reached++
         return 1
     }
-    assert(branch is error && reached==0)
+    assert(branch is err && reached==0)
     let paired=computation(ReaderResultBuilder(builder.environment)) {
         let pair=reader_ask() |> and_bind(result_ok(4)) |> bind
         return pair.first.multiplier*pair.second
@@ -73,12 +73,12 @@ def basics() {
         reached++
         return pair.first+pair.second
     }
-    assert(failedPair is error && failedPair as error=="left" && reached==0)
+    assert(failedPair is err && failedPair as err=="left" && reached==0)
     let rightFailure=computation(ReaderResultBuilder(builder.environment)) {
         let pair=reader_ask() |> and_bind(result_error("right",type<int>)) |> bind
         return pair.first.multiplier+pair.second
     }
-    assert(rightFailure is error && rightFailure as error=="right")
+    assert(rightFailure is err && rightFailure as err=="right")
 }
 def loops() {
     let builder=ReaderResultBuilder(Rules())
@@ -93,7 +93,7 @@ def loops() {
         reached+=100
         return 1
     }
-    assert(failed is error && visits==3 && reached==2)
+    assert(failed is err && visits==3 && reached==2)
     reached=0
     visits=0
     let failedWhile=computation(ReaderResultBuilder(builder.environment)) {
@@ -105,7 +105,7 @@ def loops() {
         reached++
         return 1
     }
-    assert(failedWhile is error && visits==2 && reached==0)
+    assert(failedWhile is err && visits==2 && reached==0)
     visits=0
     let zipped=computation(ReaderResultBuilder(builder.environment)) {
         for (a,b in range(5),range(5)) {
@@ -115,7 +115,7 @@ def loops() {
         reached++
         return 1
     }
-    assert(zipped is error && visits==2 && reached==0)
+    assert(zipped is err && visits==2 && reached==0)
     let complete=computation(ReaderResultBuilder(builder.environment)) {
         for (i in range(2)) {allowed(i,3) |> bind}
         return 42
@@ -131,13 +131,13 @@ def resources() {
         reached++
         return 1
     }
-    assert(failed is error && opened==closed && reached==0)
+    assert(failed is err && opened==closed && reached==0)
     let stopped=computation(ReaderResultBuilder(builder.environment)) {
         for (i in feed(false)) {allowed(i,1) |> bind}
         reached++
         return 1
     }
-    assert(stopped is error && opened==closed && reached==0)
+    assert(stopped is err && opened==closed && reached==0)
     let completed=computation(ReaderResultBuilder(builder.environment)) {
         let resource=acquire() |> use_resource
         for (i in feed(false)) {result_ok(CeUnit()) |> bind}

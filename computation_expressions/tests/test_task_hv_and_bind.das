@@ -59,7 +59,7 @@ def success_checks(round:int) {
     let left="echo_pair_left_{round}"
     let right="echo_pair_right_{round}"
     {
-        var inscope scheduler <- task_scheduler(type<variant<ok:string;error:string>>)
+        var inscope scheduler <- task_scheduler(type<$Result<string;string>>)
         let id=task_spawn(scheduler,pair(left,right))
         drive(scheduler,id)
         verify(task_status(scheduler,id)==TaskStatus.Succeeded)
@@ -75,7 +75,7 @@ def cancellation_checks(round:int) {
     let right="silent_pair_cancel_right_{round}"
     {
         var inscope token <- cancellation_token()
-        var inscope scheduler <- task_scheduler(type<variant<ok:string;error:string>>)
+        var inscope scheduler <- task_scheduler(type<$Result<string;string>>)
         let id=task_spawn(scheduler,task_with_cancellation(pair(left,right),token))
         both_waiting(scheduler,id)
         verify(cancellation_cancel(token));drive(scheduler,id)
@@ -89,7 +89,7 @@ def timeout_checks(round:int) {
     let left="silent_pair_timeout_left_{round}"
     let right="silent_pair_timeout_right_{round}"
     {
-        var inscope scheduler <- task_scheduler(type<variant<ok:string;error:string>>)
+        var inscope scheduler <- task_scheduler(type<$Result<string;string>>)
         let id=task_spawn(scheduler,pair(left,right),TaskTimeout(after_ms=5))
         // Keep virtual time at zero until both connections are awaiting replies.
         both_waiting(scheduler,id);tick(scheduler,5l)
@@ -103,13 +103,13 @@ def first_error_checks(round:int) {
     let left="pair_error_left_{round}"
     let right="silent_pair_error_right_{round}"
     {
-        var inscope scheduler <- task_scheduler(type<variant<ok:string;error:string>>)
+        var inscope scheduler <- task_scheduler(type<$Result<string;string>>)
         // No timeout: only the first child's Error can close the waiting sibling.
         let id=task_spawn(scheduler,pair(left,right))
         drive(scheduler,id)
         verify(task_status(scheduler,id)==TaskStatus.Succeeded && !task_timed_out(scheduler,id))
         let result=task_value(scheduler,id)
-        verify(result is error && result as error=="WebSocket: binary messages are unsupported by ws_receive_text")
+        verify(result is err && result as err=="WebSocket: binary messages are unsupported by ws_receive_text")
         verify(fexist("{markers}/received_{right}"))
         verify(children_continued==0 && parent_continued==0)
         balanced();wait_closed(left);wait_closed(right)

@@ -88,7 +88,7 @@ def checks() {
         }
         verify(task_poll(task)==TaskStatus.Succeeded && continued==0 && order=="1;0;")
         let value=task_value(task)
-        verify(value is error && value as error=="denied")
+        verify(value is err && value as err=="denied")
     }
     reset()
     {

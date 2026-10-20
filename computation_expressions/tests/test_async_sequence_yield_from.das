@@ -92,7 +92,7 @@ def factory(wait:int=0) {
 }
 
 def drain(var stream:auto) {
-    var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+    var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
     var now:int64=0
     var sum=0
     while(true) {
@@ -163,7 +163,7 @@ def checks() {
     // Close the outer owner while a next lease is still pending.
     {
         var stream <- outer(100)
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,async_sequence_next(stream))
         verify(task_tick(scheduler,0)==1)
         delete stream
@@ -179,7 +179,7 @@ def checks() {
     // A taken owning element survives closing both the parent and child.
     {
         var stream <- outer(0)
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,async_sequence_next(stream))
         verify(task_tick(scheduler,0)==0)
         {

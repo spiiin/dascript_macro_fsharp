@@ -21,6 +21,6 @@ def main() {
     }
     verify(task_poll(purchase)==TaskStatus.Succeeded && !continued)
     let result=task_value(purchase)
-    verify(result is error && result as error=="Out of stock")
+    verify(result is err && result as err=="Out of stock")
     print("Task and_bind demo OK\n")
 }

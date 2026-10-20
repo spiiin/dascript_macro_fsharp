@@ -26,7 +26,7 @@ def test_linear(fail_at : int) {
     if (fail_at < 0) {
         assert(result.result is ok && (result.result as ok) == "sum=1" && result.state == 40)
     } else {
-        assert(result.result is error && (result.result as error) == "failure {fail_at}" && result.state == 10)
+        assert(result.result is err && (result.result as err) == "failure {fail_at}" && result.state == 10)
     }
 }
 def test_loops(count, fail_at : int; use_while : bool) {
@@ -59,7 +59,7 @@ def test_loops(count, fail_at : int; use_while : bool) {
     assert(trace.source == (use_while ? 0 : 1))
     assert(trace.condition == (use_while ? (failed ? fail_at + 1 : count + 1) : 0))
     if (failed) {
-        assert(output.result is error && (output.result as error) == "failure {fail_at}" && output.state == 10)
+        assert(output.result is err && (output.result as err) == "failure {fail_at}" && output.state == 10)
     } else {
         assert(output.result is ok && (output.result as ok) == 100 + count && output.state == 100 + count)
     }
@@ -80,7 +80,7 @@ def test_nested_loops(fail_at : int) {
     }
     assert(trace.attempted == (fail_at < 0 ? 4 : fail_at + 1))
     assert(output.state == (fail_at < 0 ? 104 : 10))
-    assert((output.result is error) == (fail_at >= 0))
+    assert((output.result is err) == (fail_at >= 0))
 }
 def child(initial : int; fail : bool) {
     return computation(StateResultBuilder(initial)) {
@@ -91,7 +91,7 @@ def child(initial : int; fail : bool) {
 }
 def test_composition() {
     let failed_child = child(50, true)
-    assert(failed_child.result is error && failed_child.state == 50)
+    assert(failed_child.result is err && failed_child.state == 50)
     var after = 0
     let failed_parent = computation(StateResultBuilder(10)) {
         state_put(50) |> bind
@@ -100,7 +100,7 @@ def test_composition() {
         after++
         return 42
     }
-    assert(failed_parent.result is error && (failed_parent.result as error) == "child failed")
+    assert(failed_parent.result is err && (failed_parent.result as err) == "child failed")
     assert(failed_parent.state == 10 && after == 0)
     let success = computation(StateResultBuilder(10)) {
         state_put(50) |> bind
@@ -116,7 +116,7 @@ def test_composition() {
         assert(current == 55)
         return result_error("later failure", type<int>) |> return_from
     }
-    assert(failed_after_commit.result is error && failed_after_commit.state == 10)
+    assert(failed_after_commit.result is err && failed_after_commit.state == 10)
     let ignored_child = computation(StateResultBuilder(10)) {
         state_put(20) |> bind
         let ignored = child(90, true)
@@ -127,11 +127,11 @@ def test_composition() {
         state_put(20) |> bind
         return child(50, true) |> return_from
     }
-    assert(forwarded_child.result is error && forwarded_child.state == 10)
+    assert(forwarded_child.result is err && forwarded_child.state == 10)
     let forged_failure = computation(StateResultBuilder(10)) {
         return state_result_error("ignore foreign state", type<int>, 999) |> return_from
     }
-    assert(forged_failure.result is error && forged_failure.state == 10)
+    assert(forged_failure.result is err && forged_failure.state == 10)
     let forwarded_ok = computation(StateResultBuilder(10)) {
         return state_result_ok("ok", 30) |> return_from
     }
@@ -159,7 +159,7 @@ def test_edges() {
         while (condition(trace, 0, 1)) { state_put(100) |> bind }
         return 1
     }
-    assert(skipped.result is error && skipped.state == 10)
+    assert(skipped.result is err && skipped.state == 10)
     assert(trace.attempted == 1 && trace.source == 0 && trace.condition == 0)
     let terminal_while = computation(StateResultBuilder(10)) {
         state_put(20) |> bind
@@ -168,13 +168,13 @@ def test_edges() {
             result_error("stop", type<int>) |> bind
         }
     }
-    assert(terminal_while.result is error && terminal_while.state == 10)
+    assert(terminal_while.result is err && terminal_while.state == 10)
     // A Result returned without return_from is ordinary data, not failure.
     let payload = computation(StateResultBuilder(10)) {
         state_put(20) |> bind
         return result_error("payload", type<int>)
     }
-    assert(payload.result is ok && ((payload.result as ok) is error) && payload.state == 20)
+    assert(payload.result is ok && ((payload.result as ok) is err) && payload.state == 20)
     let initial = AdventureState(health=50, gold=30, potions=2, turns=0)
     var reached = 0
     let first = adventure_turn(initial, 100, reached)

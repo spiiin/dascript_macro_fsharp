@@ -8,7 +8,7 @@ require ./lib/computation.das
 и исходным снимком. Результат:
 
 ```text
-tuple<result : variant<ok : T; error : string>; state : S>
+tuple<result : $Result<T;string>; state : S>
 ```
 
 При успехе state — конечное состояние. При Error state — исходное состояние

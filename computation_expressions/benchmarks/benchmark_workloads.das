@@ -14,15 +14,15 @@ def bench_result_ce(seed:int) : int64 {
         let c=checked(b+3) |> bind
         return c*2
     }
-    return result is error ? -1l : int64(result as ok)
+    return result is err ? -1l : int64(result as ok)
 }
 def bench_result_manual(seed:int) : int64 {
     let a=checked(seed)
-    if (a is error) {return -1l}
+    if (a is err) {return -1l}
     let b=checked((a as ok)*2)
-    if (b is error) {return -1l}
+    if (b is err) {return -1l}
     let c=checked((b as ok)+3)
-    if (c is error) {return -1l}
+    if (c is err) {return -1l}
     return int64((c as ok)*2)
 }
 def bench_state_ce(seed:int) : int64 {

@@ -106,7 +106,7 @@ def repeated_copy() {
     verify(snapshotsFreed==freed+1)
     for(round in range(3)) {
         var inscope stream <- run_deferred(saved)
-        var inscope scheduler <- task_scheduler(type<variant<some:int;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<int>>)
         var sum=0
         var now:int64=0
         while(true) {
@@ -139,7 +139,7 @@ def independent_move() {
     delete data
     delete saved
     verify(snapshotsFreed==freed+2)
-    var inscope scheduler <- task_scheduler(type<variant<some:array<int>;none:bool>>)
+    var inscope scheduler <- task_scheduler(type<$Option<array<int>>>)
     let a=task_spawn(scheduler,async_sequence_next(first))
     let b=task_spawn(scheduler,async_sequence_next(second))
     verify(task_tick(scheduler,0)==2 && snapshotsFreed==freed+2)
@@ -211,7 +211,7 @@ def unopened_and_pending() {
             delete stream
             verify(cleaned==finishes)
         } else {
-            var inscope scheduler <- task_scheduler(type<variant<some:array<int>;none:bool>>)
+            var inscope scheduler <- task_scheduler(type<$Option<array<int>>>)
             let a=task_spawn(scheduler,async_sequence_next(stream))
             if(mode==2) {verify(task_tick(scheduler,0)==1)}
             delete stream

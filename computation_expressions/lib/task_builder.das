@@ -158,10 +158,10 @@ def ce_protocol(builder:tuple<kind:TaskContext;element:auto(T)?>) {
     return ce_resumable_protocol(type<tuple<tag:TaskEventTag;ready:bool;value:T>>)
 }
 def ce_protocol(builder:tuple<kind:TaskResultContext;element:auto(T)?>) {
-    return ce_resumable_protocol(type<tuple<tag:TaskEventTag;ready:bool;value:variant<ok:T;error:string>>>)
+    return ce_resumable_protocol(type<tuple<tag:TaskEventTag;ready:bool;value:$Result<T;string>>>)
 }
 def ce_await_pending(builder:tuple<kind:TaskContext;element:auto(T)?>) {return task_pending(type<T>)}
-def ce_await_pending(builder:tuple<kind:TaskResultContext;element:auto(T)?>) {return task_pending(type<variant<ok:T;error:string>>)}
+def ce_await_pending(builder:tuple<kind:TaskResultContext;element:auto(T)?>) {return task_pending(type<$Result<T;string>>)}
 def ce_await_return(builder:tuple<kind:TaskContext;element:auto(T)?>; value:T) {return task_ready(value)}
 def ce_await_return(builder:tuple<kind:TaskResultContext;element:auto(T)?>; value:T) {return task_ready(result_ok(value))}
 
@@ -176,26 +176,26 @@ def ce_await_zero(builder:tuple<kind:TaskResultContext;element:CeUnit?>) {return
 def ce_await_borrow_value(builder:tuple<kind:TaskContext;element:auto>; var event:tuple<tag:TaskEventTag;ready:bool;value:auto(T)>) : T& {
     unsafe {return event.value}
 }
-def ce_await_borrow_value(builder:tuple<kind:TaskResultContext;element:auto>; var event:tuple<tag:TaskEventTag;ready:bool;value:variant<ok:auto(T);error:string>>) : T& {
+def ce_await_borrow_value(builder:tuple<kind:TaskResultContext;element:auto>; var event:tuple<tag:TaskEventTag;ready:bool;value:$Result<auto(T);string>>) : T& {
     unsafe {return event.value as ok}
 }
 def ce_await_borrow_value(builder:tuple<kind:TaskResultContext;element:auto>; var event:tuple<tag:TaskEventTag;ready:bool;value:CeUnit>) : CeUnit& {return event.value}
 def ce_await_borrow_value(builder:tuple<kind:TaskResultContext;element:auto>; var event:tuple<tag:TaskEventTag;ready:bool;value:array<auto(T)>>) : array<T>& {unsafe {return event.value}}
 def ce_await_failed(builder:tuple<kind:TaskResultContext;element:auto>; event:tuple<tag:TaskEventTag;ready:bool;value:array<auto>>) {return false}
-def ce_await_failure(builder:tuple<kind:TaskResultContext;element:auto(T)?>; event:tuple<tag:TaskEventTag;ready:bool;value:array<auto>>) {return <- task_pending(type<variant<ok:T;error:string>>)}
+def ce_await_failure(builder:tuple<kind:TaskResultContext;element:auto(T)?>; event:tuple<tag:TaskEventTag;ready:bool;value:array<auto>>) {return <- task_pending(type<$Result<T;string>>)}
 def ce_await_value(builder:tuple<kind:TaskContext;element:auto(T)?>; event:tuple<tag:TaskEventTag;ready:bool;value:auto(U)>) {
     concept_assert(typeinfo can_copy(type<U>),"task: move-only bind needs 'var value & = source |> bind'")
     return event.value
 }
-def ce_await_value(builder:tuple<kind:TaskResultContext;element:auto(T)?>; event:tuple<tag:TaskEventTag;ready:bool;value:variant<ok:auto(U);error:string>>) {
+def ce_await_value(builder:tuple<kind:TaskResultContext;element:auto(T)?>; event:tuple<tag:TaskEventTag;ready:bool;value:$Result<auto(U);string>>) {
     concept_assert(typeinfo can_copy(type<U>),"task: move-only bind needs 'var value & = source |> bind'")
     return event.value as ok
 }
 def ce_await_failed(builder:tuple<kind:TaskContext;element:auto(T)?>; event:auto) {return false}
-def ce_await_failed(builder:tuple<kind:TaskResultContext;element:auto(T)?>; event:tuple<tag:TaskEventTag;ready:bool;value:variant<ok:auto(U);error:string>>) {return event.value is error}
+def ce_await_failed(builder:tuple<kind:TaskResultContext;element:auto(T)?>; event:tuple<tag:TaskEventTag;ready:bool;value:$Result<auto(U);string>>) {return event.value is err}
 def ce_await_failure(builder:tuple<kind:TaskContext;element:auto(T)?>; event:auto) {return task_pending(type<T>)}
-def ce_await_failure(builder:tuple<kind:TaskResultContext;element:auto(T)?>; event:tuple<tag:TaskEventTag;ready:bool;value:variant<ok:auto(U);error:string>>) {
-    var result <- move_error(event.value as error,type<T>)
+def ce_await_failure(builder:tuple<kind:TaskResultContext;element:auto(T)?>; event:tuple<tag:TaskEventTag;ready:bool;value:$Result<auto(U);string>>) {
+    var result <- move_error(event.value as err,type<T>)
     return <- task_ready_move(result)
 }
 
@@ -203,10 +203,10 @@ def ce_await_failure(builder:tuple<kind:TaskResultContext;element:auto(T)?>; eve
 // propagate through ce_await_source. This also permits delay |> bind in TaskResult.
 def ce_await_value(builder:tuple<kind:TaskResultContext;element:auto(T)?>; event:tuple<tag:TaskEventTag;ready:bool;value:CeUnit>) {return CeUnit()}
 def ce_await_failed(builder:tuple<kind:TaskResultContext;element:auto(T)?>; event:tuple<tag:TaskEventTag;ready:bool;value:CeUnit>) {return false}
-def ce_await_failure(builder:tuple<kind:TaskResultContext;element:auto(T)?>; event:tuple<tag:TaskEventTag;ready:bool;value:CeUnit>) {return task_pending(type<variant<ok:T;error:string>>)}
+def ce_await_failure(builder:tuple<kind:TaskResultContext;element:auto(T)?>; event:tuple<tag:TaskEventTag;ready:bool;value:CeUnit>) {return task_pending(type<$Result<T;string>>)}
 
 def ce_sequence_run(builder:tuple<kind:TaskContext;element:auto(T)?>; var source:iterator<tuple<tag:TaskEventTag;ready:bool;value:T>>) {return <- task_create(source)}
-def ce_sequence_run(builder:tuple<kind:TaskResultContext;element:auto(T)?>; var source:iterator<tuple<tag:TaskEventTag;ready:bool;value:variant<ok:T;error:string>>>) {return <- task_create(source)}
+def ce_sequence_run(builder:tuple<kind:TaskResultContext;element:auto(T)?>; var source:iterator<tuple<tag:TaskEventTag;ready:bool;value:$Result<T;string>>>) {return <- task_create(source)}
 
 def task_status(task:tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTag;ready:bool;value:auto(T)>>;status:TaskStatus;value:T;error:string;polling:bool>) {return task.status}
 def task_value(task:tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTag;ready:bool;value:auto(T)>>;status:TaskStatus;value:T;error:string;polling:bool>) : T {

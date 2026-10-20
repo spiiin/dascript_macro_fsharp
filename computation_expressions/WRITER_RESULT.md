@@ -4,7 +4,7 @@
 require ./lib/computation.das
 ```
 
-Результат имеет вид `tuple<result:variant<ok:T; error:string>; log:string>`.
+Результат имеет вид `tuple<result:$Result<T;string>; log:string>`.
 Computation выполняется синхронно. При Error следующие шаги не выполняются,
 а журнал уже выполненных шагов, включая неудачный шаг, сохраняется.
 Тип ошибки в этом прототипе — string, как у ResultBuilder.

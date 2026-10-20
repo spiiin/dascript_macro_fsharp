@@ -33,7 +33,7 @@ def main() {
         reached=true
         return damage
     }
-    assert(rejected is error && !reached)
-    print("Damage: {turn as ok}; rejected: {rejected as error}\n")
+    assert(rejected is err && !reached)
+    print("Damage: {turn as ok}; rejected: {rejected as err}\n")
     print("reader/result demo OK\n")
 }

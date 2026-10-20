@@ -191,7 +191,7 @@ def private ce_hv_poll_unit(var op:CeHvOperation?) {
             if(!empty(state.error)) {let message=state.error;ce_hv_shutdown(state);return ce_hv_unit_error(op,message)}
             if(state.was_opened) {op.done=true;return task_ready(result_ok(CeUnit()))}
             if(state.peer_closed) {ce_hv_shutdown(state);return ce_hv_unit_error(op,"WebSocket: closed before handshake completed")}
-            return task_pending(type<variant<ok:CeUnit;error:string>>)
+            return task_pending(type<$Result<CeUnit;string>>)
         }
         state.process_event_que()
         if(!empty(state.error)) {let message=state.error;ce_hv_shutdown(state);return ce_hv_unit_error(op,message)}
@@ -234,7 +234,7 @@ def private ce_hv_poll_text(var op:CeHvOperation?) {
             return task_ready(result_ok(message))
         }
         if(state.peer_closed) {return ce_hv_text_error(op,"WebSocket: closed before a text message arrived")}
-        return task_pending(type<variant<ok:string;error:string>>)
+        return task_pending(type<$Result<string;string>>)
     }
 }
 

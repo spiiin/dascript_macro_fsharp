@@ -17,6 +17,6 @@ def main() {
         HealthCheck(health=5) |> bind
         visited++
     }
-    assert(blocked is error && visited==3)
+    assert(blocked is err && visited==3)
     print("source protocol demo OK\n")
 }

@@ -51,7 +51,7 @@ def checks() {
     }
     {
         var inscope group <- cancellation_token()
-        var inscope scheduler <- task_scheduler(type<variant<ok:int;error:string>>)
+        var inscope scheduler <- task_scheduler(type<$Result<int;string>>)
         var source <- computation(TaskResultBuilder(type<int>)) {
             var resource & = acquire() |> use_resource
             task_delay_ms(100) |> bind

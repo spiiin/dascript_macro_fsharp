@@ -31,7 +31,7 @@ def main() {
     verify(task_poll(bad)==TaskStatus.Waiting && reached==1)
     verify(task_poll(bad)==TaskStatus.Succeeded && reached==1 && closed==2)
     let failure=task_value(bad)
-    verify(failure is error && failure as error=="denied")
+    verify(failure is err && failure as err=="denied")
     verify(task_poll(bad)==TaskStatus.Succeeded && reached==1 && closed==2)
     var inscope thrown <- computation(TaskResultBuilder(type<int>)) {
         let n=task_after_polls(1,result_ok(1)) |> bind
@@ -54,6 +54,6 @@ def main() {
     while(state==TaskStatus.Waiting) {state=task_poll(loop)}
     verify(state==TaskStatus.Succeeded && reached==2)
     let loopError=task_value(loop)
-    verify(loopError is error && loopError as error=="stop loop")
+    verify(loopError is err && loopError as err=="stop loop")
     print("TaskResult checks OK\n")
 }

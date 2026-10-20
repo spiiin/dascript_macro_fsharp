@@ -111,7 +111,7 @@ use_resource/try_finally и close-callback адаптера. Если внешн
 до перемещения. Все Task одного scheduler имеют одинаковый T. Для TaskResult:
 
 ```das
-var inscope requests <- task_scheduler(type<variant<ok:int;error:string>>)
+var inscope requests <- task_scheduler(type<$Result<int;string>>)
 ```
 
 Для разных T можно держать несколько scheduler. Фабрика возвращает типизированный

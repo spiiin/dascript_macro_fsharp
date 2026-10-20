@@ -16,8 +16,8 @@ def main() {
         }, $ { finalized++ })
     }
     let invalid = read_health("not JSON", false)
-    assert(invalid.result is error)
-    assert(success.result is ok && (success.result as ok) == 42 && failed.result is error)
+    assert(invalid.result is err)
+    assert(success.result is ok && (success.result as ok) == 42 && failed.result is err)
     assert(resource_opens == 2 && resource_closes == 2 && finalized == 2)
     print("Success and Error: opened={resource_opens}, closed={resource_closes}, finally={finalized}\n")
     print("resources demo OK\n")

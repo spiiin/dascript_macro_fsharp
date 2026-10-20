@@ -100,7 +100,7 @@ def main() {
         }
         let a=run_deferred(task)
         let b=run_deferred(task)
-        assert(a is error && b is error && a as error=="not available" && steps==55)
+        assert(a is err && b is err && a as err=="not available" && steps==55)
     }
     {
         var inscope task <- deferred(ReportBuilder(title="Reward"),5) $(number) {

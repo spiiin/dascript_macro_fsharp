@@ -22,7 +22,7 @@ def pages() {
 }
 
 def total(var stream:auto) {
-    var inscope scheduler <- task_scheduler(type<variant<some:array<int>;none:bool>>)
+    var inscope scheduler <- task_scheduler(type<$Option<array<int>>>)
     var now:int64=0
     var result=0
     while(true) {

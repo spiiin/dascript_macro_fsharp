@@ -22,9 +22,9 @@ def AsyncSequenceBuilder(unused:type<auto(T)>) {
 def AsyncSequenceBuilder() {return AsyncSequenceBuilder(type<int>)}
 
 def ce_protocol(builder:tuple<kind:AsyncSequenceContext;element:auto(T)?>) {
-    return ce_resumable_protocol(type<tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>>)
+    return ce_resumable_protocol(type<tuple<tag:TaskEventTag;ready:bool;value:$Option<T>>>)
 }
-def ce_await_pending(builder:tuple<kind:AsyncSequenceContext;element:auto(T)?>) {return task_pending(type<variant<some:T;none:bool>>)}
+def ce_await_pending(builder:tuple<kind:AsyncSequenceContext;element:auto(T)?>) {return task_pending(type<$Option<T>>)}
 def ce_await_yield(builder:tuple<kind:AsyncSequenceContext;element:auto(T)?>; value:T) {
     static_if(typeinfo can_copy(type<T>)) {return task_ready(some(value))}
     else {
@@ -33,9 +33,9 @@ def ce_await_yield(builder:tuple<kind:AsyncSequenceContext;element:auto(T)?>; va
     }
 }
 def ce_await_yield_move(builder:tuple<kind:AsyncSequenceContext;element:auto(T)?>; var value:T) {
-    // Separate assignment avoids the SDK AOT variant-initializer shallow copy.
-    var item:variant<some:T;none:bool>
-    item as some <- value
+    // Use the standard Option layout without the SDK AOT tuple initializer copy.
+    var item:$Option<T>
+    item <- ce_move_some(value)
     return <- task_ready_move(item)
 }
 def private ce_async_sequence_done(unused:type<auto(T)>) {
@@ -100,15 +100,15 @@ def ce_await_input(builder:tuple<kind:AsyncSequenceContext;element:auto>;
 // forward its terminal None: the enclosing producer may have more elements.
 def ce_await_yield_from(builder:tuple<kind:AsyncSequenceContext;element:auto(T)?>;
     var stream:tuple<tag:AsyncSequenceTag;owner:iterator<auto>;element:iterator<T>>) {
-    return <- generator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>> capture(<-stream) {
+    return <- generator<tuple<tag:TaskEventTag;ready:bool;value:$Option<T>>> capture(<-stream) {
         while(true) {
             var inscope request <- async_sequence_next(stream)
             while(task_poll(request)==TaskStatus.Waiting) {
-                yield <- task_pending(type<variant<some:T;none:bool>>)
+                yield <- task_pending(type<$Option<T>>)
             }
             if(request.status==TaskStatus.Cancelled) {
                 ce_task_cancelled()
-                yield <- task_pending(type<variant<some:T;none:bool>>)
+                yield <- task_pending(type<$Option<T>>)
                 return false
             }
             if(request.status==TaskStatus.Failed) {panic(request.error)}
@@ -126,8 +126,8 @@ def ce_await_for_source(builder:tuple<kind:AsyncSequenceContext;element:auto?>;
     var stream:tuple<tag:AsyncSequenceTag;owner:iterator<auto>;element:iterator<auto(T)>>;
     control:CeTaskLoopControl?) {
     var events <- ce_await_yield_from(AsyncSequenceBuilder(type<T>),stream)
-    return <- generator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>> capture(<-events,copy(control)) {
-        var event:tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>
+    return <- generator<tuple<tag:TaskEventTag;ready:bool;value:$Option<T>>> capture(<-events,copy(control)) {
+        var event:tuple<tag:TaskEventTag;ready:bool;value:$Option<T>>
         while(ce_task_loop_not_broken(control)) {
             if(!ce_sequence_next_value(events,event)) {break}
             yield <- event
@@ -140,7 +140,7 @@ def ce_await_for_source(builder:tuple<kind:AsyncSequenceContext;element:auto?>;
 }
 
 def ce_await_for_value(builder:tuple<kind:AsyncSequenceContext;element:auto?>;
-    var event:tuple<tag:TaskEventTag;ready:bool;value:variant<some:auto(T);none:bool>>) : T& {
+    var event:tuple<tag:TaskEventTag;ready:bool;value:$Option<auto(T)>>) : T& {
     unsafe {return event.value as some}
 }
 
@@ -163,20 +163,20 @@ def ce_await_for_merge(builder:tuple<kind:AsyncSequenceContext;element:auto?>;
             panic("async For: the same stream cannot be used twice")
         }
     }
-    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:tuple<first:L;second:R>;none:bool>>> capture(<-left,<-right) {
+    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:$Option<tuple<first:L;second:R>>>> capture(<-left,<-right) {
         while(true) {
             var inscope first <- async_sequence_next(left)
             var inscope second <- async_sequence_next(right)
             while(true) {
                 task_poll(first)
                 if(!ce_async_sequence_zip_check(first)) {
-                    yield <- task_pending(type<variant<some:tuple<first:L;second:R>;none:bool>>)
+                    yield <- task_pending(type<$Option<tuple<first:L;second:R>>>)
                     return false
                 }
                 if(first.status==TaskStatus.Succeeded && first.value is none) {return false}
                 task_poll(second)
                 if(!ce_async_sequence_zip_check(second)) {
-                    yield <- task_pending(type<variant<some:tuple<first:L;second:R>;none:bool>>)
+                    yield <- task_pending(type<$Option<tuple<first:L;second:R>>>)
                     return false
                 }
                 if(second.status==TaskStatus.Succeeded && second.value is none) {return false}
@@ -187,7 +187,7 @@ def ce_await_for_merge(builder:tuple<kind:AsyncSequenceContext;element:auto?>;
                     yield <- ce_await_yield_move(AsyncSequenceBuilder(type<tuple<first:L;second:R>>),pair)
                     break
                 }
-                yield <- task_pending(type<variant<some:tuple<first:L;second:R>;none:bool>>)
+                yield <- task_pending(type<$Option<tuple<first:L;second:R>>>)
             }
         }
         return false
@@ -231,9 +231,9 @@ def private ce_async_sequence_lease(var state:auto(State)?; primary:bool) {
 // Explicit owner/Task types let nested CE bind infer their outputs immediately,
 // instead of spending inference passes expanding the implementation generators.
 def ce_sequence_run(builder:tuple<kind:AsyncSequenceContext;element:auto(T)?>;
-    var source:iterator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>>) : tuple<tag:AsyncSequenceTag;owner:iterator<tuple<source:iterator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>>;references:int;closed:bool;cancelled:bool;busy:bool;polling:bool;error:string>?>;element:iterator<T>> {
+    var source:iterator<tuple<tag:TaskEventTag;ready:bool;value:$Option<T>>>) : tuple<tag:AsyncSequenceTag;owner:iterator<tuple<source:iterator<tuple<tag:TaskEventTag;ready:bool;value:$Option<T>>>;references:int;closed:bool;cancelled:bool;busy:bool;polling:bool;error:string>?>;element:iterator<T>> {
     unsafe {
-        var state=new tuple<source:iterator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>>;references:int;closed:bool;cancelled:bool;busy:bool;polling:bool;error:string>(source <- source,references=1)
+        var state=new tuple<source:iterator<tuple<tag:TaskEventTag;ready:bool;value:$Option<T>>>;references:int;closed:bool;cancelled:bool;busy:bool;polling:bool;error:string>(source <- source,references=1)
         // Empty iterator carries T without constructing or finalizing a dummy T.
         return <- (tag=AsyncSequenceTag(),owner <- ce_async_sequence_lease(state,true),element <- default<iterator<T>>)
     }
@@ -256,7 +256,7 @@ def ce_dispose(var stream:tuple<tag:AsyncSequenceTag;owner:iterator<auto(State)?
     if(!empty(stream.owner)) {async_sequence_close(stream)}
     delete stream
 }
-def async_sequence_next(stream:tuple<tag:AsyncSequenceTag;owner:iterator<auto(State)?>;element:iterator<auto(T)>>) : tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>>;status:TaskStatus;value:variant<some:T;none:bool>;error:string;polling:bool> {
+def async_sequence_next(stream:tuple<tag:AsyncSequenceTag;owner:iterator<auto(State)?>;element:iterator<auto(T)>>) : tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTag;ready:bool;value:$Option<T>>>;status:TaskStatus;value:$Option<T>;error:string;polling:bool> {
     var state=ce_async_sequence_state(stream)
     unsafe {
         if(state.busy) {panic("async sequence: only one next may be active")}
@@ -264,9 +264,9 @@ def async_sequence_next(stream:tuple<tag:AsyncSequenceTag;owner:iterator<auto(St
         state.references++
         // The request generator itself owns the counted reference. Its finally
         // also runs when unopened, so a second lease iterator is unnecessary.
-        var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>> capture(copy(state)) {
+        var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:$Option<T>>> capture(copy(state)) {
             var delivered=false
-            var event:tuple<tag:TaskEventTag;ready:bool;value:variant<some:T;none:bool>>
+            var event:tuple<tag:TaskEventTag;ready:bool;value:$Option<T>>
             while(true) {
                 if(state.closed) {
                     if(!empty(state.error)) {panic(state.error)}

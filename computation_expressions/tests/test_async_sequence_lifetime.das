@@ -50,7 +50,7 @@ def checks() {
     // Cold, pull-based: construction and next construction have no effects.
     {
         var inscope stream <- producer()
-        var inscope scheduler <- task_scheduler(type<variant<some:int;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<int>>)
         var first <- async_sequence_next(stream)
         verify(opened==initialOpened && produced==initialProduced)
         let one=task_spawn(scheduler,first)
@@ -119,7 +119,7 @@ def checks() {
     // The next Task owns stable state even after deleting the primary owner.
     {
         var stream <- producer(100)
-        var inscope scheduler <- task_scheduler(type<variant<some:int;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<int>>)
         let id=task_spawn(scheduler,async_sequence_next(stream))
         verify(task_tick(scheduler,0)==1)
         delete stream
@@ -130,7 +130,7 @@ def checks() {
     for(mode in range(2)) {
         let explicitClose=mode==0
         var inscope stream <- producer(100)
-        var inscope scheduler <- task_scheduler(type<variant<some:int;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<int>>)
         let id=task_spawn(scheduler,async_sequence_next(stream))
         verify(task_tick(scheduler,0)==1)
         if(explicitClose) {async_sequence_close(stream)}
@@ -145,7 +145,7 @@ def checks() {
         let started=mode==0
         var inscope stream <- producer()
         if(started) {
-            var inscope scheduler <- task_scheduler(type<variant<some:int;none:bool>>)
+            var inscope scheduler <- task_scheduler(type<$Option<int>>)
             let id=task_spawn(scheduler,async_sequence_next(stream))
             verify(task_tick(scheduler,0)==1 && task_tick(scheduler,1)==0)
         }

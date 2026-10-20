@@ -34,7 +34,7 @@ def producer(failing,at:int) {
     try {
         let result=computation(ResultBuilder()) {
             for (a in stream(failing,at)) {
-                variant<ok:int;error:string>(ok=a) |> bind
+                variant type<$Result<int;string>>(ok=a) |> bind
                 bodies++
             }
             after++
@@ -56,7 +56,7 @@ def consumer() {
         var inscope a <- stream(0,-1)
         let result=computation(OptionBuilder()) {
             for (x in a) {
-                let value=variant<some:int;none:bool>(some=x) |> bind
+                let value=variant type<$Option<int>>(some=x) |> bind
                 bodies++
                 if (x==2) {panic("consumer")}
             }

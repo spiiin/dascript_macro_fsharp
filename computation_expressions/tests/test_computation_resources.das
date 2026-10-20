@@ -178,7 +178,7 @@ def test_effects() {
             return writer_result_error("stop", type<int>, ";failure") |> return_from
         }, $ { events += "finally;" })
     }
-    assert(wr.result is error && (wr.result as error) == "stop" && wr.log == "before;failure")
+    assert(wr.result is err && (wr.result as err) == "stop" && wr.log == "before;failure")
     assert(events == "open1;close1;finally;")
     events = ""
     let sr = computation(StateResultBuilder(10)) {
@@ -188,7 +188,7 @@ def test_effects() {
             return result_error("rollback", type<int>) |> return_from
         }, $ { events += "finally;" })
     }
-    assert(sr.result is error && (sr.result as error) == "rollback" && sr.state == 10)
+    assert(sr.result is err && (sr.result as err) == "rollback" && sr.state == 10)
     assert(events == "open1;close1;finally;")
 }
 [export]

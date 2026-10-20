@@ -180,7 +180,7 @@ def test_writer() {
         tell("kept") |> bind
         return result_error("failure as data", type<int>)
     }
-    assert(payload.value is error && payload.log == "kept")
+    assert(payload.value is err && payload.log == "kept")
 }
 [export]
 def main() {

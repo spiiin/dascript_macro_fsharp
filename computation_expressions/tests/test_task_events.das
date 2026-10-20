@@ -20,7 +20,7 @@ def balanced() {
 }
 def success_checks() {
     var inscope source <- task_event_source(type<string>)
-    var inscope scheduler <- task_scheduler(type<variant<ok:string;error:string>>)
+    var inscope scheduler <- task_scheduler(type<$Result<string;string>>)
     let before=applied
     verify(task_event_emit(source,"before subscribing")==0)
     let a=task_spawn(scheduler,confirm(source))
@@ -43,7 +43,7 @@ def success_checks() {
 def cancellation_checks() {
     var inscope source <- task_event_source(type<string>)
     var inscope token <- cancellation_token()
-    var inscope scheduler <- task_scheduler(type<variant<ok:string;error:string>>)
+    var inscope scheduler <- task_scheduler(type<$Result<string;string>>)
     let before=applied
     let a=task_spawn(scheduler,task_with_cancellation(confirm(source),token))
     let b=task_spawn(scheduler,task_with_cancellation(confirm(source),token))
@@ -58,7 +58,7 @@ def cancellation_checks() {
 }
 def timeout_checks() {
     var inscope source <- task_event_source(type<string>)
-    var inscope scheduler <- task_scheduler(type<variant<ok:string;error:string>>)
+    var inscope scheduler <- task_scheduler(type<$Result<string;string>>)
     let before=applied
     let a=task_spawn(scheduler,confirm(source),TaskTimeout(after_ms=5))
     verify(task_tick(scheduler,100)==1 && task_event_subscriber_count(source)==1)
@@ -105,7 +105,7 @@ def composition_checks() {
             verify(task_event_subscriber_count(events)==0)
         }
         {
-            var inscope scheduler <- task_scheduler(type<variant<ok:string;error:string>>)
+            var inscope scheduler <- task_scheduler(type<$Result<string;string>>)
             let a=task_spawn(scheduler,confirm(events))
             let b=task_spawn(scheduler,confirm(events))
             verify(task_tick(scheduler,0)==2)
@@ -159,7 +159,7 @@ def value_checks() {
         var pending <- task_wait_event(closed)
         var inscope explicitResult <- computation(TaskBuilder(type<bool>)) {
             let result=pending |> bind
-            return result is error
+            return result is err
         }
         verify(task_poll(explicitResult)==TaskStatus.Succeeded && task_value(explicitResult))
     }
@@ -171,14 +171,14 @@ def lifetime_checks() {
         var inscope pending <- task_wait_event(source)
         verify(task_poll(pending)==TaskStatus.Waiting)
         delete source
-        verify(task_poll(pending)==TaskStatus.Succeeded && task_value(pending) is error)
+        verify(task_poll(pending)==TaskStatus.Succeeded && task_value(pending) is err)
     }
     balanced()
     {
         var source <- task_event_source(type<string>)
         var inscope unpolled <- task_wait_event(source)
         delete source
-        verify(task_poll(unpolled)==TaskStatus.Succeeded && task_value(unpolled) is error)
+        verify(task_poll(unpolled)==TaskStatus.Succeeded && task_value(unpolled) is err)
     }
     balanced()
     {
@@ -195,7 +195,7 @@ def lifetime_checks() {
         verify(task_event_emit(moved,"ignored")==0)
         verify(task_poll(next)==TaskStatus.Succeeded && task_value(next) as ok=="saved")
         var inscope closed <- task_wait_event(moved)
-        verify(task_poll(closed)==TaskStatus.Succeeded && task_value(closed) is error)
+        verify(task_poll(closed)==TaskStatus.Succeeded && task_value(closed) is err)
     }
     balanced()
 }

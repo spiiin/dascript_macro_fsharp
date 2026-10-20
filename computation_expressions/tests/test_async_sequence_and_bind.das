@@ -96,7 +96,7 @@ def saved() {
     }
 }
 def drain(var source:auto) {
-    var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+    var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
     var now:int64=0
     var sum=0
     while(true) {
@@ -134,7 +134,7 @@ def checks() {
             let b=task_after_polls(0,4) |> and_bind(task_after_polls(0,"ab") |> and_bind(task_after_polls(0,6))) |> bind
             task_after_polls(0,CeUnit()) |> and_bind(task_after_polls(0,CeUnit())) |> bind
             let data=task_after_polls(0,result_error("data",type<int>)) |> and_bind(task_after_polls(0,9)) |> bind
-            verify(data.first is error && data.first as error=="data")
+            verify(data.first is err && data.first as err=="data")
             yield a.first.first+a.first.second+a.second+b.first+length(b.second.first)+b.second.second+data.second
         }
         var inscope request <- async_sequence_next(source)
@@ -212,7 +212,7 @@ def checks() {
     {
         var inscope token <- cancellation_token()
         var inscope source <- stream(100,100)
-        var inscope scheduler <- task_scheduler(type<variant<some:int;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<int>>)
         let id=task_spawn(scheduler,task_with_cancellation(async_sequence_next(source),token))
         verify(task_tick(scheduler,0)==1)
         cancellation_cancel(token)
@@ -228,7 +228,7 @@ def checks() {
     reset()
     {
         var inscope source <- owning_stream(1,2,1,true)
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,async_sequence_next(source))
         for(now in range(5)) {task_tick(scheduler,now)}
         verify(task_status(scheduler,id)==TaskStatus.Failed && starts_with(task_error(scheduler,id),"owning group body failed"))
@@ -236,7 +236,7 @@ def checks() {
     reset()
     {
         var source <- owning_stream(0,0,0)
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,async_sequence_next(source))
         verify(task_tick(scheduler,0)==0)
         {
@@ -250,7 +250,7 @@ def checks() {
         let phase=mode%4
         var inscope token <- cancellation_token()
         var inscope source <- owning_stream((phase==0 || phase==3) ? 100 : 0,(phase==0 || phase==2) ? 100 : 0,100)
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,task_with_cancellation(async_sequence_next(source),token),TaskTimeout(after_ms=5))
         verify(task_tick(scheduler,0)==1 && allocated==released+2)
         if(mode<4) {cancellation_cancel(token)}

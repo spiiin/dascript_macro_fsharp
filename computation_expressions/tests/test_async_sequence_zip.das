@@ -99,7 +99,7 @@ def consume(limit:int=10;waitA:int=3;waitB:int=5;hold:int=1;stop:int=0;skip:int=
     }
 }
 def drive(var stream:auto) {
-    var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+    var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
     var now:int64=0
     var sum=0
     while(true) {
@@ -160,7 +160,7 @@ def checks() {
                 panic("shortest input body")
             }
         }
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,async_sequence_next(stream))
         verify(task_tick(scheduler,0)==0 && task_value(scheduler,id) is none)
         balanced()
@@ -170,7 +170,7 @@ def checks() {
         var inscope stream <- computation(AsyncSequenceBuilder(type<Packet>)) {
             for(a,b,c in feed(1,100),feed(2,100),feed(3,0,0)) {yield <- a}
         }
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,async_sequence_next(stream))
         verify(task_tick(scheduler,0)==0 && task_value(scheduler,id) is none)
         balanced()
@@ -203,7 +203,7 @@ def checks() {
                 yield <- a
             }
         }
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,async_sequence_next(stream))
         verify(task_tick(scheduler,0)==1)
         async_sequence_close(stream)
@@ -212,7 +212,7 @@ def checks() {
     }
     {
         var stream <- zipped(0,0,0)
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,async_sequence_next(stream))
         verify(task_tick(scheduler,0)==0)
         {
@@ -290,7 +290,7 @@ def checks() {
             for(a,b in mode==0 ? cancelled_feed(1) : feed(1,100),mode==1 ? cancelled_feed(2) : feed(2,100)) {yield <- a}
             panic("cancelled zip continuation")
         }
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,async_sequence_next(stream))
         verify(task_tick(scheduler,0)==0 && task_status(scheduler,id)==TaskStatus.Cancelled)
         balanced()
@@ -326,7 +326,7 @@ def checks() {
         var saved <- saved_outer(100)
         var stream <- run_deferred(saved)
         delete saved
-        var inscope scheduler <- task_scheduler(type<variant<some:Packet;none:bool>>)
+        var inscope scheduler <- task_scheduler(type<$Option<Packet>>)
         let id=task_spawn(scheduler,async_sequence_next(stream))
         verify(task_tick(scheduler,0)==1 && snapshots==before+6)
         delete stream

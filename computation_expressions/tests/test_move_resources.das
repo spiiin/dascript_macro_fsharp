@@ -16,7 +16,7 @@ def eager() {
         assert(result as ok==4 && source.id==0 && length(source.data)==0)
         let none=computation(OptionBuilder()) {
             var buffer & = acquire_buffer(2) |> use_resource
-            variant<some:int;none:bool>(none=true) |> bind
+            default<$Option<int>> |> bind
             assert(false)
             return 1
         }
@@ -27,7 +27,7 @@ def eager() {
             assert(false)
             return <- buffer.data
         }
-        assert(error is error)
+        assert(error is err)
         var inscope absent <- computation(MoveOptionBuilder()) {
             var buffer & = acquire_buffer(4) |> use_resource
             move_none(type<CeUnit>) |> bind

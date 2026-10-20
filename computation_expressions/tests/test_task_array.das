@@ -90,7 +90,7 @@ def main() {
     verify(task_tick(loanScheduler,12)==0 && task_value(loanScheduler,loan)==40)
     var inscope domain <- computation(TaskResultBuilder(type<int>)) {
         var results & = task_when_all(result_jobs()) |> bind
-        verify(results[0] is error && results[0] as error=="domain")
+        verify(results[0] is err && results[0] as err=="domain")
         continued++
         return results[1] as ok
     }

@@ -7,7 +7,7 @@ var inscope health <- [100,200,300]
 let damage = fixed_array(10,20)
 let result = computation(ResultBuilder()) {
     for (hp,hit in health,damage) {
-        let amount = variant<ok:int;error:string>(ok=hit) |> bind
+        let amount = variant type<$Result<int;string>>(ok=hit) |> bind
         hp -= amount
     }
     return health[0]
@@ -48,9 +48,9 @@ ce_for_zip(builder, arity:int,
 
 ```das
 def ce_for_zip(builder:MyBuilder; arity:int;
-    traverse:block<(visit:block<(body:block<():variant<ok:CeUnit;error:string>>):bool>):void>) {
+    traverse:block<(visit:block<(body:block<():$Result<CeUnit;string>>):bool>):void>) {
     var result = ce_zero(builder)
-    invoke(traverse, $(body:block<():variant<ok:CeUnit;error:string>>) {
+    invoke(traverse, $(body:block<():$Result<CeUnit;string>>) {
         result = invoke(body)
         return result is ok
     })

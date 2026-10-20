@@ -9,7 +9,7 @@ def main() {
     var hits=0
     let battle=computation(ResultBuilder()) {
         for (hp,hit in enemies,damage) {
-            let amount=variant<ok:int;error:string>(ok=hit) |> bind
+            let amount=variant type<$Result<int;string>>(ok=hit) |> bind
             hp-=amount
             hits++
         }
@@ -21,11 +21,11 @@ def main() {
     var turns=0
     let limited=computation(BoundedResultBuilder(limit=2)) {
         for (x,y,z in range(5),range(6),range(7)) {
-            variant<ok:int;error:string>(ok=x+y+z) |> bind
+            variant type<$Result<int;string>>(ok=x+y+z) |> bind
             turns++
         }
         return turns
     }
-    assert(limited is error && limited as error=="zip for budget exhausted" && turns==2)
+    assert(limited is err && limited as err=="zip for budget exhausted" && turns==2)
     print("zip for demo OK\n")
 }
