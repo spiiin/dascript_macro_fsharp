@@ -35,8 +35,8 @@ def private rx_queue_drop_first(var values:array<auto(QueueValue)>) {
 }
 def private rx_queue_full(size:int;queue_options:RxQueueOptions) : bool {return queue_options.capacity>0 && size>=queue_options.capacity}
 
-// Single-threaded ownership: only the returned subscription lease auto-disposes.
-// Internal leases retain storage without keeping an active subscription alive.
+// Single-threaded ownership: primary owners close their subscriptions.
+// Retaining aliases keep storage alive without keeping a subscription active.
 struct RxSubscriptionState {
     references:int=1
     closed:bool
@@ -66,8 +66,8 @@ def private rx_finalize(action:block<():void>) {
     try {panic("__rx_finalize_entry")} recover {invoke(action)}
 }
 
-// Internal observers retain control storage inline. Only the public primary
-// lease closes a subscription when destroyed; these references never close it.
+// Internal observers retain control storage inline. Primary owners close the
+// subscription when destroyed; these references never close it.
 // The empty iterator prevents accidental copies without allocating storage.
 // Visible to client-side generic tuple finalization on this SDK.
 struct RxControlRef {
@@ -81,6 +81,35 @@ struct RxControlRef {
             if(retained.references==0) {delete retained}
         }})}
     }
+}
+
+// Internal primary owner: close before releasing storage, even if cleanup fails.
+// The empty unique marker disables copying; it never allocates an iterator.
+struct RxControlOwner {
+    state:RxSubscriptionState?
+    unique:iterator<uint8>
+    def finalize {
+        var retained=state
+        state=null
+        if(retained!=null) {rx_finalize($ {
+            var failed=false;var message=""
+            try {rx_close_state(retained)} recover {failed=true;message="{this_context().last_exception}"}
+            unsafe {retained.references--;if(retained.references==0) {delete retained}}
+            if(failed) {panic(message)}
+        })}
+    }
+}
+
+def private rx_control_owner() {return <- RxControlOwner(state=new RxSubscriptionState())}
+
+def private rx_control(subscription:RxControlOwner) : RxSubscriptionState? {
+    if(subscription.state==null) {panic("rx: internal subscription was moved or deleted")}
+    unsafe {return reinterpret<RxSubscriptionState?>(subscription.state)}
+}
+
+def private rx_unsubscribe(subscription:RxControlOwner) : bool {
+    if(subscription.state==null) {return false}
+    return rx_close_state(rx_control(subscription))
 }
 
 def private rx_cleanup(var state:RxSubscriptionState?) {
@@ -134,7 +163,7 @@ def private rx_subscription_ref(subscription:RxSubscription) {
     unsafe {state.references++}
     return <- RxSubscription(owner <- rx_subscription_lease(state,false))
 }
-def private rx_observer_control(subscription:RxSubscription|RxControlRef) {
+def private rx_observer_control(subscription:RxSubscription|RxControlRef|RxControlOwner) {
     var state=rx_control(subscription)
     unsafe {state.references++}
     return <- RxControlRef(state=state)
@@ -231,7 +260,7 @@ def private rx_observer_marker(unused:type<auto(T)>) {
     var owner:iterator<tuple<references:int;control:RxControlRef;stopped:bool;root:bool;on_next:lambda<(value:T):void>;on_error:lambda<(message:string):void>;on_complete:lambda<():void>>?>
     return <- (tag=RxObserverTag(),owner <- owner)
 }
-def private rx_observer(control:RxSubscription|RxControlRef;var on_next:lambda<(value:auto(T)):void>;var on_error:lambda<(message:string):void>;var on_complete:lambda<():void>;root:bool=true) {
+def private rx_observer(control:RxSubscription|RxControlRef|RxControlOwner;var on_next:lambda<(value:auto(T)):void>;var on_error:lambda<(message:string):void>;var on_complete:lambda<():void>;root:bool=true) {
     var state=new tuple<references:int;control:RxControlRef;stopped:bool;root:bool;on_next:lambda<(value:T):void>;on_error:lambda<(message:string):void>;on_complete:lambda<():void>>(references=1,control <- rx_observer_control(control),root=root,on_next <- on_next,on_error <- on_error,on_complete <- on_complete)
     return <- (tag=RxObserverTag(),owner <- rx_lease(state))
 }
@@ -274,7 +303,7 @@ def private rx_done(observer:auto) {rx_terminal(observer,false)}
 def private rx_error(observer:auto;message:string) {rx_terminal(observer,true,message)}
 def private rx_stopped(observer:auto) : bool {unsafe {return rx_is_closed(rx_state(observer).control)}}
 
-def rx_subscribe_with(control:RxSubscription;source:auto;var on_next:lambda<(value:auto):void>;var on_error:lambda<(message:string):void>;var on_complete:lambda<():void>) {
+def private rx_subscribe_control(control:RxSubscription|RxControlOwner;source:auto;var on_next:lambda<(value:auto):void>;var on_error:lambda<(message:string):void>;var on_complete:lambda<():void>) {
     var state=rx_control(control)
     unsafe {
         if(state.started || state.closed) {
@@ -295,6 +324,11 @@ def rx_subscribe_with(control:RxSubscription;source:auto;var on_next:lambda<(val
     delete retained
     if(failed) {panic(failure)}
 }
+// Keep the public control type and signature stable.
+def rx_subscribe_with(control:RxSubscription;source:auto;var on_next:lambda<(value:auto):void>;var on_error:lambda<(message:string):void>;var on_complete:lambda<():void>) {
+    rx_subscribe_control(control,source,on_next,on_error,on_complete)
+}
+
 def rx_subscribe(source:auto;var on_next:lambda<(value:auto):void>;var on_error:lambda<(message:string):void>;var on_complete:lambda<():void>) {
     var result <- rx_subscription()
     var failure=""
@@ -1704,7 +1738,7 @@ struct RxExhaustTag {_marker:uint8}
 struct RxFlatRunTag {_marker:uint8}
 struct RxFlatChildTag {_marker:uint8}
 struct RxFlatChildState {
-    control:RxSubscription
+    control:RxControlOwner
     id:uint64
     active:bool=true
     connecting:bool=true
@@ -1741,8 +1775,36 @@ def rx_concat_map(var source:tuple<tag:auto;owner:iterator<auto?>;element:iterat
     return <- rx_flat_map(source,selector,1,queue_options)
 }
 
+// Child storage is shared by the local owner, the active list and callbacks.
+// Only its embedded primary control closes; releasing an alias merely unpins.
+struct RxFlatChildStorage {
+    references:int=1
+    data:RxFlatChildState=RxFlatChildState()
+}
+struct RxFlatChildOwner {
+    state:RxFlatChildStorage?
+    unique:iterator<uint8>
+    def finalize {
+        var retained=state
+        state=null
+        if(retained!=null) {rx_finalize($ {rx_release_state(retained)})}
+    }
+}
+
+def private rx_state(child:RxFlatChildOwner) : RxFlatChildStorage? {
+    if(child.state==null) {panic("rx: child was moved or deleted")}
+    unsafe {return reinterpret<RxFlatChildStorage?>(child.state)}
+}
+
+def private rx_ref(child:RxFlatChildOwner) {
+    var state=rx_state(child)
+    unsafe {state.references++}
+    return <- RxFlatChildOwner(state=state)
+}
+
 def private rx_flat_child(id:uint64;marker:type<auto(U)>) {
-    return <- rx_node(RxFlatChildTag(),RxFlatChildState(control <- rx_subscription(),id=id),type<U>)
+    rx_check_payload(type<U>)
+    return <- RxFlatChildOwner(state=new RxFlatChildStorage(data <- RxFlatChildState(control <- rx_control_owner(),id=id)))
 }
 
 // Detach the owning list before invoking teardown. Callbacks retain their own
@@ -1801,7 +1863,7 @@ def private rx_flat_check_end(run:auto) : void {
 def private rx_flat_child_finished(run,child:auto) : void {
     unsafe {
         let state=rx_state(run)
-        let inner=rx_state(child)
+        var inner=rx_state(child)
         if(!inner.data.active || state.data.stopped || rx_stopped(state.data.observer)) {return}
         inner.data.active=false
         state.data.finishing++
@@ -1896,12 +1958,12 @@ def private rx_flat_start_child(run,child:auto;source:tuple<tag:auto;owner:itera
         } finally {rx_finalize($ {rx_release_state(errorChild);rx_release_state(errors)})}
         var on_complete <- @ capture(copy(completed),copy(doneChild)) () {
             unsafe {
-                let target=doneChild
+                var target=doneChild
                 target.data.done=true
                 if(!target.data.connecting) {rx_flat_child_finished((callback_state=completed),(callback_state=doneChild))}
             }
         } finally {rx_finalize($ {rx_release_state(doneChild);rx_release_state(completed)})}
-        rx_subscribe_with(inner.data.control,source,on_next,on_error,on_complete)
+        rx_subscribe_control(inner.data.control,source,on_next,on_error,on_complete)
         inner.data.connecting=false
         if(inner.data.done) {rx_flat_child_finished(run,child)}
     }
@@ -1972,7 +2034,7 @@ def private rx_flat_start_outer(run:auto;source:tuple<tag:auto;owner:iterator<au
                 if(!target.data.outer_connecting) {rx_flat_outer_finished(completed)}
             }
         } finally {rx_finalize($ {delete completed})}
-        rx_subscribe_with(state.data.outer,source,on_next,on_error,on_complete)
+        rx_subscribe_control(state.data.outer,source,on_next,on_error,on_complete)
         state.data.outer_connecting=false
         if(state.data.outer_done) {rx_flat_outer_finished(run)}
     }
@@ -1981,7 +2043,7 @@ def private rx_flat_connect_typed(source:tuple<tag:auto;owner:iterator<auto?>;el
     var children:array<typedecl(rx_flat_child(uint64(0),type<U>)) -const -&>
     var queue:array<tuple<kind:int;value:U;error:string>>
     var pending:array<PendingInput>
-    var run <- rx_node(RxFlatRunTag(),(source <- rx_ref(source),observer <- rx_ref(observer),outer <- rx_subscription(),
+    var run <- rx_node(RxFlatRunTag(),(source <- rx_ref(source),observer <- rx_ref(observer),outer <- rx_control_owner(),
         children <- children,queue <- queue,pending <- pending,limits=RxQueueOptions(capacity=rx_state(source).data.limits.capacity,policy=rx_state(source).data.limits.policy),max_active=rx_state(source).data.max_active,exhausting=rx_state(source).data.exhausting,pumping=false,finishing=0,serial=uint64(0),switching=switching,stopped=false,dispatching=false,
         outer_connecting=true,outer_done=false,outer_finished=false),type<U>)
     var keeper <- rx_ref(run)

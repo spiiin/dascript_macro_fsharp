@@ -176,12 +176,12 @@ complete и доставку накопленных событий. Scheduler и
 Для сравнения до/после сохраните перед изменением отдельный каталог с
 `lib/reactivex.das`, `lib/rx_scheduler.das`, `lib/rx_payload_checks.das` и теми же
 `benchmarks/benchmark_extended.das`, `benchmarks/extended_workloads.das`.
-В текущем локальном запуске такой снимок лежит в `.work/concat-subscriptions/baseline`.
+В текущем локальном запуске такой снимок лежит в `.work/child-control/baseline`.
 
 ```powershell
-./reactivex/run_extended_benchmarks.ps1 -BaselineDirectory ./reactivex/.work/concat-subscriptions/baseline -BuildOnly
+./reactivex/run_extended_benchmarks.ps1 -BaselineDirectory ./reactivex/.work/child-control/baseline -BuildOnly
 # Дождаться завершения остальных тестов и сборок, затем:
-./reactivex/run_extended_benchmarks.ps1 -BaselineDirectory ./reactivex/.work/concat-subscriptions/baseline -RunOnly
+./reactivex/run_extended_benchmarks.ps1 -BaselineDirectory ./reactivex/.work/child-control/baseline -RunOnly
 ```
 
 Runner выполняет два последовательных раунда: before/after и after/before.
@@ -211,3 +211,6 @@ Affinity остальных процессов не меняется.
 
 Создание внутренних подписок concat_map и общих flatten-операторов:
 [CONCAT_INNER_OPTIMIZATION.md](CONCAT_INNER_OPTIMIZATION.md).
+
+Владельцы child/control со struct finalize и сохранением RxSubscription:
+[CHILD_CONTROL_OPTIMIZATION.md](CHILD_CONTROL_OPTIMIZATION.md).
