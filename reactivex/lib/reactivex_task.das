@@ -61,7 +61,7 @@ def private rx_first_poll(op:tuple<owner:iterator<auto?>>;marker:type<auto(T)>) 
         }
         // Do not export deduction constness into a variant member: SDK AOT emits
         // distinct C++ TVariant types for string and const string payloads.
-        if(!state.data.ready) {return task_pending(type<variant<ok:T -const -&;error:string>>)}
+        if(!state.data.ready) {return task_pending(type<$Result<T -const -&;string>>)}
         if(state.data.failed) {return task_ready(result_error(state.data.error,type<T>))}
         return task_ready(result_ok(state.data.value))
     }
@@ -123,7 +123,7 @@ def private rx_task_deliver(op:auto;policy:RxTaskResultPolicy) : void {
         let state=rx_bridge_state(op)
         let result=task_value(state.data.task)
         rx_task_stop(op)
-        if(result is error) {rx_sink_error(state.data.sink,result as error)}
+        if(result is err) {rx_sink_error(state.data.sink,result as err)}
         else {
             rx_sink_next(state.data.sink,result as ok)
             if(!rx_sink_stopped(state.data.sink)) {rx_sink_complete(state.data.sink)}
@@ -200,7 +200,7 @@ def private rx_task_value_node(var factory:auto;scheduler:RxScheduler;period:int
     return <- rx_create(type<T>,wrapper)
 }
 def private rx_task_result_node(var factory:auto;scheduler:RxScheduler;period:int64;
-    marker:tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTag;ready:bool;value:variant<ok:auto(RxBridgeResult);error:string>>>;status:TaskStatus;value:variant<ok:RxBridgeResult;error:string>;error:string;polling:bool>) {
+    marker:tuple<tag:TaskTag;source:iterator<tuple<tag:TaskEventTag;ready:bool;value:$Result<auto(RxBridgeResult);string>>>;status:TaskStatus;value:$Result<RxBridgeResult;string>;error:string;polling:bool>) {
     var wrapper <- rx_task_factory(factory,scheduler,period,RxTaskResultPolicy(),rx_sink_marker(type<RxBridgeResult>))
     return <- rx_create(type<RxBridgeResult>,wrapper)
 }

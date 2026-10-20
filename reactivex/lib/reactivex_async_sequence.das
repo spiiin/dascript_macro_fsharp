@@ -111,22 +111,22 @@ def rx_to_async_sequence(var source:tuple<tag:auto;owner:iterator<auto?>;element
     var queue:array<StreamItem>
     var op <- rx_stream_node((source <- source,control <- rx_subscription(),queue <- queue,
         capacity=queue_options.capacity,policy=queue_options.policy,started=false,closed=false,done=false,failed=false,error=""))
-    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:variant<some:StreamItem;none:bool>>> capture(<-op) {
+    var events <- generator<tuple<tag:TaskEventTag;ready:bool;value:$Option<StreamItem>>> capture(<-op) {
         rx_to_stream_start(op,type<StreamItem>)
         while(true) {
             unsafe {
                 let state=rx_stream_state(op)
                 if(state.data.failed) {panic(state.data.error)}
                 if(!empty(state.data.queue)) {
-                    var item:variant<some:StreamItem;none:bool>
-                    item as some <- state.data.queue[0]
+                    var item:$Option<StreamItem>
+                    item <- ce_move_some(state.data.queue[0])
                     state.data.queue |> erase(0)
                     yield <- task_ready_move(item)
                 } elif(state.data.done) {
                     var item <- move_none(type<StreamItem>)
                     yield <- task_ready_move(item)
                     return false
-                } else {yield <- task_pending(type<variant<some:StreamItem;none:bool>>)}
+                } else {yield <- task_pending(type<$Option<StreamItem>>)}
             }
         }
         return false

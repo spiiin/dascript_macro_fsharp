@@ -87,7 +87,7 @@ def checks() {
         delete source
         if(mode==0) {task_cancel(task)}
         elif(mode==5) {
-            var inscope scheduler <- task_scheduler(type<variant<ok:int;error:string>>)
+            var inscope scheduler <- task_scheduler(type<$Result<int;string>>)
             let id=task_spawn(scheduler,task,TaskTimeout(after_ms=5))
             task_tick(scheduler,0);verify(rx_subscriber_count(input)==1)
             task_tick(scheduler,5)

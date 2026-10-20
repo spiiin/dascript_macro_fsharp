@@ -48,8 +48,8 @@ def checks() {
         verify(task_poll(task)==TaskStatus.Succeeded && rx_subscriber_count(source)==0)
         let result=task_value(task)
         if(mode==1) {verify(result is ok && result as ok=="confirmed")}
-        elif(mode==2) {verify(result is error && result as error=="rx: source completed without value")}
-        else {verify(result is error && result as error=="string failure")}
+        elif(mode==2) {verify(result is err && result as err=="rx: source completed without value")}
+        else {verify(result is err && result as err=="string failure")}
     }
     {
         effects=0
@@ -72,7 +72,7 @@ def checks() {
         verify(task_poll(task)==TaskStatus.Succeeded && rx_subscriber_count(source)==0)
         let result=task_value(task)
         if(mode==1) {verify(result is ok && result as ok==42)}
-        else {verify(result is error)}
+        else {verify(result is err)}
     }
     {
         var inscope source <- rx_subject(type<int>)
@@ -84,7 +84,7 @@ def checks() {
     }
     {
         var inscope source <- rx_subject(type<int>)
-        var inscope scheduler <- task_scheduler(type<variant<ok:int;error:string>>)
+        var inscope scheduler <- task_scheduler(type<$Result<int;string>>)
         let id=task_spawn(scheduler,rx_first_task(source),TaskTimeout(after_ms=3))
         task_tick(scheduler,0);verify(rx_subscriber_count(source)==1)
         task_tick(scheduler,3)
@@ -107,7 +107,7 @@ def checks() {
         task_poll(task);rx_subject_error(actions,"failed")
         verify(task_poll(task)==TaskStatus.Succeeded && afterWait==before)
         let result=task_value(task)
-        verify(result is error && result as error=="failed")
+        verify(result is err && result as err=="failed")
         delete actions
     }
     {
@@ -163,7 +163,7 @@ def checks() {
         trace=""
         var inscope clock <- rx_virtual_scheduler()
         var inscope source <- rx_from_task(@(){return <- task_after_polls(0,result_ok(9))},clock)
-        var inscope sub <- rx_subscribe(source,@(v:variant<ok:int;error:string>) {verify(v is ok && v as ok==9);trace+="raw;"},@(s:string) {panic(s)},@(){trace+="done;"})
+        var inscope sub <- rx_subscribe(source,@(v:$Result<int;string>) {verify(v is ok && v as ok==9);trace+="raw;"},@(s:string) {panic(s)},@(){trace+="done;"})
         rx_advance_to(clock,0)
         verify(trace=="raw;done;" && rx_is_closed(sub))
     }

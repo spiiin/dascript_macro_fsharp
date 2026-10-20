@@ -5,6 +5,10 @@ Task, type providers и active patterns. Ядро исполняет callbacks �
 временные операции продвигаются явно через scheduler. Это ещё не полная
 реализация всех операторов ReactiveX. Дополнительный `lib/reactivex_task.das`
 подключает адаптеры CE Task, не добавляя эту зависимость в ядро.
+Адаптеры Task и AsyncSequence используют стандартные `$Result<T;string>`
+(cases err/ok) и `$Option<T>` (none/some) из SDK 0.6.5-RC2;
+[миграция и владение](../computation_expressions/STANDARD_TYPES.md).
+Уведомления materialize сохраняют собственный case error.
 
 ```das
 require ../lib/reactivex.das

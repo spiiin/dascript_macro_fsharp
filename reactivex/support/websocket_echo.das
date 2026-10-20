@@ -11,12 +11,12 @@ def websocket_echo_stream(url:string;count:int) {
     return <- computation(AsyncSequenceBuilder(type<string>)) {
         var socket & = hv_websocket() |> use_resource
         let connected=ws_connect(socket,url) |> bind
-        if(connected is error) {panic(connected as error)}
+        if(connected is err) {panic(connected as err)}
         for(i in range(count)) {
             let sent=ws_send_text(socket,"message {i}") |> bind
-            if(sent is error) {panic(sent as error)}
+            if(sent is err) {panic(sent as err)}
             let received=ws_receive_text(socket) |> bind
-            if(received is error) {panic(received as error)}
+            if(received is err) {panic(received as err)}
             yield received as ok
             task_delay_ms(10) |> bind
         }
