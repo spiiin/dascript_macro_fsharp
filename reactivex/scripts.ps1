@@ -63,6 +63,7 @@ if($IncludeTests){$positive+=@(
     'tests/test_notification_lifetime.das',
     'tests/test_time.das',
     'tests/test_time_lifetime.das',
+    'tests/test_time_callback_ownership.das',
     'tests/test_task_adapters.das',
     'tests/test_task_adapter_lifetime.das',
     'tests/test_recovery.das',

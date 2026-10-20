@@ -2028,6 +2028,10 @@ def rx_subscribe_on(var source:tuple<tag:auto;owner:iterator<auto?>;element:iter
 def rx_debounce(var source:tuple<tag:auto;owner:iterator<auto?>;element:iterator<auto>>;duration_ms:int|int64;scheduler:RxScheduler) {return <- rx_time_node(source,int64(duration_ms),scheduler,3)}
 def rx_timeout(var source:tuple<tag:auto;owner:iterator<auto?>;element:iterator<auto>>;duration_ms:int|int64;scheduler:RxScheduler) {return <- rx_time_node(source,int64(duration_ms),scheduler,4)}
 
+// Borrowed view used only while a scheduled callback holds an intrusive ref.
+// It allocates no iterator; never store this view beyond the callback frame.
+def private rx_state(handle:tuple<time_state:auto(S)?>) : S? {unsafe {return reinterpret<S?>(handle.time_state)}}
+
 def private rx_time_clear(run:auto) : void {
     unsafe {
         let state=rx_state(run)
@@ -2100,7 +2104,7 @@ def private rx_time_fire(run:auto;serial:uint64;kind:int;value:auto;error_messag
 }
 def private rx_time_schedule(run:auto;duration:int64;kind:int;value:auto;error_message:string="") : void {
     unsafe {
-        let state=rx_state(run)
+        var state=rx_state(run)
         if(state.data.stopped || rx_stopped(state.data.observer)) {return}
         if((state.data.mode==2 || state.data.mode==5) && kind==0 && state.data.limits.capacity>0) {
             // A cancelled payload finalizer can reenter the producer.
@@ -2134,19 +2138,23 @@ def private rx_time_schedule(run:auto;duration:int64;kind:int;value:auto;error_m
         }
         state.data.serial++
         let serial=state.data.serial
-        var owner <- rx_ref(run)
-        var closing <- rx_ref(run)
+        // Each callback independently retains the run, including a callback
+        // already removed from the scheduler queue during reentrant teardown.
+        // No generator/iterator lease is needed for these private references.
+        var owner=state
+        var closing=state
+        state.references+=2
         var saved:typedecl(value) -const -&
         var saved_error=clone_string(error_message)
         static_if(typeinfo is_string(type<typedecl(value) -const -&>)) {saved=clone_string(value)}
         else {saved=value}
-        var action <- @ capture(<-owner,copy(serial),copy(kind),<-saved,<-saved_error) () {rx_time_fire(owner,serial,kind,saved,saved_error)} finally {rx_finalize($ {
+        var action <- @ capture(copy(owner),copy(serial),copy(kind),<-saved,<-saved_error) () {rx_time_fire((time_state=owner),serial,kind,saved,saved_error)} finally {rx_finalize($ {
             var failed=false;var message=""
             try {rx_queue_dispose(saved)} recover {failed=true;message="{this_context().last_exception}"}
-            delete owner
+            rx_release_state(owner)
             if(failed) {panic(message)}
         })}
-        var on_close <- @ capture(<-closing) () {rx_time_error(closing,"rx scheduler closed")} finally {rx_finalize($ {delete closing})}
+        var on_close <- @ capture(copy(closing)) () {rx_time_error((time_state=closing),"rx scheduler closed")} finally {rx_finalize($ {rx_release_state(closing)})}
         var handle:RxScheduledId
         var failed=false
         var message=""

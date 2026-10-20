@@ -203,3 +203,7 @@ Affinity остальных процессов не меняется.
 Тесты `test_simple_operator_ownership.das` и `test_extended_benchmarks.das`
 включены в общий scripts.ps1 для interpreter/JIT и исполнения AOT.
 Результаты оптимизации: [SIMPLE_OPERATORS_OPTIMIZATION.md](SIMPLE_OPERATORS_OPTIMIZATION.md).
+
+Сокращение выделений на отложенное событие observe_on/delay, сохранение
+порядка scheduler и регрессионные проверки владения:
+[TIME_OPERATORS_OPTIMIZATION.md](TIME_OPERATORS_OPTIMIZATION.md).
