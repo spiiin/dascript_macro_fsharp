@@ -54,7 +54,7 @@ task_combinators.das и task_scheduler.das.
 Состояние освобождается после удаления последнего handle. У каждой обёртки
 есть собственный handle; delete неотменённой обёртки всё равно закрывает её Task.
 Сброса флага нет: для следующей группы создайте новый токен.
-Все handles могут запросить отмену; разделения на read-only token и source пока нет.
+Обычные handles могут запросить отмену; наблюдателю без этого права выдайте `cancellation_view` (см. ниже).
 
 ## Границы наблюдения
 
@@ -117,3 +117,33 @@ task_scheduler_scope.
 наблюдения и cleanup сохраняют максимальную достигнутую ёмкость до удаления
 context; повторения после прогрева не увеличивают её. Проверка токенов стоит
 O(D) при D активных вложенных обёртках; без обёртки стек пуст.
+
+## Иерархия, причина и read-only view
+
+```das
+var inscope level <- cancellation_token()
+var inscope room <- cancellation_child(level)      // отменяется вместе с level
+var inscope dialog <- cancellation_child(room)
+cancellation_cancel(dialog,"closed by player")     // level и room не затронуты
+cancellation_cancel(level,"level exit")            // room и все его дети отменены
+verify(cancellation_reason(room)=="level exit")
+```
+
+- `cancellation_child(parent)` создаёт токен, который считается отменённым
+  при собственном запросе или запросе любого предка. Отмена ребёнка не
+  отменяет родителя. Ребёнок держит lease на всю цепочку: удаление владельца
+  родителя не ломает детей, а уже сделанный запрос остаётся видимым.
+- `cancellation_cancel(token,reason)` сохраняет причину; без reason — "cancelled".
+  `cancellation_reason(token)` возвращает причину ближайшего отменённого
+  состояния: собственного, затем предков; "" если запроса нет. Повторный
+  cancel того же токена даёт false и не меняет причину. Запрос, пришедший
+  только от предка, не мешает ребёнку записать собственную причину.
+- `cancellation_view(token)` — наблюдатель того же состояния:
+  `cancellation_requested`, `cancellation_reason` и `task_with_cancellation`
+  работают, `cancellation_cancel` вызывает panic. Clone view тоже read-only;
+  `cancellation_is_read_only` проверяет режим.
+- Модель прежняя: флаги опрашиваются через `cancellation_requested`, поэтому
+  `task_with_cancellation`, вложенные bind и shared Task видят запрос предка
+  без изменений в builder и планировщике.
+
+Проверка: [test_task_cancellation_tree.das](tests/test_task_cancellation_tree.das).

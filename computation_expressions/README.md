@@ -1,6 +1,9 @@
 # Computation expressions
 
-Task: [runtime, channel, jobque, semaphore, retry](TASK_CONCURRENCY.md).
+Task: [runtime, channel, select, progress, jobque-потоки, HTTP, semaphore, retry](TASK_CONCURRENCY.md);
+[иерархия отмены](TASK_CANCELLATION.md#иерархия-причина-и-read-only-view);
+[дедлайн, бюджет и диагностика планировщика](TASK_SCHEDULER.md#ближайший-дедлайн-бюджет-времени-и-диагностика);
+[общий пример](examples/task_toolkit_demo.das).
 
 Текущий результат завершения State/API/диагностики/метрик: [COMPLETION_RESULTS.md](COMPLETION_RESULTS.md).
 

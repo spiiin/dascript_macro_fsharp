@@ -36,5 +36,7 @@
   "task_runtime.das",
   "task_channel.das",
   "task_parallel.das",
-  "task_jobque.das"
+  "task_jobque.das",
+  "task_progress.das",
+  "task_http.das"
 ]

@@ -3,12 +3,15 @@ module task_delay public
 require ./task_builder.das public
 require daslib/rtti
 
-struct TaskClockSample {owner:uint64;now_ms:int64}
+// wake_ms collects the earliest clock deadline observed during the tick.
+struct TaskClockSample {owner:uint64;now_ms:int64;wake_ms:uint64=uint64(-1)}
 // Value snapshots exist only across synchronous poll calls, never borrowed
 // scheduler pointers. Nested schedulers restore the enclosing clock on return.
 var private task_clock_samples:array<TaskClockSample>
 
-def ce_task_clock_scope(owner:uint64; now_ms:int64; action:block<():void>) {
+// Returns the earliest wake deadline reported by waits polled in this scope,
+// or uint64(-1) when none reported one.
+def ce_task_clock_scope(owner:uint64; now_ms:int64; action:block<():void>) : uint64 {
     let depth=length(task_clock_samples)
     task_clock_samples |> push(TaskClockSample(owner=owner,now_ms=now_ms))
     try {invoke(action)} recover {
@@ -16,7 +19,15 @@ def ce_task_clock_scope(owner:uint64; now_ms:int64; action:block<():void>) {
         task_clock_samples.resize(depth)
         panic(message)
     }
+    let wake=task_clock_samples[depth].wake_ms
     task_clock_samples.resize(depth)
+    return wake
+}
+// Time-based waits report when they next need a poll. Outside a tick it is a no-op.
+def ce_task_clock_hint(deadline_ms:uint64) {
+    if(empty(task_clock_samples)) {return}
+    let top=length(task_clock_samples)-1
+    if(deadline_ms<task_clock_samples[top].wake_ms) {task_clock_samples[top].wake_ms=deadline_ms}
 }
 def private task_delay_clock_owner() : uint64 {
     if(empty(task_clock_samples)) {panic("task_delay_ms: polling requires task_tick scheduler clock")}
@@ -37,6 +48,7 @@ def task_delay_ms(duration_ms:int64) {
         while(true) {
             if(task_delay_clock_owner()!=owner) {panic("task_delay_ms: scheduler changed while waiting")}
             if(uint64(task_delay_clock_now())>=deadline) {yield task_ready(CeUnit());return false}
+            ce_task_clock_hint(deadline)
             yield task_pending(type<CeUnit>)
         }
         return false

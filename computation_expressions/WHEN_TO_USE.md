@@ -156,14 +156,22 @@ daslang императивен: `var`, генераторы, `[async]`, `try/rec
   освобождается на первом ожидании
   ([repro_async_inscope.das](tests/repro/repro_async_inscope.das)); в Task CE этого нет.
 - **Обычный код лучше:** покадровая логика без ресурсов и отмены — `[async]` достаточно.
-- **Ограничение:** кооперативная модель на poll, без потоков; нативный синхронный
-  код блокирует poll.
+- **Инфраструктура:** один `task_runtime` для задач разных типов, `task_channel`
+  и `task_channel_select`, `task_progress`, семафор и `when_all` с лимитом,
+  `task_retry` / `task_first_success`, дочерние токены отмены с причиной,
+  `task_next_deadline` и дамп задач ([TASK_CONCURRENCY.md](TASK_CONCURRENCY.md)).
+- **Потоки и сеть:** сами Task кооперативны и однопоточны (нативный синхронный код
+  блокирует poll), но тяжёлую работу можно вынести в jobque: `task_jobque`,
+  `task_jobque_cancellable` (кооперативная отмена worker), `task_jobque_stream`
+  (много значений из worker с backpressure) и `task_http` поверх блокирующего
+  HTTP-клиента dasHV.
 - Примеры: [task_demo.das](examples/task_demo.das),
   [task_cancellation_demo.das](examples/task_cancellation_demo.das),
   [task_timeout_demo.das](examples/task_timeout_demo.das),
   [task_async_demo.das](examples/task_async_demo.das),
   [task_async_resources_demo.das](examples/task_async_resources_demo.das),
-  [task_hv_demo.das](examples/task_hv_demo.das).
+  [task_hv_demo.das](examples/task_hv_demo.das),
+  [task_toolkit_demo.das](examples/task_toolkit_demo.das).
 
 ## AsyncSequence
 

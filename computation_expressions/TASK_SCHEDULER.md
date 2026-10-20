@@ -49,7 +49,7 @@ def main() {
 Время — неотрицательное монотонное int64 в миллисекундах; int также принимается,
 равные отметки разрешены. Оно доступно через `task_scheduler_time` (до первого
 tick — 0). Таймауты проверяются по этому времени; приоритетов и автоматического
-пробуждения по часам нет.
+пробуждения по часам нет, но `task_next_deadline` подсказывает, когда тикать (см. ниже).
 
 Лимит считает вызовы task_poll верхнего уровня. Одна Task может внутри выполнить
 много синхронной работы и опросить вложенные задачи. Это не ограничение времени
@@ -203,3 +203,48 @@ Scope потребляет scheduler и удаляет его и при успе
 недействительным; `task_value` возвращает независимый clone. Shared handle при
 spawn создаёт отдельного ожидателя: отмена/timeout его записи не отменяет общий
 производитель при наличии других lease. Подробности: [TASK_COMPLETION.md](TASK_COMPLETION.md).
+
+## Ближайший дедлайн, бюджет времени и диагностика
+
+```das
+var inscope runtime <- task_runtime(TaskSchedulerConfig(max_polls_per_tick=16,max_tick_usec=2000))
+var inscope level <- task_spawn_named(runtime,"load level",load_level(),TaskTimeout(after_ms=5000))
+task_tick(runtime,now_ms)
+let wake=task_next_deadline(runtime)   // -1, now_ms или ближайший срок
+print(task_dump_text(runtime))
+for(info in task_stalled(runtime,3000)) {print("stalled: {info.name}\n")}
+```
+
+`task_next_deadline(scheduler|runtime) : int64`:
+
+- -1, если активных задач нет или ни у одной нет известного срока;
+- текущее `now_ms` до первого tick и когда прошлый tick оставил активные
+  задачи неопрошенными (бюджет опросов или времени);
+- иначе ближайший из таймаутов `TaskTimeout` и сроков `task_delay_ms`,
+  замеченных при прошлом tick.
+
+Задачи, ждущие события, channel, сокет или jobque, здесь не видны: пока такие
+ожидания могут завершиться, продолжайте тикать регулярно. Подсказка нужна
+инструментам и серверам, которые хотят спать до срока, а не крутить цикл.
+
+`TaskSchedulerConfig.max_tick_usec` (0 — без ограничения) — бюджет tick по
+настенным часам. Проверка идёт между опросами верхнего уровня: хотя бы одна
+задача опрашивается, а синхронный шаг задачи не прерывается. Остаток
+опрашивается на следующих tick по кругу.
+
+Диагностика:
+
+| Операция | Результат |
+|---|---|
+| `task_spawn_named(scheduler|runtime,name,source[,timeout])` | Как task_spawn, с меткой; имена не обязаны быть уникальными |
+| `task_name`, `task_set_name` | Чтение/замена метки (set_name — для typed scheduler) |
+| `task_dump(scheduler|runtime) : array<TaskInfo>` | Все занятые записи: id, name, status, active, timed_out, spawned_ms, last_poll_ms, polls, deadline_ms |
+| `task_stalled(scheduler|runtime,older_than_ms)` | Активные задачи старше порога по времени scheduler |
+| `task_dump_text(scheduler|runtime)` | Те же данные строкой для лога |
+
+`spawned_ms` для задач, созданных до первого tick, равен времени первого tick.
+`deadline_ms` — срок таймаута либо -1. Для runtime статус — статус адаптера
+записи (тот же, что у ticket). Дерево «кто кого ждёт» внутри вложенных bind
+не строится.
+
+Проверка: [test_task_scheduler_insight.das](tests/test_task_scheduler_insight.das).

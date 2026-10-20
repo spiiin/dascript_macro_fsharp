@@ -27,22 +27,34 @@ def private ce_task_erased(var handle:auto) {
     })}
     return <- task_create(events)
 }
-def private ce_runtime_spawn(var runtime:auto;var source:auto;timed:bool;timeout:TaskTimeout) {
+def private ce_runtime_spawn(var runtime:auto;var source:auto;timed:bool;timeout:TaskTimeout;name:string) {
     var inscope owned <- ce_task_source(source)
     var inscope handle <- task_share(owned)
     var copy <- task_shared_clone(handle)
     var inscope erased <- ce_task_erased(copy)
     var id:TaskId
-    if(timed) {id=task_spawn(runtime.scheduler,erased,timeout)}
-    else {id=task_spawn(runtime.scheduler,erased)}
+    if(timed) {id=task_spawn_named(runtime.scheduler,name,erased,timeout)}
+    else {id=task_spawn_named(runtime.scheduler,name,erased)}
     return <- (tag=TaskTicketTag(),id=id,handle <- handle)
 }
 def task_spawn(var runtime:tuple<kind:TaskRuntimeTag;scheduler:auto>;var source:auto) {
-    return <- ce_runtime_spawn(runtime,source,false,TaskTimeout())
+    return <- ce_runtime_spawn(runtime,source,false,TaskTimeout(),"")
 }
 def task_spawn(var runtime:tuple<kind:TaskRuntimeTag;scheduler:auto>;var source:auto;timeout:TaskTimeout) {
-    return <- ce_runtime_spawn(runtime,source,true,timeout)
+    return <- ce_runtime_spawn(runtime,source,true,timeout,"")
 }
+def task_spawn_named(var runtime:tuple<kind:TaskRuntimeTag;scheduler:auto>;name:string;var source:auto) {
+    return <- ce_runtime_spawn(runtime,source,false,TaskTimeout(),name)
+}
+def task_spawn_named(var runtime:tuple<kind:TaskRuntimeTag;scheduler:auto>;name:string;var source:auto;timeout:TaskTimeout) {
+    return <- ce_runtime_spawn(runtime,source,true,timeout,name)
+}
+def task_name(runtime:tuple<kind:TaskRuntimeTag;scheduler:auto>;ticket:tuple<tag:TaskTicketTag;id:TaskId;handle:auto>) {return task_name(runtime.scheduler,ticket.id)}
+def task_next_deadline(runtime:tuple<kind:TaskRuntimeTag;scheduler:auto>) {return task_next_deadline(runtime.scheduler)}
+def task_dump(runtime:tuple<kind:TaskRuntimeTag;scheduler:auto>) {return <- task_dump(runtime.scheduler)}
+def task_dump_text(runtime:tuple<kind:TaskRuntimeTag;scheduler:auto>) {return task_dump_text(runtime.scheduler)}
+def task_stalled(runtime:tuple<kind:TaskRuntimeTag;scheduler:auto>;older_than_ms:int64) {return <- task_stalled(runtime.scheduler,older_than_ms)}
+def task_stalled(runtime:tuple<kind:TaskRuntimeTag;scheduler:auto>;older_than_ms:int) {return <- task_stalled(runtime.scheduler,int64(older_than_ms))}
 def task_tick(var runtime:tuple<kind:TaskRuntimeTag;scheduler:auto>;now_ms:int64) {return task_tick(runtime.scheduler,now_ms)}
 def task_tick(var runtime:tuple<kind:TaskRuntimeTag;scheduler:auto>;now_ms:int) {return task_tick(runtime.scheduler,now_ms)}
 def task_status(ticket:tuple<tag:TaskTicketTag;id:TaskId;handle:auto>) {return task_status(ticket.handle)}

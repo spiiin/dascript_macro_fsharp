@@ -120,3 +120,78 @@ def task_channel_receive(channel:tuple<tag:TaskChannelTag;owner:iterator<auto(S)
 def clone(var target:tuple<tag:TaskChannelTag;owner:iterator<auto(S)?>>;source:tuple<tag:TaskChannelTag;owner:iterator<S?>>) {
     var next <- task_channel_clone(source);delete target;target <- next
 }
+
+// Select: one reader registration in every channel, so a single item is taken
+// from exactly one channel and nothing is lost when another one wins.
+// Channels are checked in argument order; a lower index wins when several are ready.
+// Result: Task<Result<tuple<index:int;value:Option<T>>,string>>. A closed and drained
+// channel reports (index,none) so the caller can stop listening to it; a failed one
+// reports err. Every channel must share the element type T.
+def private ce_channel_select_poll(var op:auto(O)?) {unsafe {
+    typedef Item=typedecl(op.states[0].queue[0]) -const -&
+    typedef Choice=tuple<index:int;value:$Option<Item>>
+    let count=length(op.states)
+    if(!op.started) {
+        op.started=true
+        for(i in range(count)) {
+            if(empty(op.states[i].error)) {op.ids[i]=ce_channel_register(op.states[i],false)}
+        }
+    }
+    for(i in range(count)) {
+        var state=op.states[i]
+        if(!empty(state.error)) {
+            var failure <- move_error(state.error,type<Choice>)
+            return <- task_ready_move(failure)
+        }
+        if(op.ids[i]!=uint64(0) && state.readers[0]==op.ids[i]) {
+            if(!empty(state.queue)) {
+                var item <- ce_move_some(state.queue[0]);state.queue |> erase(0)
+                ce_channel_select_release(op)
+                var choice:Choice
+                choice.index=i
+                choice.value <- item
+                var result <- move_ok(choice);return <- task_ready_move(result)
+            }
+            if(state.closed) {
+                ce_channel_select_release(op)
+                var choice:Choice
+                choice.index=i
+                choice.value=none(type<Item>)
+                var result <- move_ok(choice);return <- task_ready_move(result)
+            }
+        }
+    }
+    return <- task_pending(type<$Result<Choice;string>>)
+}}
+def private ce_channel_select_release(var op:auto(O)?) {unsafe {
+    for(i in range(length(op.states))) {
+        if(op.ids[i]!=uint64(0)) {ce_channel_remove(op.states[i].readers,op.ids[i]);op.ids[i]=uint64(0)}
+    }
+}}
+def private ce_channel_select_finish(var op:auto(O)?) {unsafe {
+    ce_channel_select_release(op)
+    for(i in range(length(op.states))) {op.states[i]=null}
+    delete op.leases;delete op
+}}
+def private ce_channel_select_op(var leases:array<auto(L)>) {
+    unsafe {
+        typedef S=typedecl(ce_channel_state(leases[0]))
+        var op=new tuple<states:array<S>;leases:array<L>;ids:array<uint64>;started:bool>()
+        for(lease in leases) {op.states |> push(ce_channel_state(lease));op.ids |> push(uint64(0))}
+        op.leases <- leases
+        return <- task_from_poll(@(){return <- ce_channel_select_poll(op)},@(){ce_channel_select_finish(op)})
+    }
+}
+def task_channel_select(a:tuple<tag:TaskChannelTag;owner:iterator<auto(S)?>>;b:tuple<tag:TaskChannelTag;owner:iterator<S?>>) {
+    var leases:array<typedecl(task_channel_clone(a))>
+    leases |> emplace(task_channel_clone(a))
+    leases |> emplace(task_channel_clone(b))
+    return <- ce_channel_select_op(leases)
+}
+def task_channel_select(a:tuple<tag:TaskChannelTag;owner:iterator<auto(S)?>>;b,c:tuple<tag:TaskChannelTag;owner:iterator<S?>>) {
+    var leases:array<typedecl(task_channel_clone(a))>
+    leases |> emplace(task_channel_clone(a))
+    leases |> emplace(task_channel_clone(b))
+    leases |> emplace(task_channel_clone(c))
+    return <- ce_channel_select_op(leases)
+}

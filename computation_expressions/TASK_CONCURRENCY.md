@@ -183,6 +183,139 @@ queue живым до завершения игрового цикла. Беск
 прервать этим мостом. Для отмены самого алгоритма нужен отдельный межпоточный
 кооперативный протокол; обычный CancellationToken CE для этого не предназначен.
 
+## Выбор из нескольких каналов
+
+`task_channel_select(a,b)` и `task_channel_select(a,b,c)` ждут первый готовый
+элемент из нескольких каналов одного типа T и дают
+`Task<Result<tuple<index:int;value:Option<T>>,string>>`.
+
+```dascript
+let pick=task_channel_select(input,commands) |> bind
+if(pick.value is some) {handle(pick.index,pick.value as some)}
+```
+
+- На первом poll ожидание регистрируется получателем во всех каналах сразу.
+  Элемент берётся ровно из одного канала, остальные регистрации снимаются
+  в том же poll: при одновременной готовности ничего не теряется.
+- При нескольких готовых каналах побеждает меньший индекс аргумента.
+- FIFO получателей сохраняется: обычный `task_channel_receive`, начавший
+  ждать раньше, обслуживается первым.
+- Закрытый и опустошённый канал сразу даёт `(index,none)`, чтобы цикл мог
+  перестать его слушать; при следующем select он снова даст none. Ошибочный
+  (`task_channel_fail`) канал даёт err.
+- Отмена и таймаут снимают все регистрации. Для каналов разных типов
+  используйте общий variant как тип элемента.
+
+## Прогресс
+
+`lib/task_progress.das`: ячейка «последнее значение побеждает» для экранов
+загрузки и индикаторов. Истории нет, промежуточные значения склеиваются.
+
+| Операция | Результат |
+|---|---|
+| `task_progress(type<T>)` | Владелец; T копируемый |
+| `task_progress_report(progress,value)` | Заменить значение; false после close |
+| `task_progress_value(progress)` / `task_progress_version` | Последнее значение (Option) и номер версии (0 до первого report) |
+| `task_progress_wait(progress)` | Task<Result<Option<T>,string>>: следующее значение после первого poll этой Task, none после close |
+| `task_progress_wait_after(progress,version)` | То же, но новее явно увиденной версии: не теряет обновление между ожиданиями |
+| `task_progress_close`, `task_progress_closed`, `task_progress_clone` | Закрытие, проверка, дополнительный lease |
+
+Уничтожение владельца закрывает ячейку; ожидающие Task держат её память через
+lease до завершения. Как и channel, хэндл живёт на уровне приложения
+(глобальная переменная или сервис), а не в параметре CE-функции.
+
+## Кооперативная отмена и поток значений из worker
+
+`task_jobque_cancellable(queue,input,@@work)` — как `task_jobque`, но work имеет
+вид `(input:Input;sink:TaskJobSink) : R`. Отмена или таймаут ожидающей Task,
+её удаление или завершение работы queue делают `task_job_cancelled(sink)`
+истинным, и длинный алгоритм может выйти сам:
+
+```dascript
+def search(depth:int;sink:TaskJobSink) : int {
+    var best=0
+    for(i in range(depth)) {
+        if(task_job_cancelled(sink)) {return best}
+        best=max(best,step(i))
+    }
+    return best
+}
+let best=task_jobque_cancellable(queue,40,@@search) |> bind
+```
+
+`task_jobque_stream(queue,type<T>,input,@@work,capacity=64)` — один worker
+публикует много значений. Work вида `(input:Input;sink:TaskJobSink) : void`
+вызывает `task_job_emit(sink,value)`; потребитель получает значения через
+`task_jobque_next(stream)` — Task<Result<Option<T>,string>>:
+
+```dascript
+def decode(chunks:int;sink:TaskJobSink) {
+    for(i in range(chunks)) {if(!task_job_emit(sink,decode_chunk(i))) {return}}
+}
+// stream — хэндл уровня приложения, как queue и channel:
+decoded <- task_jobque_stream(queue,type<int>,8,@@decode,4)
+// в TaskResultBuilder:
+while(true) {
+    let chunk=task_jobque_next(decoded) |> bind
+    if(chunk is none) {break}
+    task_progress_report(load_progress,chunk as some)
+}
+```
+
+- Поток холодный: worker стартует на первом poll `task_jobque_next`.
+- Backpressure: пока непрочитанных значений `capacity`, emit спит по 1 мс и
+  проверяет отмену; `capacity=0` — без ограничения.
+- emit возвращает false после отмены; значение тогда отбрасывается.
+- Тип значения emit должен совпадать с T потока в точности (int и int64 —
+  разные типы): значения проходят через стандартный Channel клонированием.
+- Значения, отправленные до panic worker, доставляются; затем next даёт err.
+  После возврата из work next даёт none; `task_jobque_stream_done` — true.
+- `task_jobque_stream_cancel(stream)` и уничтожение хэндла запрашивают отмену
+  worker; следующие next дают none. Каналы и атомики освобождаются через
+  `task_jobque_collect`, когда worker действительно завершился.
+- Последний lease queue при уничтожении сначала запрашивает отмену у всех
+  кооперативных worker, затем присоединяет их.
+
+Флаг отмены — `Atomic32` из стандартного jobque; ни Task, ни CE channel, ни
+CancellationToken в worker не передаются.
+
+## HTTP
+
+`lib/task_http.das` (нужен модуль dasHV). dasHV даёт только блокирующий HTTP-клиент,
+поэтому запрос выполняется на jobque worker, а Task опрашивает результат:
+
+```dascript
+var queue:typedecl(task_job_queue())   // сервис уровня приложения
+def load_profile(id:int) {
+    return <- computation(TaskResultBuilder(type<string>)) {
+        let response=task_http_get(queue,"https://example.com/api/players/{id}") |> bind
+        if(!task_http_ok(response)) {return "status {response.status}"}
+        return response.body
+    }
+}
+```
+
+| Операция | Результат |
+|---|---|
+| `task_http(queue,TaskHttpRequest(...))` | Task<Result<TaskHttpResponse,string>> |
+| `task_http_get(queue,url)` / `task_http_post(queue,url,body,content_type)` | Сокращения |
+| `task_http_header(response,key)` | Заголовок без учёта регистра, "" если нет |
+| `task_http_ok(response)` | status в 200..299 |
+
+`TaskHttpRequest`: method (GET/POST/PUT/DELETE/PATCH/HEAD/OPTIONS), url, body,
+content_type, headers, timeout_s, connect_timeout_s, follow_redirects.
+`TaskHttpResponse`: status, body, headers.
+
+- HTTP-статусы ошибок (404, 500) — успешный ответ; err только для транспортных
+  сбоев: DNS, отказ соединения, таймаут libhv.
+- Отмена и таймаут Task прекращают ожидание, но не прерывают уже идущий запрос:
+  его ограничивают `timeout_s`/`connect_timeout_s`. Последний lease queue при
+  уничтожении ждёт такие запросы.
+- Сочетается с `task_retry`, `task_result_when_all_limited`, `task_first_success`.
+- Проверка: `./test_task_http.ps1` запускает локальный Python-фикстур
+  ([task_http_fixture.py](support/task_http_fixture.py)) и
+  [test_task_http.das](tests/test_task_http.das).
+
 ## Примеры и проверки
 
 - [task_runtime_channel_demo.das](examples/task_runtime_channel_demo.das): runtime

@@ -211,3 +211,10 @@ Task concurrency: [TASK_CONCURRENCY.md](TASK_CONCURRENCY.md).
 task_with_semaphore, task_when_all_limited, task_result_when_all_limited,
 task_retry, task_first_success, task_job_queue, task_jobque, task_jobque_move,
 task_jobque_collect.
+Дополнительно: task_progress (task_progress_report/value/wait/wait_after/close),
+task_http (task_http, task_http_get, task_http_post, task_http_header, task_http_ok;
+нужен dasHV), task_channel_select, task_jobque_cancellable, task_jobque_stream,
+task_jobque_next, task_jobque_stream_cancel, task_job_emit, task_job_cancelled,
+cancellation_child, cancellation_view, cancellation_reason, cancellation_cancel(token,reason),
+task_next_deadline, task_spawn_named, task_name, task_set_name, task_dump,
+task_dump_text, task_stalled, TaskSchedulerConfig.max_tick_usec.

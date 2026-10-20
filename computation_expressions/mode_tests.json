@@ -60,5 +60,12 @@
   "tests/test_task_jobque.das",
   "tests/test_task_jobque_lifetime.das",
   "examples/task_runtime_channel_demo.das",
-  "examples/task_parallel_jobque_demo.das"
+  "examples/task_parallel_jobque_demo.das",
+  "tests/test_task_cancellation_tree.das",
+  "tests/test_task_progress.das",
+  "tests/test_task_channel_select.das",
+  "tests/test_task_scheduler_insight.das",
+  "tests/test_task_jobque_stream.das",
+  "tests/test_task_events.das",
+  "examples/task_toolkit_demo.das"
 ]
