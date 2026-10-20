@@ -1,10 +1,12 @@
 # Computation expressions
 
+Task: [runtime, channel, jobque, semaphore, retry](TASK_CONCURRENCY.md).
+
 Текущий результат завершения State/API/диагностики/метрик: [COMPLETION_RESULTS.md](COMPLETION_RESULTS.md).
 
 | Каталог | Содержимое |
 |---|---|
-| lib/ | 34 публичных модуля без тестовых builders |
+| lib/ | 38 публичных модулей без тестовых builders |
 | examples/ | Запускаемые примеры |
 | tests/ | Положительные и отрицательные проверки; tests/repro/ — известные сбои |
 | support/ | Демонстрационные builders и вспомогательные модули примеров/тестов |

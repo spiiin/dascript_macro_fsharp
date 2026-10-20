@@ -67,9 +67,14 @@ def ce_cancellation_isolate(action:block<():void>) {
     var saved <- cancellation_scopes
     try {invoke(action)} recover {
         let message="{this_context().last_exception}"
+        // Scope entries are borrowed; discard them before freeing only the array.
+        cancellation_scopes.resize(0)
+        __builtin_array_free(cancellation_scopes,typeinfo sizeof(cancellation_scopes[0]))
         cancellation_scopes <- saved
         panic(message)
     }
+    cancellation_scopes.resize(0)
+    __builtin_array_free(cancellation_scopes,typeinfo sizeof(cancellation_scopes[0]))
     cancellation_scopes <- saved
 }
 def ce_task_cancellation_requested() : bool {

@@ -203,3 +203,11 @@ Query-операции: `source |> query_order_by(key,descending=false)`, `sourc
 
 В примерах блоки `query_where`, `query_select`, `query_group_by` и `query_distinct(key)`
 передаются через `source |> query_operation <| $(row:Row) {...}`; прежние вызовы со скобками также поддерживаются.
+
+
+Task concurrency: [TASK_CONCURRENCY.md](TASK_CONCURRENCY.md).
+Публичные модули: task_runtime, task_channel, task_parallel, task_jobque;
+операции task_runtime, task_await, task_channel_send/receive, task_semaphore,
+task_with_semaphore, task_when_all_limited, task_result_when_all_limited,
+task_retry, task_first_success, task_job_queue, task_jobque, task_jobque_move,
+task_jobque_collect.

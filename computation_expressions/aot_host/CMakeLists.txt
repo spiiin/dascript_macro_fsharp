@@ -31,7 +31,7 @@ if(async_benchmark_aot)
     DEPENDS "${script}" ${ce_dependencies} VERBATIM)
   list(APPEND generated "${cpp}")
 endif()
-foreach(module IN ITEMS builder_protocol computation_resources sequence_runtime zip_runtime cancellation_token task_builder task_delay task_combinators task_scheduler deferred_runtime async_sequence_builder computation_builders move_builders list_builder sequence_builder parser_builder search_builder query_builder)
+foreach(module IN ITEMS builder_protocol computation_resources sequence_runtime zip_runtime cancellation_token task_builder task_delay task_combinators task_scheduler task_runtime task_channel task_parallel task_jobque deferred_runtime async_sequence_builder computation_builders move_builders list_builder sequence_builder parser_builder search_builder query_builder)
   set(script "${CMAKE_CURRENT_SOURCE_DIR}/../lib/${module}.das")
   set(cpp "${CMAKE_CURRENT_BINARY_DIR}/generated/lib_${module}.cpp")
   add_custom_command(OUTPUT "${cpp}"
@@ -40,7 +40,7 @@ foreach(module IN ITEMS builder_protocol computation_resources sequence_runtime 
   list(APPEND generated "${cpp}")
 endforeach()
 # Parser's integer conversion calls nongeneric standard-library functions.
-foreach(module IN ITEMS strings_convert)
+foreach(module IN ITEMS strings_convert jobque_boost)
   set(script "${DAS_SDK_ROOT}/daslib/${module}.das")
   set(cpp "${CMAKE_CURRENT_BINARY_DIR}/generated/daslib_${module}.cpp")
   add_custom_command(OUTPUT "${cpp}"

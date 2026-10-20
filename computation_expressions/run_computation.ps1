@@ -20,6 +20,16 @@ function Check([string]$File, [bool]$Pass, [string]$Expected) {
 Push-Location $PSScriptRoot
 try {
     Check 'tests/test_standard_outcomes.das' $true 'Standard outcome interoperability checks OK'
+    Check 'tests/test_task_concurrency_edges.das' $true 'Task concurrency edge checks OK'
+    Check 'tests/test_task_runtime_channel.das' $true 'Task runtime channel checks OK'
+    Check 'tests/test_task_runtime_lifetime.das' $true 'Task runtime lifetime checks OK'
+    Check 'tests/test_task_channel_lifetime.das' $true 'Task channel lifetime checks OK'
+    Check 'tests/test_task_parallel.das' $true 'Task parallel checks OK'
+    Check 'tests/test_task_parallel_lifetime.das' $true 'Task parallel lifetime checks OK'
+    Check 'tests/test_task_jobque.das' $true 'Task jobque checks OK'
+    Check 'tests/test_task_jobque_lifetime.das' $true 'Task jobque lifetime checks OK'
+    Check 'examples/task_runtime_channel_demo.das' $true 'Task runtime channel demo OK'
+    Check 'examples/task_parallel_jobque_demo.das' $true 'Task parallel jobque demo OK'
     Check 'examples/parser_combinators_demo.das' $true 'Parser combinators demo OK'
     Check 'examples/parser_demo.das' $true 'Parser demo OK'
     Check 'examples/search_alternatives_demo.das' $true 'Search alternatives demo OK'

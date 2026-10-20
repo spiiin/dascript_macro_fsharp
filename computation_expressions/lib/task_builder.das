@@ -549,3 +549,15 @@ def ce_await_source(builder:auto; handle:tuple<tag:TaskSharedTag;owner:iterator<
     var source <- ce_task_source(handle)
     return <- ce_await_source(builder,source)
 }
+
+// A scheduled/shared result may be transferred only with one remaining lease.
+// Observers must release their handles first; the consumed handle becomes empty.
+def task_take(var handle:tuple<tag:TaskSharedTag;owner:iterator<auto(SharedState)?>>) {
+    var state=ce_task_shared_state(handle)
+    unsafe {
+        if(state.references!=uint64(1)) {panic("shared Task take: other observers still own the result")}
+        var result <- task_take(state.task)
+        delete handle
+        return <- result
+    }
+}

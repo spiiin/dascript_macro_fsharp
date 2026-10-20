@@ -50,5 +50,15 @@
   "tests/test_parser_combinator_lifetime.das",
   "tests/test_search_combinators.das",
   "tests/test_query_operators.das",
-  "examples/query_full_demo.das"
+  "examples/query_full_demo.das",
+  "tests/test_task_concurrency_edges.das",
+  "tests/test_task_runtime_channel.das",
+  "tests/test_task_runtime_lifetime.das",
+  "tests/test_task_channel_lifetime.das",
+  "tests/test_task_parallel.das",
+  "tests/test_task_parallel_lifetime.das",
+  "tests/test_task_jobque.das",
+  "tests/test_task_jobque_lifetime.das",
+  "examples/task_runtime_channel_demo.das",
+  "examples/task_parallel_jobque_demo.das"
 ]

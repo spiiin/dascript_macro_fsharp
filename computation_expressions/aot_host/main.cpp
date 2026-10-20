@@ -10,6 +10,7 @@ int main(int argc, char **argv) {
     if(argc < 3) {std::cerr << "Usage: " << argv[0] << " SDK_ROOT SCRIPT...\n";return 2;}
     setDasRoot(argv[1]);
     NEED_ALL_DEFAULT_MODULES;
+    NEED_MODULE(Module_JobQue);
     Module::Initialize();
     int failures=0;
     for(int i=2;i<argc;i++) {

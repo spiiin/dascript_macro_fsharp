@@ -32,5 +32,9 @@
   "async_sequence_builder.das",
   "parser_builder.das",
   "search_builder.das",
-  "query_builder.das"
+  "query_builder.das",
+  "task_runtime.das",
+  "task_channel.das",
+  "task_parallel.das",
+  "task_jobque.das"
 ]
