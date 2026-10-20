@@ -42,6 +42,43 @@ jobs:
           try { & ./type_providers/run.ps1 -Test }
           finally { Stop-Transcript }
 
+      - name: Derive / examples, tests, JIT and standalone export
+        if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          New-Item -ItemType Directory -Path ci-results -Force | Out-Null
+          Start-Transcript -Path ci-results/derive.log
+          try {
+            & ./derive/run.ps1 -Test
+            & ./derive/run.ps1 -Test -Jit
+            & ./derive/test_integration.ps1
+            & ./derive/test_integration.ps1 -Jit
+          } finally { Stop-Transcript }
+
+      - name: Derive / build and execute strict AOT host
+        if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          Start-Transcript -Path ci-results/derive-aot-build.log
+          try {
+            & ./derive/run_aot.ps1 -OutputDirectory "$env:GITHUB_WORKSPACE/ci-results/derive-aot-runtime" -BuildDirectory "$env:RUNNER_TEMP/derive-aot-build"
+          } finally { Stop-Transcript }
+
+      - name: Derive / independent JSON Schema 2020-12 validator
+        if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
+        run: |
+          python -m pip install jsonschema==4.23.0
+          if ($LASTEXITCODE -ne 0) { throw 'JSON Schema validator installation failed' }
+          Start-Transcript -Path ci-results/derive-schema-validator.log
+          try {
+            python ./derive/tests/test_schema_jsonschema.py
+            if ($LASTEXITCODE -ne 0) { throw 'Interpreter schemas failed validation' }
+            python ./derive/tests/test_schema_jsonschema.py --jit
+            if ($LASTEXITCODE -ne 0) { throw 'JIT schemas failed validation' }
+            python ./derive/tests/test_schema_jsonschema.py --output-log ci-results/derive-aot-runtime/schema_demo.runtime.log --workflow-output-log ci-results/derive-aot-runtime/workflow_demo.runtime.log
+            if ($LASTEXITCODE -ne 0) { throw 'AOT schemas failed validation' }
+          } finally { Stop-Transcript }
+
       - name: Computation expressions / interpreter examples and tests
         if: ${{ !cancelled() && steps.sdk.outcome == 'success' }}
         run: |

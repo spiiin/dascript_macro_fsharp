@@ -1,0 +1,202 @@
+[
+  {
+    "file": "examples/derive_demo.das",
+    "marker": "Derive demo OK"
+  },
+  {
+    "file": "examples/game_demo.das",
+    "marker": "Derive game demo OK"
+  },
+  {
+    "file": "examples/custom_demo.das",
+    "marker": "Derive custom demo OK"
+  },
+  {
+    "file": "tests/test_derive.das",
+    "marker": "Derive checks OK"
+  },
+  {
+    "file": "tests/test_derive_owned.das",
+    "marker": "Derive owning checks OK"
+  },
+  {
+    "file": "tests/test_derive_laws.das",
+    "marker": "Derive composition laws OK"
+  },
+  {
+    "file": "tests/test_derive_modules.das",
+    "marker": "Derive cross-module checks OK"
+  },
+  {
+    "file": "examples/validation_demo.das",
+    "marker": "Derive validation demo OK"
+  },
+  {
+    "file": "examples/game_validation_demo.das",
+    "marker": "Derive game validation demo OK"
+  },
+  {
+    "file": "tests/test_validation.das",
+    "marker": "Derive validation checks OK"
+  },
+  {
+    "file": "tests/test_validation_numbers.das",
+    "marker": "Derive validation numeric checks OK"
+  },
+  {
+    "file": "tests/test_validation_custom.das",
+    "marker": "Derive validation custom checks OK"
+  },
+  {
+    "file": "examples/json_demo.das",
+    "marker": "Derive JSON demo OK"
+  },
+  {
+    "file": "examples/json_game_demo.das",
+    "marker": "Derive JSON game demo OK"
+  },
+  {
+    "file": "tests/test_json.das",
+    "marker": "Derive JSON checks OK"
+  },
+  {
+    "file": "tests/test_json_numbers.das",
+    "marker": "Derive JSON numeric and parser checks OK"
+  },
+  {
+    "file": "tests/test_json_custom.das",
+    "marker": "Derive JSON custom and ownership checks OK"
+  },
+  {
+    "file": "examples/json_presence_demo.das",
+    "marker": "Derive JSON presence demo OK"
+  },
+  {
+    "file": "tests/test_json_presence.das",
+    "marker": "Derive JSON presence checks OK"
+  },
+  {
+    "file": "tests/test_json_strict.das",
+    "marker": "Derive JSON strict checks OK"
+  },
+  {
+    "file": "tests/test_json_presence_owned.das",
+    "marker": "Derive JSON presence ownership checks OK"
+  },
+  {
+    "file": "examples/json_enum_variant_demo.das",
+    "marker": "Derive JSON enum variant demo OK"
+  },
+  {
+    "file": "tests/test_json_enum_variant.das",
+    "marker": "Derive JSON enum variant checks OK"
+  },
+  {
+    "file": "tests/test_json_enum_variant_owned.das",
+    "marker": "Derive JSON enum variant ownership checks OK"
+  },
+  {
+    "file": "examples/collection_validation_demo.das",
+    "marker": "Derive collection validation demo OK"
+  },
+  {
+    "file": "tests/test_validation_collections.das",
+    "marker": "Derive collection validation checks OK"
+  },
+  {
+    "file": "examples/clone_demo.das",
+    "marker": "Derive clone demo OK"
+  },
+  {
+    "file": "tests/test_clone.das",
+    "marker": "Derive clone checks OK"
+  },
+  {
+    "file": "tests/test_clone_exceptions.das",
+    "marker": "Derive clone exception and ownership checks OK"
+  },
+  {
+    "file": "examples/diff_demo.das",
+    "marker": "Derive diff demo OK"
+  },
+  {
+    "file": "tests/test_diff.das",
+    "marker": "Derive diff checks OK"
+  },
+  {
+    "file": "tests/test_diff_wrappers.das",
+    "marker": "Derive diff wrappers and variants checks OK"
+  },
+  {
+    "file": "tests/test_diff_exceptions.das",
+    "marker": "Derive diff custom and ownership checks OK"
+  },
+  {
+    "file": "examples/patch_demo.das",
+    "marker": "Derive patch demo OK"
+  },
+  {
+    "file": "tests/test_patch.das",
+    "marker": "Derive patch checks OK"
+  },
+  {
+    "file": "tests/test_patch_wrappers.das",
+    "marker": "Derive patch wrappers and arrays checks OK"
+  },
+  {
+    "file": "tests/test_patch_exceptions.das",
+    "marker": "Derive patch exception and ownership checks OK"
+  },
+  {
+    "file": "examples/builder_demo.das",
+    "marker": "Derive builder demo OK"
+  },
+  {
+    "file": "tests/test_builder.das",
+    "marker": "Derive builder checks OK"
+  },
+  {
+    "file": "tests/test_builder_exceptions.das",
+    "marker": "Derive builder exception checks OK"
+  },
+  {
+    "file": "examples/schema_demo.das",
+    "marker": "Derive schema demo OK"
+  },
+  {
+    "file": "examples/workflow_demo.das",
+    "marker": "Derive workflow demo OK"
+  },
+  {
+    "file": "tests/test_schema.das",
+    "marker": "Derive schema checks OK"
+  },
+  {
+    "file": "tests/test_workflow.das",
+    "marker": "Derive workflow checks OK"
+  },
+  {
+    "file": "examples/optics_demo.das",
+    "marker": "Derive optics demo OK"
+  },
+  {
+    "file": "tests/test_optics.das",
+    "marker": "Derive optics checks OK"
+  },
+  {
+    "file": "tests/test_optics_exceptions.das",
+    "marker": "Derive optics exception and ownership checks OK"
+  },
+  {
+    "file": "examples/prism_demo.das",
+    "marker": "Derive prism demo OK"
+  },
+  {
+    "file": "tests/test_prism.das",
+    "marker": "Derive prism checks OK"
+  },
+  {
+    "file": "tests/test_prism_exceptions.das",
+    "marker": "Derive prism exception and ownership checks OK"
+  }
+]

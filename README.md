@@ -1,4 +1,4 @@
-# Type providers, computation expressions, active patterns и ReactiveX
+# Type providers, computation expressions, active patterns, ReactiveX и derive
 
 Таблица возможностей builders и общий контракт: [CE_SEMANTICS.md](computation_expressions/CE_SEMANTICS.md).
 Асинхронные последовательности с Task bind: [AsyncSequenceBuilder](computation_expressions/ASYNC_SEQUENCE.md).
@@ -7,6 +7,7 @@ Parser, Search и Query: [DOMAIN_BUILDERS.md](computation_expressions/DOMAIN_BUI
 
 Части репозитория:
 
+- [Derive](derive/README.md): генерация Debug, Equality и Hash, [глубокий Clone](derive/CLONE.md), [диагностический Diff](derive/DIFF.md), [типизированный Patch](derive/PATCH.md), [Builder](derive/BUILDER.md), [JSON Schema](derive/SCHEMA.md), [Optics](derive/OPTICS.md), [Prism](derive/PRISM.md), [сквозной пример](derive/examples/workflow_demo.das), [валидация](derive/VALIDATION.md) правил полей и вложенных данных, [JSON](derive/JSON.md) с проверкой загруженных значений, строгим режимом, Option/JsonField, строковыми enum и tagged variant.
 - [Type providers](type_providers/README.md): генерация типов, схемы, JSON-данные, примеры и проверки.
 - [Computation expressions](computation_expressions/README.md): макрос CE, builders, примеры, проверки и бенчмарки.
 - [Active patterns](active_patterns/README.md): полные, частичные и параметризованные распознаватели на стандартном `daslib/match`.
@@ -38,6 +39,7 @@ $env:DASLANG_EXE = & ./.github/scripts/install-daslang.ps1 -Destination ./.work/
 
 Отдельные шаги проверяют:
 
+- Derive: примеры, owning-данные, диагностика, законы равенства/хеша, экспорт, JIT и строгий AOT-хост.
 - Type providers: все примеры и тесты через `type_providers/run.ps1 -Test`.
 - Active patterns: примеры, полные/частичные/параметризованные распознаватели
   и ожидаемые ошибки через `active_patterns/run.ps1 -Test`, в интерпретаторе и JIT.

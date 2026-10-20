@@ -1,0 +1,458 @@
+[
+  {
+    "file": "tests/failed_class.das",
+    "message": "only plain structs without inheritance"
+  },
+  {
+    "file": "tests/failed_option.das",
+    "message": "unknown option 'unknown'"
+  },
+  {
+    "file": "tests/failed_option_type.das",
+    "message": "option 'debug' must be bool"
+  },
+  {
+    "file": "tests/failed_empty_options.das",
+    "message": "enable at least one operation"
+  },
+  {
+    "file": "tests/failed_hash_without_equal.das",
+    "message": "hash requires equality"
+  },
+  {
+    "file": "tests/failed_nested.das",
+    "message": "derive_debug: unsupported value"
+  },
+  {
+    "file": "tests/failed_pointer.das",
+    "message": "derive_debug: unsupported value"
+  },
+  {
+    "file": "tests/failed_table.das",
+    "message": "derive_debug: unsupported value"
+  },
+  {
+    "file": "tests/failed_debug_disabled.das",
+    "message": "derive_debug: unsupported value"
+  },
+  {
+    "file": "tests/failed_hash_disabled.das",
+    "message": "derive_hash: unsupported value"
+  },
+  {
+    "file": "tests/failed_type_mismatch.das",
+    "message": "derive_equal requires matching types"
+  },
+  {
+    "file": "tests/failed_validation_rule_unknown.das",
+    "message": "unknown validation rule"
+  },
+  {
+    "file": "tests/failed_validation_rule_disabled.das",
+    "message": "validation rules require validate=true"
+  },
+  {
+    "file": "tests/failed_validation_rule_duplicate.das",
+    "message": "duplicate rule"
+  },
+  {
+    "file": "tests/failed_validation_rule_type.das",
+    "message": "must be a number"
+  },
+  {
+    "file": "tests/failed_validation_rule_range.das",
+    "message": "min must be <= max"
+  },
+  {
+    "file": "tests/failed_validation_length_range.das",
+    "message": "min_length must be <= max_length"
+  },
+  {
+    "file": "tests/failed_validation_length_negative.das",
+    "message": "must be a nonnegative int"
+  },
+  {
+    "file": "tests/failed_validation_length_type.das",
+    "message": "length/non_empty rules require a string or array"
+  },
+  {
+    "file": "tests/failed_validation_numeric_type.das",
+    "message": "min/max rules require a numeric scalar"
+  },
+  {
+    "file": "tests/failed_validation_integer_bound.das",
+    "message": "integer fields require integer bounds"
+  },
+  {
+    "file": "tests/failed_validation_float_bound.das",
+    "message": "float fields require floating or <=32-bit integer bounds"
+  },
+  {
+    "file": "tests/failed_validation_check_disabled.das",
+    "message": "check requires validate=true"
+  },
+  {
+    "file": "tests/failed_validation_check_name.das",
+    "message": "check must be a simple function name string"
+  },
+  {
+    "file": "tests/failed_validation_non_empty_type.das",
+    "message": "validate_non_empty must be bool"
+  },
+  {
+    "file": "tests/failed_validation_check_return.das",
+    "message": "custom check must return void"
+  },
+  {
+    "file": "tests/failed_validation_nested.das",
+    "message": "nested type requires"
+  },
+  {
+    "file": "tests/failed_json_disabled.das",
+    "message": "JSON rules require json=true"
+  },
+  {
+    "file": "tests/failed_json_unknown.das",
+    "message": "unknown JSON rule"
+  },
+  {
+    "file": "tests/failed_json_duplicate.das",
+    "message": "duplicate JSON rule"
+  },
+  {
+    "file": "tests/failed_json_name_type.das",
+    "message": "json_name must be a nonempty string"
+  },
+  {
+    "file": "tests/failed_json_skip_type.das",
+    "message": "json_skip must be bool"
+  },
+  {
+    "file": "tests/failed_json_required_type.das",
+    "message": "json_required must be bool"
+  },
+  {
+    "file": "tests/failed_json_default_required.das",
+    "message": "json_default conflicts"
+  },
+  {
+    "file": "tests/failed_json_default_type.das",
+    "message": "can only copy compatible type"
+  },
+  {
+    "file": "tests/failed_json_unsupported.das",
+    "message": "derive JSON: unsupported type"
+  },
+  {
+    "file": "tests/failed_json_name_collision.das",
+    "message": "duplicate JSON field name"
+  },
+  {
+    "file": "tests/failed_json_check_without_validate.das",
+    "message": "check requires validate=true"
+  },
+  {
+    "file": "tests/failed_json_variant_payload.das",
+    "message": "derive JSON: unsupported type"
+  },
+  {
+    "file": "tests/failed_validation_callback_name.das",
+    "message": "validate_check must be a simple function name string"
+  },
+  {
+    "file": "tests/failed_validation_callback_type.das",
+    "message": "validate_each must be a simple function name string"
+  },
+  {
+    "file": "tests/failed_validation_callback_disabled.das",
+    "message": "validation rules require validate=true"
+  },
+  {
+    "file": "tests/failed_validation_each_scalar.das",
+    "message": "validate_each requires an array or fixed array field"
+  },
+  {
+    "file": "tests/failed_validation_unique_scalar.das",
+    "message": "validate_unique_by requires an array or fixed array field"
+  },
+  {
+    "file": "tests/failed_validation_field_callback_return.das",
+    "message": "field check must return void"
+  },
+  {
+    "file": "tests/failed_validation_each_callback_return.das",
+    "message": "element check must return void"
+  },
+  {
+    "file": "tests/failed_validation_callback_duplicate.das",
+    "message": "duplicate rule"
+  },
+  {
+    "file": "tests/failed_clone_option_type.das",
+    "message": "option 'clone' must be bool"
+  },
+  {
+    "file": "tests/failed_clone_disabled.das",
+    "message": "derive_clone: unsupported value"
+  },
+  {
+    "file": "tests/failed_clone_nested.das",
+    "message": "derive_clone: unsupported value"
+  },
+  {
+    "file": "tests/failed_clone_pointer.das",
+    "message": "derive_clone: unsupported value"
+  },
+  {
+    "file": "tests/failed_clone_table.das",
+    "message": "derive_clone: unsupported value"
+  },
+  {
+    "file": "tests/failed_diff_option_type.das",
+    "message": "option 'diff' must be bool"
+  },
+  {
+    "file": "tests/failed_diff_without_debug.das",
+    "message": "diff requires debug"
+  },
+  {
+    "file": "tests/failed_diff_disabled.das",
+    "message": "derive_diff: unsupported value"
+  },
+  {
+    "file": "tests/failed_diff_nested.das",
+    "message": "derive_diff: unsupported value"
+  },
+  {
+    "file": "tests/failed_diff_pointer.das",
+    "message": "derive_diff: unsupported value"
+  },
+  {
+    "file": "tests/failed_diff_mismatch.das",
+    "message": "derive_diff requires matching types"
+  },
+  {
+    "file": "tests/failed_patch_option_type.das",
+    "message": "option 'patch' must be bool"
+  },
+  {
+    "file": "tests/failed_patch_needs_clone.das",
+    "message": "patch requires clone=true, equality=true and validate=true"
+  },
+  {
+    "file": "tests/failed_patch_needs_equal.das",
+    "message": "patch requires clone=true, equality=true and validate=true"
+  },
+  {
+    "file": "tests/failed_patch_needs_validate.das",
+    "message": "patch requires clone=true, equality=true and validate=true"
+  },
+  {
+    "file": "tests/failed_patch_disabled.das",
+    "message": "derive_patch: unsupported value"
+  },
+  {
+    "file": "tests/failed_patch_nested.das",
+    "message": "derive_patch: unsupported value"
+  },
+  {
+    "file": "tests/failed_patch_make_mismatch.das",
+    "message": "derive_make_patch requires matching types"
+  },
+  {
+    "file": "tests/failed_patch_apply_mismatch.das",
+    "message": "no matching functions or generics"
+  },
+  {
+    "file": "tests/failed_patch_zero_size.das",
+    "message": "zero-sized root types are unsupported by SDK Option AOT"
+  },
+  {
+    "file": "tests/failed_builder_validation.das",
+    "message": "builder requires validate=true"
+  },
+  {
+    "file": "tests/failed_builder_rule_disabled.das",
+    "message": "builder rules require builder=true"
+  },
+  {
+    "file": "tests/failed_builder_rule_type.das",
+    "message": "builder_required must be bool"
+  },
+  {
+    "file": "tests/failed_builder_rule_unknown.das",
+    "message": "unknown builder rule"
+  },
+  {
+    "file": "tests/failed_builder_zero.das",
+    "message": "zero-sized root types are unsupported by SDK Option AOT"
+  },
+  {
+    "file": "tests/failed_builder_wrong_setter.das",
+    "message": "no matching functions or generics"
+  },
+  {
+    "file": "tests/failed_schema_unsupported.das",
+    "message": "derive schema: unsupported type"
+  },
+  {
+    "file": "tests/failed_schema_unannotated.das",
+    "message": "requires [derive(json=true)]"
+  },
+  {
+    "file": "tests/failed_schema_no_json.das",
+    "message": "requires [derive(json=true)]"
+  },
+  {
+    "file": "tests/failed_schema_witness.das",
+    "message": "expects a type<T> witness"
+  },
+  {
+    "file": "tests/failed_schema_strict.das",
+    "message": "strict must be a bool literal"
+  },
+  {
+    "file": "tests/failed_schema_args.das",
+    "message": "expects type<Model> and optional literal strict bool"
+  },
+  {
+    "file": "tests/failed_schema_nested.das",
+    "message": "requires [derive(json=true)]"
+  },
+  {
+    "file": "tests/failed_optics_empty.das",
+    "message": "path must not be empty"
+  },
+  {
+    "file": "tests/failed_optics_malformed.das",
+    "message": "empty path component"
+  },
+  {
+    "file": "tests/failed_optics_index.das",
+    "message": "only struct field names"
+  },
+  {
+    "file": "tests/failed_optics_runtime.das",
+    "message": "path must be a literal or immutable constant string"
+  },
+  {
+    "file": "tests/failed_optics_missing.das",
+    "message": "field 'missing' was not found"
+  },
+  {
+    "file": "tests/failed_optics_array_path.das",
+    "message": "only plain struct fields form a total path"
+  },
+  {
+    "file": "tests/failed_optics_option_path.das",
+    "message": "only plain struct fields form a total path"
+  },
+  {
+    "file": "tests/failed_optics_variant_path.das",
+    "message": "only plain struct fields form a total path"
+  },
+  {
+    "file": "tests/failed_optics_scalar_root.das",
+    "message": "only plain struct fields form a total path"
+  },
+  {
+    "file": "tests/failed_optics_callback.das",
+    "message": "expected a block returning the focus type"
+  },
+  {
+    "file": "tests/failed_optics_callback_type.das",
+    "message": "callback must return the focus type"
+  },
+  {
+    "file": "tests/failed_optics_replacement_type.das",
+    "message": "optics_assign_copy"
+  },
+  {
+    "file": "tests/failed_optics_arity.das",
+    "message": "optic_get expects source and constant path"
+  },
+  {
+    "file": "tests/failed_optics_temporary_source.das",
+    "message": "bind the temporary owner to a variable"
+  },
+  {
+    "file": "tests/failed_optics_temporary_replacement.das",
+    "message": "bind the replacement temporary owner"
+  },
+  {
+    "file": "tests/failed_optics_callback_ref.das",
+    "message": "callback must return a value, not a borrowed reference"
+  },
+  {
+    "file": "tests/failed_prism_empty.das",
+    "message": "path must not be empty"
+  },
+  {
+    "file": "tests/failed_prism_malformed.das",
+    "message": "empty path component"
+  },
+  {
+    "file": "tests/failed_prism_runtime.das",
+    "message": "path must be a literal or immutable constant string"
+  },
+  {
+    "file": "tests/failed_prism_case.das",
+    "message": "variant case 'missing' was not found"
+  },
+  {
+    "file": "tests/failed_prism_field.das",
+    "message": "field 'missing' was not found"
+  },
+  {
+    "file": "tests/failed_prism_array.das",
+    "message": "only plain struct fields and variant cases are supported"
+  },
+  {
+    "file": "tests/failed_prism_void_read.das",
+    "message": "selected case has no payload; use prism_matches"
+  },
+  {
+    "file": "tests/failed_prism_void_update.das",
+    "message": "selected case has no payload; use prism_matches"
+  },
+  {
+    "file": "tests/failed_prism_zero_read.das",
+    "message": "zero-sized focus has no data; use prism_matches"
+  },
+  {
+    "file": "tests/failed_prism_callback.das",
+    "message": "expected a block returning the focus type"
+  },
+  {
+    "file": "tests/failed_prism_callback_type.das",
+    "message": "callback must return the focus type"
+  },
+  {
+    "file": "tests/failed_prism_callback_ref.das",
+    "message": "callback must return a value, not a borrowed reference"
+  },
+  {
+    "file": "tests/failed_prism_replacement_type.das",
+    "message": "optics_assign_copy"
+  },
+  {
+    "file": "tests/failed_prism_arity.das",
+    "message": "prism read expects source and constant path"
+  },
+  {
+    "file": "tests/failed_prism_temporary_source.das",
+    "message": "bind the temporary owner to a variable"
+  },
+  {
+    "file": "tests/failed_prism_temporary_variant.das",
+    "message": "bind the temporary owner to a variable"
+  },
+  {
+    "file": "tests/failed_prism_temporary_replacement.das",
+    "message": "bind the replacement temporary owner"
+  },
+  {
+    "file": "tests/failed_prism_root.das",
+    "message": "only plain struct fields and variant cases are supported"
+  }
+]
