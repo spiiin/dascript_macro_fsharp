@@ -147,3 +147,7 @@ terminal, pruning непрочитанной timed history и финализат
 `test_subscription_ownership.das` проверяет эти случаи через цепочку map/filter,
 порядок cleanup, break/continue и отсутствие роста живой памяти.
 Сравнение: [SUBSCRIPTION_OPTIMIZATION.md](SUBSCRIPTION_OPTIMIZATION.md).
+
+Обработчики map/filter теперь удерживают состояния напрямую, без временных iterator
+leases; это сокращает выделения при подписке и повторные обращения к rx_state на событии.
+Сравнение: [MAP_FILTER_OPTIMIZATION.md](MAP_FILTER_OPTIMIZATION.md).

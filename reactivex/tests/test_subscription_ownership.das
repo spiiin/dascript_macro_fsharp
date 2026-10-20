@@ -87,11 +87,52 @@ def checks() {
     }
     verify(effects==initial+45)
 }
+// Errors in a selector/predicate may delete the whole public pipeline.
+// Its captures must survive both terminal delivery and a throwing error callback.
+var handler_released=0
+struct HandlerCapture {
+    data:array<int>
+    def finalize {if(!empty(data)) {handler_released++;delete data}}
+}
+def handler_checks() {
+    for(mode in range(4)) {
+        let before=handler_released
+        var inscope subject <- rx_subject(type<int>)
+        var a <- HandlerCapture(data <- [42])
+        var b <- HandlerCapture(data <- [42])
+        var pipeline <- rx_clone(subject) |> rx_map(@ capture(<-a,copy(mode)) (n:int) {
+            verify(a.data[0]==42)
+            if(mode%2==0) {panic("map failed")}
+            return n
+        } finally {delete a}) |> rx_filter(@ capture(<-b) (n:int) {
+            verify(b.data[0]==42);panic("filter failed");return true
+        } finally {delete b})
+        var calls=0
+        unsafe {
+            var inscope sub <- rx_subscribe(pipeline,@(n:int) {panic("unexpected next")},
+                @ capture(&pipeline,&calls,copy(before),copy(mode)) (message:string) {
+                    calls++
+                    verify(starts_with(message,mode%2==0 ? "map failed" : "filter failed"))
+                    delete pipeline
+                    verify(handler_released==before)
+                    if(mode>=2) {panic("terminal failed")}
+                },@() {panic("unexpected complete")})
+            var caught=false
+            try {rx_subject_next(subject,1)} recover {
+                caught=true;verify(starts_with("{this_context().last_exception}","terminal failed"))
+            }
+            verify(caught==(mode>=2) && calls==1 && rx_is_closed(sub))
+        }
+        verify(handler_released==before+2 && rx_subscriber_count(subject)==0)
+        delete pipeline
+    }
+}
+
 [export]
 def main() {
     checks()
     let baseline=heap_bytes_allocated()
-    for(i in range(10)) {checks()}
+    for(i in range(10)) {checks();handler_checks()}
     verify(heap_bytes_allocated()==baseline)
     print("ReactiveX subscription ownership checks OK\n")
 }
